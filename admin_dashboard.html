@@ -1,9 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    <h1> HAHAHA </h1>
-  </body>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+</head>
+
+<body class="parent">
+  <?!= include('admin_navigation') ?>
+  <script>
+    // Toggle the dropdown menu
+    document.getElementById('profileButton').addEventListener('click', function () {
+      var menu = document.getElementById('profileMenu');
+      menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+    });
+
+    // Close the dropdown menu when clicking outside of it
+    window.onclick = function (event) {
+      if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+        var dropdowns = document.getElementsByClassName('dropdown-menu');
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.style.display === 'block') {
+            openDropdown.style.display = 'none';
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
 </html>
