@@ -1,9 +1,18 @@
 var SESSION_KEY = 'userSession';
 
-function doGet() {
-  var template = HtmlService.createTemplateFromFile('login');
-  template.message = '';
-  return template.evaluate().setTitle('EzBook Login Page').addMetaTag('viewport', 'width=device-width, initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+function doGet(e) {
+  let temp = 'login';
+  if ('temp' in e.parameters) {
+    temp = e.parameters['temp'][0];
+  }
+  try {
+    var template = HtmlService.createTemplateFromFile('login');
+    template.message = '';
+    return template.evaluate().setTitle('EzBook Login Page').addMetaTag('viewport', 'width=device-width, initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch (e){
+    return ContentService.createTextOutput(JSON.stringify(e))
+  }
+
 }
 
 function getUrl() {
@@ -19,6 +28,8 @@ function doPost(e) {
 
   if (action == 'login') {
     return handleLogin(e);
+  } else if (action == 'logout') {
+    return handleLogout();
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -58,4 +69,14 @@ function handleLogin(e) {
   template.message = 'Email or password wrong';
   return template.evaluate()
     .setTitle('EzBook').addMetaTag('viewport', 'width=device-width, initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleLogout() {
+  // Redirect to the login page
+  var template = HtmlService.createTemplateFromFile('login');
+  template.message = 'You have been logged out';
+  return template.evaluate()
+    .setTitle('EzBook Login Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
