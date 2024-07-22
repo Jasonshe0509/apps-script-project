@@ -26,7 +26,7 @@
             alt="Profile" class="h-12 w-12 rounded-full">
         </button>
         <div id="profileMenu" class="dropdown-menu">
-          <a href="#">User Profile</a>
+          <a href="<?=url?>?temp=user_profile">User Profile</a>
           <a href="#">Change Password</a>
           <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
             <input type="hidden" name="action" value="logout">
