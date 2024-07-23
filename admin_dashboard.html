@@ -21,7 +21,7 @@
       </button>
       <div id="profileMenu" class="dropdown-menu">
         <a href="<?=url?>?temp=user_profile">User Profile</a>
-        <a href="#">Change Password</a>
+        <a href="<?=url?>?temp=user_change_password">Change Password</a>
         <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
           <input type="hidden" name="action" value="logout">
           <button type="submit">Logout</button>
@@ -29,10 +29,11 @@
       </div>
     </div>
     <ul id="navItems"
-      class="flex space-x-14 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
-      <li><a href="#" class="text-white hover:text-lime-500">Employee</a></li>
+      class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+      <li><a href="#" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
       <li><a href="#" class="text-white hover:text-lime-500">Customer</a></li>
       <li><a href="#" class="text-white hover:text-lime-500">Booking</a></li>
+      <li><a href="#" class="text-white hover:text-lime-500">Invoice</a></li>
       <li><a href="#" class="text-white hover:text-lime-500">Service</a></li>
       <li><a href="#" class="text-white hover:text-lime-500">Report</a></li>
     </ul>
