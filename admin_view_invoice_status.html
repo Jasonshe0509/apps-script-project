@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full">
+        <h2 class="text-center text-lg font-bold mb-4 text-green-400">Status: Overdue</h2>
+
+        <form class="space-y-4">
+            <div>
+                <label for="id" class="block text-sm font-medium">Invoice Id</label>
+                <input type="input" class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="amount" class="block text-sm font-medium">Amount</label>
+                <input type="input" class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <!-- Invoice Document (URL) -->
+            <div>
+                <label for="invoice-document" class="block text-sm font-medium">Invoice Document</label>
+                <a id="invoice-link" href="#" class="input-link block w-full rounded-md border border-gray-600 p-2 mt-1 bg-transparent" onclick="return false;">Enter URL for invoice document</a>
+            </div>
+            <!-- Receipt Document (File Upload) -->
+            <div>
+                <label for="receipt-document" class="block text-sm font-medium">Receipt Document</label>
+                <input type="file" id="receipt-document" class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500" onchange="previewFile()">
+                <div id="file-preview" class="mt-4"></div>
+            </div>
+            <div>
+                <label for="paid" class="block text-sm font-medium">Paid Amount</label>
+                <input type="input" class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label for="updated-time" class="block text-sm font-medium">Updated Time</label>
+                <input type="text" class="mt-1 block w-full rounded-md bg-gray-700 border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+            </div>
+            <div>
+                <label for="created-time" class="block text-sm font-medium">Created Time</label>
+                <input type="text" class="mt-1 block w-full rounded-md bg-gray-700  border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="button" class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
+                <button type="button" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Remain Open</button>
+                <button type="button" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Mark As Close</button>
+            </div>
+           
+        </form>
+        
+    </div>
+</body>
+<script>
+    // Set the invoice URL
+    function setInvoiceURL(url) {
+            const invoiceLink = document.getElementById('invoice-link');
+            if (url) {
+                invoiceLink.href = url;
+                invoiceLink.textContent = 'Click here to view the invoice document';
+                invoiceLink.onclick = () => window.open(url, '_blank');
+            }
+        }
+
+        // Example URL for demonstration
+        setInvoiceURL('https://example.com/invoice.pdf');
+
+    function previewFile() {
+        const fileInput = document.getElementById('receipt-document');
+        const filePreview = document.getElementById('file-preview');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const fileUrl = URL.createObjectURL(file);
+            
+            filePreview.innerHTML = `
+                <a href="${fileUrl}" target="_blank" class="text-blue-400 hover:underline">${file.name}</a>
+            `;
+        } else {
+            filePreview.innerHTML = '';
+        }
+    }
+</script>
+</html>
