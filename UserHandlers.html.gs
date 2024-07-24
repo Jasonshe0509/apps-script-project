@@ -34,6 +34,11 @@ function handleLogin(e) {
 
               var html = HtmlService.createTemplateFromFile(redirectPage);
               html.userID = userData[i][1];
+              html.totalSales = getTotalSales();
+              html.totalUnpaidAmount = getUnpaidAmounts();
+              html.totalPaidAmounts = getPaidAmounts();
+              html.totalActiveBookings = getActiveBookings();
+              html.bookings = getRecentBookings();
               return html.evaluate()
                 .setTitle('EzBook')
                 .addMetaTag('viewport', 'width=device-width, initial-scale=1')

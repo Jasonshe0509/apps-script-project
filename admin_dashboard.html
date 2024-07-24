@@ -4,6 +4,18 @@
 <head>
   <base target="_top">
   <?!= include('header') ?>
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      /* IE and Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+  </style>
 </head>
 
 <body class="parent">
@@ -11,9 +23,9 @@
   <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
     style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
     <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
-      <img
-        src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
-        alt="EZBOOK Logo" class="h-[60px] object-contain">
+      <a href="#"><img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
       <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
         <img
           src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
@@ -38,6 +50,124 @@
       <li><a href="#" class="text-white hover:text-lime-500">Report</a></li>
     </ul>
   </nav>
+  <!-- Main Content -->
+  <div class="p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Metric Cards -->
+      <div class="flex justify-between items-center bg-[#2A282A] p-4 shadow rounded">
+        <div>
+          <div class="text-white font-bold mb-2" style="font-family: Abeezee;">Total Sales</div>
+          <div class="text-green-500 text-2xl font-bold mb-2" style="font-family: Abeezee;">RM
+            <?!= totalSales ?>
+          </div>
+          <div class="text-sm text-gray-500 mb-2" style="font-family: Abeezee;">Compared to Oct 2024</div>
+        </div>
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbdsb45Km_Fu1cKPmhFcBNd8-cnfT44cSRQwmRhj1DPdxhRXCbP9PBgtc0p7iUX_Bz6kc95O4o8RyA78Zc--YKJh-JzZEPJr_o=s2560"
+          alt="Sales Image" class="w-16 h-16 object-cover rounded">
+      </div>
+      <div class="flex justify-between items-center bg-[#2A282A] p-4 shadow rounded">
+        <div>
+          <div class="text-white font-bold mb-2" style="font-family: Abeezee;">Unpaid Booking</div>
+          <div class="text-red-500 text-2xl font-bold mb-2" style="font-family: Abeezee;">RM
+            <?!= totalUnpaidAmount ?>
+          </div>
+          <div class="text-sm text-gray-500 mb-2" style="font-family: Abeezee;">Compared to Oct 2023</div>
+        </div>
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihZ4PCvboFv9t9wNZvytL3sBx2cCkmr_jiuRnuy_bkC7EUVYvBivzlKY_V_kfQMYeZ21AYMPC3f-r3IaG0m91cwhoVX4UrJPPFs=s2560"
+          alt="Sales Image" class="w-16 h-16 object-cover rounded">
+      </div>
+      <div class="flex justify-between items-center bg-[#2A282A] p-4 shadow rounded">
+        <div>
+          <div class="text-white font-bold mb-2" style="font-family: Abeezee;">Paid Booking</div>
+          <div class="text-orange-500 text-2xl font-bold mb-2" style="font-family: Abeezee;">RM
+            <?!= totalPaidAmounts ?>
+          </div>
+          <div class="text-sm text-gray-500 mb-2" style="font-family: Abeezee;">Compared to Oct 2023</div>
+        </div>
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbwvAIjzTnX5H5xWBKiAz385Mfw9p5MZiR-MVVh41xXArUDAWJ6PzCDncdU2oRtFoWcgWzaLooNJsFxGeM7OoeQ-x03EtyGWu4=s2560"
+          alt="Sales Image" class="w-16 h-16 object-cover rounded">
+      </div>
+      <div class="flex justify-between items-center bg-[#2A282A] p-4 shadow rounded">
+        <div style="font-family: Abeezee;">
+          <div class="text-white font-bold mb-2">Active Booking</div>
+          <div class="text-[#A0D7FF] text-2xl font-bold mb-2">
+            <?!= totalActiveBookings ?>
+          </div>
+          <div class="text-sm text-gray-500 mb-2">Compared to Oct 2023</div>
+        </div>
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihaVFEZGl5Q40HWHJ4uDP5uew9wklgeFid_pzZUQw4aTXgudgHbyx0mragQLOk0gaDLeD7MEGgP7r0DtqscBF_jVs1FTPxJ42Bc=s2560"
+          alt="Sales Image" class="w-16 h-16 object-cover rounded">
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Taskline -->
+      <div class="bg-[#2A282A] p-4 shadow rounded" style="font-family: Abeezee;">
+        <div class="flex justify-between items-center mb-4">
+          <div class="text-lg font-bold text-white">Taskline</div>
+          <div class="text-white text-sm" id="currentDate">
+          </div>
+        </div>
+        <div class="overflow-y-auto max-h-80 no-scrollbar" id="bookingList">
+        </div>
+      </div>
+      <!-- Recent Booking Requests -->
+      <div class="bg-[#2A282A] p-4 shadow rounded text-white" style="font-family: Abeezee;">
+        <div class="text-lg font-bold mb-4">Recent Booking Request Received</div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full rounded-lg text-white mx-auto w-full">
+            <thead>
+              <tr class="border-b border-neutral-100">
+                <th class="p-2 font-bold text-left text-sm md:text-base">Booking ID</th>
+                <th class="p-2 font-bold text-left text-sm md:text-base">Status</th>
+                <th class="p-2 font-bold text-left text-sm md:text-base">Customer Name</th>
+                <th class="p-2 font-bold text-left text-sm md:text-base">Type of Service</th>
+              </tr>
+            </thead>
+            <tbody>
+              <? for (var i = 0; i < bookings.length; i++) { ?>
+              <tr class="border-b border-neutral-100">
+                <td class="p-2 text-sm md:text-base">
+                  <?= bookings[i].bookingId ?>
+                </td>
+                <td class="p-2 text-sm md:text-base">
+                  <? if (bookings[i].status == 'Pending') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else if (bookings[i].status == 'En Route') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFA16D] text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else if (bookings[i].status == 'Scheduled') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFF855] text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else if (bookings[i].status == 'Canceled') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else if (bookings[i].status == 'Completed') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else if (bookings[i].status == 'On Going') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#DDB478] text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } else { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-gray-200 text-black text-[10px] md:text-xs"><?= bookings[i].status ?></span>
+                  <? } ?>
+                </td>
+                <td class="p-2 text-sm md:text-base">
+                  <?= bookings[i].customerName ?>
+                </td>
+                <td class="p-2 text-sm md:text-base">
+                  <?= bookings[i].typeOfService ?>
+                </td>
+              </tr>
+              <? } ?>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex justify-end mt-4">
+          <a href="/all-bookings" class="text-white hover:underline text-sm md:text-base">View All</a>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     // Toggle the dropdown menu
     document.getElementById('profileButton').addEventListener('click', function () {
@@ -57,6 +187,48 @@
         }
       }
     }
+  </script>
+  <script>
+    function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  }
+
+  function displayTodaysBookings(bookings) {
+    console.log(bookings)
+    const bookingList = document.getElementById('bookingList');
+    bookingList.innerHTML = ''; // Clear previous contents
+
+    bookings.forEach(booking => {
+      const taskDiv = document.createElement('div');
+      taskDiv.className = 'timeline-task mb-4';
+      taskDiv.innerHTML = `
+        <div class="task-dot"></div>
+        <div class="ml-6">
+          <div class="text-[#B1B1B1]">${booking.time}</div>
+          <div class="bg-blue-100 text-blue-500 rounded p-2">
+            Booking ID: ${booking.id}<br>
+            Customer: ${booking.customerName}<br>
+            Location: ${booking.address}
+          </div>
+        </div>
+      `;
+      bookingList.appendChild(taskDiv);
+    });
+  }
+
+  function fetchBookings() {
+    google.script.run.withSuccessHandler(displayTodaysBookings).getTodaysBookings();
+  }
+
+  function setCurrentDate() {
+    document.getElementById('currentDate').textContent = formatDate(new Date());
+  }
+
+  window.onload = function() {
+    setCurrentDate();
+    fetchBookings();
+  }
   </script>
 </body>
 
