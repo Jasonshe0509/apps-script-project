@@ -3,6 +3,7 @@ let user = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE
 let employee_zone = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee_Zone');
 let zone = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Zone');
 
+
 function doGet(e) {
   let temp = 'login';
   if ('temp' in e.parameters) {
@@ -13,6 +14,9 @@ function doGet(e) {
   }
   if (temp == 'user_change_password') {
     return handleUserChangePassword();
+  }
+  if (temp == 'admin_service') {
+    return handleAdminService();
   }
   try {
     var template = HtmlService.createTemplateFromFile('login');
@@ -93,4 +97,25 @@ function handleUserChangePassword() {
     .setTitle('User Profile')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminService() {
+  var template = HtmlService.createTemplateFromFile('admin_service');
+  return template.evaluate()
+    .setTitle('Service Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function getServiceTypeData() {
+  let sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Service');
+  var dataRange = sheet.getRange('B5:F'); // Adjusted to get the right range
+  var data = dataRange.getValues();
+
+  // Filter out rows where all cells are empty
+  var filteredData = data.filter(function(row) {
+    return row.some(cell => cell !== '' && cell !== null && cell !== undefined);
+  });
+
+  return filteredData;
 }
