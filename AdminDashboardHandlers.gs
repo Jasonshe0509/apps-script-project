@@ -68,23 +68,6 @@ function getActiveBookings() {
   return countActive;
 }
 
-function getCustomerData() {
-  let sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Customer'); // Adjust sheet name as needed
-  let dataRange = sheet.getRange('B5:E'); // Adjust range to include Customer ID and Name columns
-  let data = dataRange.getValues();
-
-  let customerMap = {};
-  data.forEach(row => {
-    let customerId = row[0];
-    let customerName = row[3];
-    if (customerId) {
-      customerMap[customerId] = customerName;
-    }
-  });
-
-  return customerMap;
-}
-
 function getCityData() {
   let sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Zone'); // Adjust sheet name as needed
   let dataRange = sheet.getRange('B5:C'); // Adjust range to include City ID and City Name columns
