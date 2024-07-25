@@ -8,36 +8,467 @@
 
 <body class="parent">
   <? var url = getUrl(); ?>
-  <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
-    style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
-    <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
-      <img
-        src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
-        alt="EZBOOK Logo" class="h-[60px] object-contain">
-      <div class="flex items-center gap-0 sm:gap-6">
-        <svg class="text-white w-10 h-10 cursor-pointer mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+  <div class="sticky top-0 z-50">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          alt="EZBOOK Logo" class="h-[60px] object-contain">
+        <div class="flex items-center gap-0 sm:gap-6">
+          <svg class="text-white w-10 h-10 cursor-pointer mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+            <img
+              src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
+              alt="Profile" class="h-12 w-12 rounded-full">
+          </button>
+          <div id="profileMenu" class="dropdown-menu">
+            <a href="<?=url?>?temp=user_profile">User Profile</a>
+            <a href="<?=url?>?temp=user_change_password">Change Password</a>
+            <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+              <input type="hidden" name="action" value="logout">
+              <button type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Booking</h1>
+    </div>
+  </div>
+  <div class="flex">
+    <!-- Side bar -->
+    <div class="sideMenu bg-[#1D1C1D] sticky left-0 top-0 mt-4 h-screen z-40" id="side-menu">
+      <div class="main-menu">
+        <div class="mb-4">
+          <div class="bg-[#2a282a] p-2">
+            <h3 for="search" class="font-bold text-neutral-100 text-xl pl-5">Search by keyword</h3>
+          </div>
+          <div class="relative m-4">
+            <input id="search" type="text" class="w-full pl-10 p-2 rounded bg-lime-500 text-[#2a282a] text-base"
+              placeholder="Search...">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6 text-[#313131] absolute left-2 top-1/2 transform -translate-y-1/2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+        </div>
+        <div class="mb-4 text-neutral-100">
+          <div class="bg-[#2a282a] p-2">
+            <h3 class="font-bold text-xl pl-5">Filter by Status</h3>
+          </div>
+          <div class="flex flex-col m-4 text-base pl-5">
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Status 1</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Status 2</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Status 3</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Status 4</label>
+          </div>
+        </div>
+        <div class="mb-4 text-neutral-100">
+          <div class="p-2 bg-[#2a282a]">
+            <h3 class="text-lg font-bold text-xl pl-5">Filter by Service Type</h3>
+          </div>
+          <div class="flex flex-col m-4 text-base pl-5">
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Type 1</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Type 2</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Type 3</label>
+            <label class="mb-2"><input type="checkbox" class="mr-2"> Type 4</label>
+          </div>
+        </div>
+        <div class="flex justify-center items-end">
+          <button class="bg-lime-500 text-[#2a282a] font-bold py-2 px-4 w-40 h-12 rounded">Apply</button>
+        </div>
+      </div>
+      <div class="flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="closebtn text-lime-500 w-6 h-6" onclick="toggleNav()">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
-        <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
-          <img
-            src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
-            alt="Profile" class="h-12 w-12 rounded-full">
-        </button>
-        <div id="profileMenu" class="dropdown-menu">
-          <a href="<?=url?>?temp=user_profile">User Profile</a>
-          <a href="<?=url?>?temp=user_change_password">Change Password</a>
-          <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
-            <input type="hidden" name="action" value="logout">
-            <button type="submit">Logout</button>
-          </form>
+      </div>
+    </div>
+    <!-- Main content -->
+    <div id="main-content" class="p-4 transition-all duration-[30ms] grow z-30 overflow-hidden">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center">
+          <select id="date-filter" class="bg-[#2A282A] text-white border border-white p-2 rounded">
+            <option>Last 30 days</option>
+          </select>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full max-w-full rounded-lg text-neutral-100 text-left">
+          <thead class="text-nowrap">
+            <tr>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Booking ID</th>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Status</th>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Customer Name</th>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Type of Service</th>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Schedule Date Time</th>
+              <th class="p-2 md:p-4 border-b-2 border-gray-600 ">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK001</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#FFA16D] text-black text-[10px] md:text-xs">En
+                  Route</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK002</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#FFAF52] text-black text-[10px] md:text-xs">Scheduled</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK003</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs">Canceled</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK004</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs">Completed</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK005</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#DDB478] text-black text-[10px] md:text-xs">On
+                  Going</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK006</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs">Completed</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK007</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[##DDB478] text-black text-[10px] md:text-xs">On
+                  Going</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK008</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK009</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-700">
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">BK010</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 "><span
+                  class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span>
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Aieto Energies</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">Installation and Relocation Services
+              </td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600 ">24.12.2020 11:16 AM - 2:00 PM</td>
+              <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                <div class="relative inline-block no-underline">
+                  <button class="bookingButton hover:text-lime-500 focus:text-lime-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" class="size-6">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                  </button>
+                  <div
+                    class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">
+                    <a href="<?=url?>?temp=user_profile"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Status</a>
+                    <a href="<?=url?>?temp=user_change_password"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update
+                      Evidence</a>
+                    <a href="<?=url?>?temp=staff_view_booking_details"
+                      class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking
+                      Details</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-between items-center mt-4 text-neutral-100">
+        <div>
+          <label for="page-input">Go to</label>
+          <input id="page-input" type="number" class="bg-[#2a2828] p-2 rounded w-16" value="1">
+          page
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="bg-[#2a2828] px-2 py-1 rounded">&lt;</button>
+          <button class="bg-lime-500 text-black px-2 py-1 rounded">1</button>
+          <button class="bg-[#2a2828] px-2 py-1 rounded">2</button>
+          <button class="bg-[#2a2828] px-2 py-1 rounded">3</button>
+          <button class="bg-[#2a2828] px-2 py-1 rounded">4</button>
+          <button class="bg-[#2a2828] px-2 py-1 rounded">&gt;</button>
         </div>
       </div>
     </div>
-  </nav>
+  </div>
   <script>
-    // Toggle the dropdown menu
+    // Toggle the dropdown menu - profile
     document.getElementById('profileButton').addEventListener('click', function () {
       var menu = document.getElementById('profileMenu');
       menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
@@ -56,6 +487,76 @@
       }
     }
   </script>
-</body>
+  <script>
+    // Toggle the dropdown menu - booking details
+    document.querySelectorAll('.bookingButton').forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        // Prevent the click event from bubbling up to the window click event
+        event.stopPropagation();
 
+        // Close other open dropdowns
+        document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+          menu.classList.add('hidden');
+        });
+
+        // Toggle the corresponding dropdown menu
+        var menu = button.nextElementSibling;
+        menu.classList.toggle('hidden');
+      });
+    });
+
+    // Close the dropdown menu when clicking outside of it
+    window.onclick = function (event) {
+      document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+        menu.classList.add('hidden');
+      });
+    }
+  </script>
+  <script>
+    // Side bar
+    function toggleNav() {
+      const nav = document.getElementById('side-menu');
+      const mainContent = document.getElementById('main-content');
+      const closeBtn = document.querySelector('.closebtn');
+
+      if (nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        closeBtn.classList.add('rotate-180');
+        if (window.innerWidth <= 768) {
+          nav.style.width = '50px';
+          nav.style.gridTemplateColumns = '0 40px';
+          mainContent.classList.remove('hidden');
+        } else {
+          mainContent.classList.add('mx-4');
+        }
+      } else {
+        nav.classList.add('open');
+        closeBtn.classList.remove('rotate-180');
+        if (window.innerWidth <= 768) {
+          nav.style.width = '100vw';
+          nav.style.gridTemplateColumns = '90vw 10vw';
+          mainContent.classList.add('hidden');
+        } else {
+          mainContent.classList.remove('mx-4');
+        }
+      }
+    }
+
+    window.addEventListener('resize', function () {
+      const nav = document.getElementById('side-menu');
+      const closeBtn = document.querySelector('.closebtn');
+      const mainContent = document.getElementById('main-content');
+      if (window.innerWidth >= 768) {
+        nav.classList.add('open');
+        closeBtn.classList.remove('rotate-180');
+        mainContent.classList.remove('mx-8');
+      } else {
+        nav.classList.remove('open');
+        closeBtn.classList.add('rotate-180');
+        mainContent.classList.add('mx-4');
+      }
+    });
+    window.dispatchEvent(new Event('resize'));
+  </script>
+</body>
 </html>
