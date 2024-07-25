@@ -69,6 +69,46 @@
     background-color: rgba(42, 40, 40, 0.2);
     color: #C1FF03;
   }
+
+  /* Side bar */
+  .sideMenu {
+    width: 50px;
+    transition: width 0.3s ease-in-out;
+    display: grid;
+    grid-template-columns: 0px 40px;
+  }
+
+  .sideMenu.open {
+    width: 300px;
+    grid-template-columns: 260px 40px;
+  }
+
+  .main-menu {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .closebtn {
+    cursor: pointer;
+    justify-self: center;
+    align-self: center;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* Table */
+  tr>th {
+    font-family: ABeeZee;
+    font-size: 16px !important;
+  }
+
+  tr>td {
+    font-family: ABeeZee;
+    font-size: 14px !important;
+  }
+
+  span {
+    font-family: ABeeZee;
+  }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
