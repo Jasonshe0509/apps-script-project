@@ -18,6 +18,9 @@ function doGet(e) {
   if (temp == 'admin_service') {
     return handleAdminService();
   }
+  if (temp == 'admin_customer') {
+    return handleAdminCustomer();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -105,6 +108,14 @@ function handleAdminService() {
   var template = HtmlService.createTemplateFromFile('admin_service');
   return template.evaluate()
     .setTitle('Service Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminCustomer() {
+  var template = HtmlService.createTemplateFromFile('admin_customer');
+  return template.evaluate()
+    .setTitle('Customer Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
