@@ -45,6 +45,8 @@ function doPost(e) {
     return handleLogout();
   } else if (action == 'change_password') {
     return changePassword(e);
+  } else if (action == 'add_service') {
+    return handleAddService(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -107,15 +109,15 @@ function handleAdminService() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function getServiceTypeData() {
-  let sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Service');
-  var dataRange = sheet.getRange('B5:F'); // Adjusted to get the right range
-  var data = dataRange.getValues();
-
-  // Filter out rows where all cells are empty
-  var filteredData = data.filter(function(row) {
-    return row.some(cell => cell !== '' && cell !== null && cell !== undefined);
-  });
-
-  return filteredData;
+function getCurrentDateTime() {
+  // Get current datetime in format YYYY-MM-DD HH:MM:SS
+  let currentDateTime = new Date();
+  let year = currentDateTime.getFullYear();
+  let month = String(currentDateTime.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  let day = String(currentDateTime.getDate()).padStart(2, '0');
+  let hours = String(currentDateTime.getHours()).padStart(2, '0');
+  let minutes = String(currentDateTime.getMinutes()).padStart(2, '0');
+  let seconds = String(currentDateTime.getSeconds()).padStart(2, '0');
+  let formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDateTime;
 }
