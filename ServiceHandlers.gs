@@ -97,3 +97,14 @@ function handleDeleteService(serviceId) {
   }
 }
 
+function getservice() {
+  const ss = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const serviceSheet = ss.getSheetByName('Service');
+  const serviceRange = serviceSheet.getRange('B5:C'); // Adjust range if necessary
+  const services = serviceRange.getValues();
+
+  // Filter out rows where the city name (assumed to be in the second column) is empty or null
+  const filteredServices = services.filter(row => row[1] && row[1].trim() !== '');
+
+  return filteredServices;
+}
