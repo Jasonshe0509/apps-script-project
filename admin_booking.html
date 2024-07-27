@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+  <style>
+    .animate-pulse-3 {
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .custom-select select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      box-shadow: 0px 7px 8px #161616;
+    }
+
+    .drop-area {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .drop-area.dragover {
+      border-color: #00aaff;
+    }
+
+    .main-menu::-webkit-scrollbar {
+      display: none;
+    }
+
+    .modal::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="parent">
+  <? var url = getUrl(); ?>
+  <div id="loadingIndicator" class="flex items-center justify-center h-screen">
+    <div class="text-center">
+      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+                alt="Logo" class="  h-[60px] object-contain mx-auto">
+      <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
+    </div>
+  </div>
+  <div id="mainContent" style="display: none;">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50 border-b-[1px] "
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+                    alt="EZBOOK Logo" class="h-[60px] object-contain">
+        <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+                    <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
+                        alt="Profile" class="h-12 w-12 rounded-full">
+                </button>
+        <div id="profileMenu" class="dropdown-menu">
+          <a href="<?=url?>?temp=user_profile">User Profile</a>
+          <a href="<?=url?>?temp=user_change_password">Change Password</a>
+          <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+      <ul id="navItems"
+        class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+        <li><a href="<?=url?>?temp=admin_employee" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
+        <li><a href="<?=url?>?temp=admin_customer" class="text-white hover:text-lime-500">Customer</a></li>
+        <li><a href="<?=url?>?temp=admin_booking" class="text-lime-500 hover:text-lime-500">Booking</a></li>
+        <li><a href="#" class="text-white hover:text-lime-500">Invoice</a></li>
+        <li><a href="<?=url?>?temp=admin_service" class="text-white hover:text-lime-500">Service</a></li>
+      </ul>
+    </nav>
+    <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Booking</h1>
+    </div>
+    <div class="flex">
+      <!-- Side bar -->
+      <div class="sideMenu bg-[#1D1C1D] sticky left-0 top-0 mt-4 h-screen z-40 overflow-y-auto" id="side-menu">
+        <div class="main-menu overflow-y-auto">
+          <div class="mb-4">
+            <div class="bg-[#2a282a] p-2">
+              <h3 for="search" class="font-bold text-neutral-100 text-xl pl-5">Search by keyword</h3>
+            </div>
+            <div class="relative m-4">
+              <input id="searchInput" type="text"
+                                class="w-full pl-10 p-2 rounded bg-lime-500 text-[#2a282a] text-base"
+                                placeholder="Search..." oninput="onSearchInputChange()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6 text-[#313131] absolute left-2 top-1/2 transform -translate-y-1/2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="mb-4 text-neutral-100">
+            <div class="bg-[#2a282a] p-2">
+              <h3 class="font-bold text-xl pl-5">Filter by Status</h3>
+            </div>
+            <div class="flex flex-col m-4 text-base pl-5" id="statusCheckboxes">
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Pending">Pending</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Scheduled">Scheduled</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Canceled">Canceled</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox" value="On Going">On
+                                Going</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox" value="En Route">En
+                                Route</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Completed">Completed</label>
+            </div>
+          </div>
+          <div class="mb-4 text-neutral-100">
+            <div class="p-2 bg-[#2a282a]">
+              <h3 class="text-lg font-bold text-xl pl-5">Filter by Service</h3>
+            </div>
+            <div id="serviceCheckboxes" class="flex flex-col m-4 text-base pl-5">
+              <!-- Dynamic checkboxes will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="closebtn text-lime-500 w-6 h-6" onclick="toggleNav()">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </div>
+      </div>
+      <!-- Main content -->
+      <div id="main-content" class="p-4 transition-all duration-[30ms] grow z-30 overflow-hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center">
+            <select id="date-filter" class="bg-[#2A282A] text-white border border-white p-2 rounded">
+                            <option>Last 30 days</option>
+                        </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto" id='booking-table'>
+        </div>
+        <div class="flex justify-between items-center mt-4 text-neutral-100">
+          <div>
+            <label for="goToPage" class="mr-2 text-white">Go to</label>
+            <input type="number" id="goToPage" name="goToPage"
+                            class="w-16 px-2 py-1 mr-2 rounded-lg bg-[#2a2828] text-white border border-neutral-100"
+                            min="1" oninput="onPageInputChange()">
+            <label class="text-white">page</label>
+          </div>
+          <div class="flex items-center space-x-2" id="pagination-controls">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="viewBookingStatus"
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full sm:max-w-lg w-full max-h-[100vh] sm:max-h-[80vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A]">
+        <h2 id="bookingStatus" class="text-lime-500 text-xl">Status: Pending</h2>
+      </div>
+      <div class="p-6">
+        <form class="space-y-4">
+          <div>
+            <label for="date" class="block text-sm font-medium">Date</label>
+            <input type="date" id="date"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+          </div>
+          <div class="flex space-x-4">
+            <div class="flex-1">
+              <label for="start-time" class="block text-sm font-medium">Start Time</label>
+              <input type="time" id="start-time"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+            </div>
+            <div class="flex-1">
+              <label for="end-time" class="block text-sm font-medium">End Time</label>
+              <input type="time" id="end-time"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+            </div>
+          </div>
+          <div>
+            <label for="service" class="block text-sm font-medium">Type of Service</label>
+            <select id="service"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" disabled >
+                        </select>
+          </div>
+          <div>
+            <label for="device-type" class="block text-sm font-medium">Type of Device </label>
+            <input type="text" id="device-type"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+          </div>
+          <div>
+            <label for="device" class="block text-sm font-medium">Number of Device Service</label>
+            <input type="number" id="device" min="0"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+          </div>
+          <div>
+            <label for="remark" class="block text-sm font-medium">Additional Remark</label>
+            <textarea id="remark"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly></textarea>
+          </div>
+          <div>
+            <label for="employee" class="block text-sm font-medium">Employee Selected</label>
+            <input type="text" id="employee" value="Ali, Abu" readonly
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label for="reject-reason" class="block text-sm font-medium">Reject Reason</label>
+            <textarea id="reject-reason"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+          </div>
+          <div class="flex justify-end gap-4 mt-4 text-neutral-100">
+            <button type="button" onclick="toggleModal('viewBookingStatus')"
+                            class="w-1/3 bg-transparent border-gray-600 border py-2 px-4 rounded modal-button-close">Close</button>
+            <button type="button"
+                            class="w-1/3 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Reject</button>
+            <button type="button"
+                            class="w-1/3 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Approve</button>
+          </div>
+        </form>
+        <div class="text-right mt-4">
+          <button onclick="openViewDetailsModal()" class="text-blue-400 hover:underline">View Details &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div id="bookingDetailsModal"
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full w-full max-h-[110vh] sm:max-h-[70vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0 md:w-3/4">
+      <button onclick="toggleModal('bookingDetailsModal')" class="text-left w-full p-5  rounded-md">←
+                Back</button>
+      <div class="space-y-4 px-4 py-4">
+        <!-- Customer Section -->
+        <div class="border border-gray-600 rounded-md mb-4">
+          <button onclick="toggleSection('customer-details')"
+                        class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                        <span class="text-lg">Customer</span>
+                        <span id="customer-details-icon">▼</span>
+                    </button>
+          <div id="customer-details" class="space-y-4 px-4 pt-2 pb-4">
+            <div>
+              <label for="name" class="block text-sm font-small">Name</label>
+              <input type="text" id="name"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500d">
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-small">Phone Number</label>
+              <input type="tel" id="phone"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-small">Email Address</label>
+              <input type="email" id="email"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Time Section -->
+        <div class="border border-gray-600 rounded-md mb-4">
+          <button onclick="toggleSection('datetime-details')"
+                        class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                        <span class="text-lg">Date & Time</span>
+                        <span id="datetime-details-icon">▼</span>
+                    </button>
+          <div id="datetime-details" class="space-y-4 px-4 pt-2 pb-4">
+            <div>
+              <label for="date" class="block text-sm font-small">Date</label>
+              <input type="date" id="date1"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex space-x-4">
+              <div class="w-full">
+                <label for="start-time" class="block text-sm font-small">Start Time</label>
+                <input type="time" id="start-time1"
+                                    class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div class="w-full">
+                <label for="end-time" class="block text-sm font-small">End Time</label>
+                <input type="time" id="end-time1"
+                                    class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+            <div>
+              <label for="start-time" class="block text-sm font-medium">Reach Time</label>
+              <input id="reach-time" type="text"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500"
+                                readonly>
+            </div>
+            <div>
+              <label for="completed-time" class="block text-sm font-medium">Completed Time</label>
+              <input type="text" id="completed-time"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500"
+                                readonly>
+            </div>
+          </div>
+        </div>
+        <!-- Service Details Section -->
+        <div class="border border-gray-600 rounded-md mb-4">
+          <button onclick="toggleSection('service-details')"
+                        class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                        <span class="text-lg">Service Details</span>
+                        <span id="service-details-icon">▼</span>
+                    </button>
+          <div id="service-details" class="space-y-4 px-4 pt-2 pb-4">
+            <div>
+              <label for="service" class="block text-sm font-small">Type of Service</label>
+              <select id="service1"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                            </select>
+            </div>
+            <div>
+              <label for="device-type" class="block text-sm font-medium">Type of Device </label>
+              <input type="text" id="device-type1"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+            </div>
+            <div>
+              <label for="device-number" class="block text-sm font-small">Number of Devices</label>
+              <input type="number" id="device-number"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500"
+                                min="0">
+            </div>
+            <div>
+              <label for="additional-remark" class="block text-sm font-small">Additional Remark</label>
+              <input type="text" id="additional-remark"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Employee Section -->
+        <div class="border border-gray-600 rounded-md mb-4">
+          <button onclick="toggleSection('employee-details')"
+                        class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                        <span class="text-lg">Employee</span>
+                        <span id="employee-details-icon">▼</span>
+                    </button>
+          <div id="employee-details" class="space-y-4 px-4 pt-2 pb-4">
+            <table id="employee-table" class="w-full mb-4 border-collapse">
+              <thead>
+                <tr>
+                  <th class="text-left text-sm font-small p-2 border-b border-gray-600">Name</th>
+                  <th class="text-left text-sm font-small p-2 border-b border-gray-600">Phone Number
+                  </th>
+                  <th class="text-left text-sm font-small p-2 border-b border-gray-600">Email Address
+                  </th>
+                  <th class="text-left text-sm font-small p-2 border-b border-gray-600">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div class="flex items-center space-x-4 mb-4">
+              <div class="flex-grow">
+                <select id="select-employee"
+                                    class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select employee</option>
+                                    <option value="ali">Ali</option>
+                                    <!-- Add other employees here -->
+                                </select>
+              </div>
+              <div>
+                <button class="bg-green-600 p-2 rounded-md">Add Employee</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Address Section -->
+        <div class="border border-gray-600 rounded-md mb-4">
+          <button onclick="toggleSection('address-details')"
+                        class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                        <span class="text-lg">Address</span>
+                        <span id="address-details-icon">▼</span>
+                    </button>
+          <div id="address-details" class="space-y-4 px-4 pt-2 pb-4">
+            <div>
+              <label for="address-line-1" class="block text-sm font-small">Address Line 1</label>
+              <input type="text" id="address-line-1"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="address-line-2" class="block text-sm font-small">Address Line 2</label>
+              <input type="text" id="address-line-2"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="district" class="block text-sm font-small">Post Code</label>
+              <input type="text" id="postCode"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="city" class="block text-sm font-small">City</label>
+              <input type="text" id="city"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="state" class="block text-sm font-small">State</label>
+              <input type="text" id="state"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="assignServiceCostModal"
+    class="fixed inset-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full sm:max-w-lg w-full max-h-[100vh] sm:max-h-[80vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A]">
+        <h2 id="bookingIDShow" class="text-center text-lg font-bold mb-4 text-green-400">Booking id: 1255</h2>
+      </div>
+      <div class="p-6">
+        <form class="space-y-4">
+          <div>
+            <label for="service" class="block text-sm font-small">Type of Service</label>
+            <select id="service2"
+                                class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                            </select>
+          </div>
+          <div>
+            <label for="device-type" class="block text-sm font-medium">Type of Device </label>
+            <input type="text" id="device-type2"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+          </div>
+          <div>
+            <label for="device" class="block text-sm font-medium">Number of Device Service</label>
+            <input type="number" id="device1" min="0"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500"readonly>
+          </div>
+
+          <!-- Evidence Section -->
+          <div class="border border-gray-600 rounded-md mb-4">
+            <button type="button" onclick="toggleSection('evidence')"
+                            class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                            <span class="text-lg">Evidence</span>
+                            <span id="evidence-icon">▼</span>
+                        </button>
+
+            <div id="evidence" class="space-y-4 px-4 pt-2 pb-4 hidden">
+              <div class="relative w-full max-w-xs mx-auto" style="aspect-ratio: 4 / 3; overflow: hidden;">
+                <img id="evidence-photo"
+                                    class="absolute border border-gray-600 inset-0 w-full h-full object-cover rounded-md"
+                                    src="invalid-url.png" onerror="handleImageError()">
+                <div id="no-image"
+                  class="absolute inset-0 flex items-center justify-center border border-gray-600 text-white text-sm hidden">
+                  No image uploaded</div>
+              </div>
+              <div>
+                <label class="block text-sm font-small">Evidence Name</label>
+                <input type="text" id="evidence-name"
+                                    class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+              </div>
+              <div>
+                <label class="block text-sm font-small">Remark</label>
+                <textarea id="evidence-remark"
+                                    class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly></textarea>
+              </div>
+              <div class="flex justify-between ">
+                <div class="text-left">
+                  <a href="#" class="text-white text-sm hover:underline">&larr;1/3 </a>
+                </div>
+                <div class="text-right">
+                  <a href="#" class="text-white  text-sm hover:underline">3/3 &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="cost" class="block text-sm font-small">Total Cost</label>
+            <input type="number" id="cost" min="0"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div class="flex space-x-4">
+            <button type="button" onclick="toggleModal('assignServiceCostModal')"
+                            class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
+            <button type="button"
+                            class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="ratingModal"
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full sm:max-w-lg w-full max-h-[100vh] sm:max-h-[80vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A]">
+        <h2 id="bookingIDShow1" class="text-center text-lime-500 text-xl">Booking id: 1255</h2>
+      </div>
+      <div class="p-6">
+        <form class="space-y-4">
+          <div>
+            <label for="feedback" class="block text-sm font-medium">Feedback</label>
+            <input type="text" id="feedback"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Rate</label>
+            <div id="stars" class="flex space-x-2 mt-1 text-3xl">
+            </div>
+          </div>
+          <div class="flex ">
+            <button type="button"
+                            class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Toggle the dropdown menu - profile
+        document.getElementById('profileButton').addEventListener('click', function () {
+            var menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+                var dropdowns = document.getElementsByClassName('dropdown-menu');
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        }
+  </script>
+  <script>
+    // Side bar
+        function toggleNav() {
+            const nav = document.getElementById('side-menu');
+            const mainContent = document.getElementById('main-content');
+            const closeBtn = document.querySelector('.closebtn');
+
+            if (nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                closeBtn.classList.add('rotate-180');
+                if (window.innerWidth <= 768) {
+                    nav.style.width = '50px';
+                    nav.style.gridTemplateColumns = '0 40px';
+                    mainContent.classList.remove('hidden');
+                } else {
+                    mainContent.classList.add('mx-4');
+                }
+            } else {
+                nav.classList.add('open');
+                closeBtn.classList.remove('rotate-180');
+                if (window.innerWidth <= 768) {
+                    nav.style.width = '100vw';
+                    nav.style.gridTemplateColumns = '90vw 10vw';
+                    mainContent.classList.add('hidden');
+                } else {
+                    mainContent.classList.remove('mx-4');
+                }
+            }
+        }
+
+        window.addEventListener('resize', function () {
+            const nav = document.getElementById('side-menu');
+            const closeBtn = document.querySelector('.closebtn');
+            const mainContent = document.getElementById('main-content');
+            if (window.innerWidth >= 768) {
+                nav.classList.add('open');
+                closeBtn.classList.remove('rotate-180');
+                mainContent.classList.remove('mx-8');
+            } else {
+                nav.classList.remove('open');
+                closeBtn.classList.add('rotate-180');
+                mainContent.classList.add('mx-4');
+            }
+        });
+        window.dispatchEvent(new Event('resize'));
+  </script>
+  <script>
+    // Load Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectElement = document.getElementById('status');
+            const svgElement = document.getElementById('select-arrow');
+
+            selectElement.addEventListener('click', function () {
+                svgElement.classList.toggle('rotate-180');
+            });
+        });
+
+        let currentBookingData = null;
+
+        function openViewStatusModal(index) {
+            currentBookingData = filteredData[index];
+            google.script.run.withSuccessHandler(function(services) {
+              var serviceSelect = document.getElementById('service');
+              serviceSelect.innerHTML = ''; // Clear existing options
+
+              services.forEach(function(service) {
+                var option = document.createElement('option');
+                option.value = service[1]; // Assuming city name is in the second column
+                option.textContent = service[1];
+                serviceSelect.appendChild(option);
+              });
+
+              // Set the current city as the selected option
+              if (currentBookingData.typeOfService) {
+                serviceSelect.value = currentBookingData.typeOfService;
+              }
+
+              // Show the modal
+              populateViewStatusModal();
+              toggleModal('viewBookingStatus');
+            }).getservice();
+        }
+
+        function openViewDetailsModal(){
+          google.script.run.withSuccessHandler(function(services) {
+              var serviceSelect = document.getElementById('service1');
+              serviceSelect.innerHTML = ''; // Clear existing options
+
+              services.forEach(function(service) {
+                var option = document.createElement('option');
+                option.value = service[1]; // Assuming city name is in the second column
+                option.textContent = service[1];
+                serviceSelect.appendChild(option);
+              });
+
+              // Set the current city as the selected option
+              if (currentBookingData.typeOfService) {
+                serviceSelect.value = currentBookingData.typeOfService;
+              }
+
+              // Show the modal
+              populateViewDetailsModal();
+              toggleModal('bookingDetailsModal');
+            }).getservice();
+          
+        }
+
+        function openAssignedServiceCostModal(index){
+          currentBookingData = filteredData[index];
+            google.script.run.withSuccessHandler(function(services) {
+              var serviceSelect = document.getElementById('service2');
+              serviceSelect.innerHTML = ''; // Clear existing options
+
+              services.forEach(function(service) {
+                var option = document.createElement('option');
+                option.value = service[1]; // Assuming city name is in the second column
+                option.textContent = service[1];
+                serviceSelect.appendChild(option);
+              });
+
+              // Set the current city as the selected option
+              if (currentBookingData.typeOfService) {
+                serviceSelect.value = currentBookingData.typeOfService;
+              }
+
+              // Show the modal
+              populateAssignedServiceCostModal();
+              toggleModal('assignServiceCostModal');
+            }).getservice();
+        }
+
+        function openRatingModal(index){
+          currentBookingData = filteredData[index];
+          if (!currentBookingData) return;
+          document.getElementById('bookingIDShow1').innerText = 'Booking id: ' + (currentBookingData.bookingId || '');
+          document.getElementById('feedback').value = currentBookingData.feedbackArray.feedback_name || '';
+          setRating(currentBookingData.feedbackArray.rate);
+          toggleModal('ratingModal');
+        }
+        
+        function populateViewStatusModal() {
+            if (!currentBookingData) return;
+            document.getElementById('bookingStatus').innerText = 'Status: ' + (currentBookingData.status || 'Pending');
+            if (currentBookingData.scheduleDate) {
+                let dateParts = currentBookingData.scheduleDate.split('/');
+                let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+                console.log(formattedDate);
+                document.getElementById('date').value = formattedDate;
+            } else {
+                document.getElementById('date').value = '';
+            }
+            if (currentBookingData.scheduleTime && currentBookingData.scheduleTime.includes('-')) {
+                let timeParts = currentBookingData.scheduleTime.split('-');
+                document.getElementById('start-time').value = timeParts[0];
+                document.getElementById('end-time').value = timeParts[1];
+            } else {
+                document.getElementById('start-time').value = currentBookingData.startTime || '';
+                document.getElementById('end-time').value = currentBookingData.endTime || '';
+            }
+            document.getElementById('device-type').value = currentBookingData.typeOfDevice || '';
+            document.getElementById('device').value = currentBookingData.numberOfDeviceService || '';
+            document.getElementById('remark').value = currentBookingData.additionalRemark || '';
+            document.getElementById('employee').value = currentBookingData.employees || '';
+            document.getElementById('reject-reason').value = currentBookingData.rejectReason || '';
+        }
+
+        function populateViewDetailsModal(){
+          if (!currentBookingData) return;
+          //Customer
+          document.getElementById('name').value = currentBookingData.customerDetails.name || '';
+          document.getElementById('phone').value = currentBookingData.customerDetails.mobile || '';
+          document.getElementById('email').value = currentBookingData.customerDetails.email || '';
+          //Date & Time
+          if (currentBookingData.scheduleDate) {
+              let dateParts = currentBookingData.scheduleDate.split('/');
+              let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+              console.log(formattedDate);
+              document.getElementById('date1').value = formattedDate;
+          } else {
+              document.getElementById('date1').value = '';
+          }
+          if (currentBookingData.scheduleTime && currentBookingData.scheduleTime.includes('-')) {
+              let timeParts = currentBookingData.scheduleTime.split('-');
+              document.getElementById('start-time1').value = timeParts[0];
+              document.getElementById('end-time1').value = timeParts[1];
+          } else {
+              document.getElementById('start-time1').value = currentBookingData.startTime || '';
+              document.getElementById('end-time1').value = currentBookingData.endTime || '';
+          }
+          document.getElementById('reach-time').value = currentBookingData.reachTime || '';
+          document.getElementById('completed-time').value = currentBookingData.completedTime || '';
+
+          //Service
+          document.getElementById('device-type1').value = currentBookingData.typeOfDevice || '';
+          document.getElementById('device-number').value = currentBookingData.numberOfDeviceService || '';
+          document.getElementById('additional-remark').value = currentBookingData.additionalRemark || '';
+
+          //Address
+          document.getElementById('address-line-1').value = currentBookingData.address1 || '';
+          document.getElementById('address-line-2').value = currentBookingData.address2 || '';
+          document.getElementById('postCode').value = currentBookingData.postCode || '';
+          document.getElementById('city').value = currentBookingData.city || '';
+          document.getElementById('state').value = currentBookingData.state || '';
+
+          // Employee details
+          const employeeDetailsArray = currentBookingData.employeeDetailsArray;
+          console.log(employeeDetailsArray);
+          const employeeTableBody = document.getElementById('employee-table').getElementsByTagName('tbody')[0];
+          employeeTableBody.innerHTML = ''; // Clear any existing rows
+
+          employeeDetailsArray.forEach(employee => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td class="p-2 text-sm font-small border-b border-gray-600">${employee.name}</td>
+              <td class="p-2 text-sm font-small border-b border-gray-600">${employee.mobile}</td>
+              <td class="p-2 text-sm font-small border-b border-gray-600">${employee.email}</td>
+              <td class="p-2 text-sm font-small border-b border-gray-600">
+                <button class="px-2 py-1 bg-none rounded-md">:</button>
+              </td>
+            `;
+            employeeTableBody.appendChild(row);
+          });
+        }
+
+        function populateAssignedServiceCostModal() {
+          if (!currentBookingData) return;
+          document.getElementById('bookingIDShow').innerText = 'Booking id: ' + (currentBookingData.bookingId || '');
+          document.getElementById('device-type2').value = currentBookingData.typeOfDevice || '';
+          document.getElementById('device1').value = currentBookingData.numberOfDeviceService || '';
+          document.getElementById('evidence-name').value = currentBookingData.evidenceArray.evidence_name || '';
+          document.getElementById('evidence-remark').value = currentBookingData.evidenceArray.remark || '';
+          const img = document.getElementById('evidence-photo');
+          img.src = (currentBookingData.evidenceArray.image_url || '');
+          const noImage = document.getElementById('no-image');
+          img.classList.remove('hidden'); // Hide the image using Tailwind's hidden class
+          noImage.classList.add('hidden'); // Show the "No image uploaded" message by removing Tailwind's hidden class
+        }
+
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const icon = document.getElementById(`${sectionId}-icon`);
+            section.classList.toggle('hidden');
+            icon.textContent = section.classList.contains('hidden') ? '►' : '▼';
+        }
+
+        function handleImageError() {
+          const img = document.getElementById('evidence-photo');
+          const noImage = document.getElementById('no-image');
+          img.classList.add('hidden'); // Hide the image using Tailwind's hidden class
+          noImage.classList.remove('hidden'); // Show the "No image uploaded" message by removing Tailwind's hidden class
+        }
+
+        function setRating(rating) {
+            const starsContainer = document.getElementById('stars');
+            starsContainer.innerHTML = ''; // Clear existing stars
+
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('span');
+                star.classList.add('fa', 'fa-star');
+                if (i <= rating) {
+                    star.classList.add('text-yellow-400'); // Filled star
+                } else {
+                    star.classList.add('text-gray-400'); // Empty star
+                }
+                starsContainer.appendChild(star);
+            }
+        }
+        // Initialize all sections as hidden
+        const sections = ['customer-details', 'datetime-details', 'service-details', 'employee-details', 'address-details'];
+        sections.forEach(section => {
+            document.getElementById(section).classList.add('hidden');
+            document.getElementById(`${section}-icon`).textContent = '►';
+        })
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal.classList.contains('opacity-0')) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.remove('opacity-100');
+            }
+        }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+            loadData();
+        });
+
+        function loadData() {
+            // Simulate data fetching
+            setTimeout(() => {
+                renderTable();
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('mainContent').style.display = 'block';
+            }, 5000); // Adjust the delay to your actual data fetching time
+        }
+
+        var currentPage = 1;
+        var itemsPerPage = 10;
+        var data = [];
+        var filteredData = [];
+
+        google.script.run.withSuccessHandler(function (response) {
+            data = response;
+            filteredData = data; // Initialize filtered data
+            loadData();
+        }).getCustomerBookings();
+
+
+
+        function renderTable() {
+            var startIndex = (currentPage - 1) * itemsPerPage;
+            var endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+            var table = '<table class="min-w-full max-w-full rounded-lg text-neutral-100 text-left">';
+            table += ' <thead class="text-nowrap"><tr><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Booking ID</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Status</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Customer Name</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Type of Service</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Assigned to</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Schedule Date Time</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Actions</th></tr></thead>';
+            table += '<tbody>';
+
+            for (var i = startIndex; i < endIndex; i++) {
+                const booking = filteredData[i]; // Assuming filteredData is an array of objects
+                const bookings = JSON.stringify(booking);
+                table += '<tr class="hover:bg-gray-700">';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.bookingId || 'N/A')+ '</td>';
+                switch (booking.status) {
+                  case "Pending":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span></td>';
+                    break;
+                  case "En Route":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFA16D] text-black text-[10px] md:text-xs">En Route</span></td>';
+                    break;
+                  case "Scheduled":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFAF52] text-black text-[10px] md:text-xs">Scheduled</span></td>';
+                    break;
+                  case "Canceled":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs">Canceled</span></td>';
+                    break;
+                  case "Completed":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs">Completed</span></td>';
+                    break;
+                  case "On Going":
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#DDB478] text-black text-[10px] md:text-xs">On Going</span></td>';
+                    break;
+                  default:
+                    table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-gray-200 text-black text-[10px] md:text-xs"></span></td>';
+                    break;
+                }
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.customerDetails.name || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.typeOfService || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.employees || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.scheduleDate || 'N/A') + '<br>' + (booking.scheduleTime || 'N/A') +   '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline">';
+                table += '<button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)">';
+                table += '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">';
+                table += '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />';
+                table += '</svg></button>';
+                table += '<div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">';
+                table += '<button onclick="openViewStatusModal(' + i + ')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</button>';
+
+                if (booking.status === 'Completed') {
+                  table += '<button onclick="openAssignedServiceCostModal(' + i + ')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Assign Service Cost</button>';
+                  table += '<button onclick="openRatingModal(' + i + ')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Feedback</button>';
+                }
+
+                table += '</div></div></td>';
+            }
+
+            table += '</tbody></table>';
+
+            document.getElementById('booking-table').innerHTML = table;
+            updatePaginationControls();
+        }
+
+        function updatePaginationControls() {
+            var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            var paginationControls = '<div class="flex flex-wrap items-center space-x-2 mt-2">';
+
+            // Previous button
+            paginationControls += '<button onclick="changePage(currentPage - 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === 1 ? 'opacity-50 cursor-not-allowed' : '') + '">‹</button>';
+
+            // Pagination buttons
+            if (totalPages <= 3) {
+                // Show all page numbers if there are 3 or fewer pages
+                for (var i = 1; i <= totalPages; i++) {
+                    paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-[#2A282A]' : '') + '">' + i + '</button>';
+                }
+            } else {
+                // Show pagination with ellipsis
+                if (currentPage < 2) {
+                    // Pages at the beginning
+                    for (var i = 1; i <= 3; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+                } else if (currentPage > totalPages - 1) {
+                    // Pages at the end
+                    paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    for (var i = totalPages - 2; i <= totalPages; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                } else {
+                    // Pages in the middle
+                    paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    for (var i = currentPage - 1; i <= currentPage + 1; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+                }
+            }
+
+            // Next button
+            paginationControls += '<button onclick="changePage(currentPage + 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : '') + '">›</button>';
+            paginationControls += '</div>';
+
+            document.getElementById('pagination-controls').innerHTML = paginationControls;
+        }
+
+        function changePage(pageNumber) {
+            var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (pageNumber < 1 || pageNumber > totalPages) return;
+            currentPage = pageNumber;
+            updatePageInput();
+            renderTable();
+        }
+
+        function updatePageInput() {
+            document.getElementById('goToPage').value = currentPage;
+        }
+
+        function onPageInputChange() {
+            var pageNumber = parseInt(document.getElementById('goToPage').value);
+            if (!isNaN(pageNumber)) {
+                changePage(pageNumber);
+            }
+        }
+        function onSearchInputChange() {
+            var searchValue = document.getElementById('searchInput').value.toLowerCase();
+            filterData();
+        }
+
+        function onStatusFilterChange() {
+            filterData();
+        }
+
+        function onServiceFilterChange() {
+            filterData();
+        }
+
+        function filterData() {
+            var searchValue = document.getElementById('searchInput').value.toLowerCase();
+            var selectedStatus = Array.from(document.querySelectorAll('.statusCheckbox:checked')).map(cb => cb.value);
+            var selectedServices = Array.from(document.querySelectorAll('.serviceCheckbox:checked')).map(cb => cb.value);
+            console.log(selectedServices);
+
+            filteredData = data.filter(function (row) {
+                var customerName = row.customerDetails.name.toLowerCase();
+                var bookingId = row.bookingId.toLowerCase();
+                var statusMatches = selectedStatus.length === 0 || selectedStatus.includes(row.status);
+                var servicesMatches = selectedServices.length === 0 || selectedServices.includes(row.typeOfService);
+
+                return (customerName.includes(searchValue) || bookingId.includes(searchValue)) && statusMatches && servicesMatches;
+            });
+
+            currentPage = 1; // Reset to first page
+            updatePageInput();
+            renderTable();
+        }
+
+        google.script.run.withSuccessHandler(function (response) {
+            generateServiceCheckboxes(response);
+        }).getservice();
+
+        function generateServiceCheckboxes(services) {
+            var serviceCheckboxes = document.getElementById('serviceCheckboxes');
+            serviceCheckboxes.innerHTML = ''; // Clear any existing content
+
+            services.forEach(function (service) {
+                var serviceLabel = document.createElement('label');
+                serviceLabel.className = 'mb-2';
+                serviceLabel.innerHTML = '<input type="checkbox" class="mr-2 serviceCheckbox" value="' + service[1] + '"> ' + service[1]; // Assuming city name is in the second column
+                serviceCheckboxes.appendChild(serviceLabel);
+            });
+
+            // Attach event listeners to city checkboxes
+            document.querySelectorAll('.serviceCheckbox').forEach(function (checkbox) {
+                checkbox.addEventListener('change', onServiceFilterChange);
+            });
+        }
+
+        // Attach event listeners to role checkboxes
+        document.querySelectorAll('.statusCheckbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', onStatusFilterChange);
+        });
+  </script>
+  <script>
+    function toggleDropdown(event, button) {
+            // Prevent the click event from bubbling up to the window click event
+            event.stopPropagation();
+
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+                menu.classList.add('hidden');
+            });
+
+            // Toggle the corresponding dropdown menu
+            var menu = button.nextElementSibling;
+            menu.classList.toggle('hidden');
+        }
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+                menu.classList.add('hidden');
+            });
+        };
+  </script>
+</body>
+
+</html>

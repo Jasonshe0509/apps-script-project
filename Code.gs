@@ -24,6 +24,9 @@ function doGet(e) {
   if (temp == 'admin_employee') {
     return handleAdminEmployee();
   }
+  if (temp == 'admin_booking') {
+    return handleAdminBooking();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -131,6 +134,13 @@ function handleAdminEmployee() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+function handleAdminBooking(){
+  var template = HtmlService.createTemplateFromFile('admin_booking');
+  return template.evaluate()
+    .setTitle('Booking Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
 function getCurrentDateTime() {
   // Get current datetime in format YYYY-MM-DD HH:MM:SS
   let currentDateTime = new Date();
