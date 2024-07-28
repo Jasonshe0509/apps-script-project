@@ -77,17 +77,21 @@
         <form>
           <div class="mb-2 md:mb-4">
             <label for="type-of-service" class="block text-lime-500">Type of Service</label>
-            <input type="text" id="type-of-service" class="p-2 rounded border border-neutral-100 bg-transparent w-full">
+            <input type="text" id="type-of-service" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.typeOfService ?>">
+          </div>
+          <div class="mb-2 md:mb-4">
+            <label for="type-of-service" class="block text-lime-500">Type of Device</label>
+            <input type="text" id="type-of-service" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.typeOfDevice ?>">
           </div>
           <div class="mb-2 md:mb-4">
             <label for="number-of-device-service" class="block text-lime-500">Number of Device Service</label>
             <input type="number" id="number-of-device-service"
-              class="p-2 rounded border border-neutral-100 bg-transparent w-full">
+              class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.numberOfDeviceService ?>">
           </div>
           <div class="mb-2 md:mb-4">
             <label for="additional-remark" class="block text-lime-500">Additional Remark</label>
             <textarea id="additional-remark"
-              class="p-2 rounded border border-neutral-100 bg-transparent w-full"></textarea>
+              class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" ><?!= bookingDetails.additionalRemark ?></textarea>
           </div>
         </form>
       </div>
@@ -115,34 +119,29 @@
         <form>
           <div class="mb-2 md:mb-4">
             <label for="date" class="block text-lime-500">Date</label>
-            <input type="date" id="date" class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+            <input type="date" id="date" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.scheduleDate ?>" disabled>
           </div>
           <div class="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-8">
             <div class="mb-2 md:mb-4">
               <label for="start-time" class="block text-lime-500">Start Time</label>
-              <input type="time" id="start-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-                disabled>
+              <input type="time" id="start-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+                 value="<?!= bookingDetails.startTime ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="end-time" class="block text-lime-500">End Time</label>
-              <input type="time" id="end-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-                disabled>
+              <input type="time" id="end-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+                 value="<?!= bookingDetails.endTime ?>" disabled>
             </div>
           </div>
           <div class="mb-2 md:mb-4">
-            <label for="requested-time" class="block text-lime-500">Requested Time</label>
-            <input type="time" id="requested-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-              disabled>
-          </div>
-          <div class="mb-2 md:mb-4">
             <label for="started-time" class="block text-lime-500">Started Time</label>
-            <input type="time" id="started-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-              disabled>
+            <input type="time" id="started-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+               value="<?!= bookingDetails.reachTime ?>" disabled>
           </div>
           <div class="mb-2 md:mb-4">
             <label for="completed-time" class="block text-lime-500">Completed Time</label>
-            <input type="time" id="completed-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-              disabled>
+            <input type="time" id="completed-time" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+              value="<?!= bookingDetails.completedTime ?>" disabled>
           </div>
         </form>
       </div>
@@ -175,21 +174,13 @@
             </tr>
           </thead>
           <tbody>
+            <? for (var i = 0; i < bookingDetails.employeeDetailsArray.length; i++) { ?>
             <tr>
-              <td class="p-4 border-b border-gray-600">Ali</td>
-              <td class="p-4 border-b border-gray-600">123-456-7890</td>
-              <td class="p-4 border-b border-gray-600">ali@example.com</td>
+              <td class="p-4 border-b border-gray-600"><?= bookingDetails.employeeDetailsArray[i].name ?></td>
+              <td class="p-4 border-b border-gray-600"><?= bookingDetails.employeeDetailsArray[i].mobile ?></td>
+              <td class="p-4 border-b border-gray-600"><?= bookingDetails.employeeDetailsArray[i].email ?></td>
             </tr>
-            <tr>
-              <td class="p-4 border-b border-gray-600">Ali</td>
-              <td class="p-4 border-b border-gray-600">123-456-7890</td>
-              <td class="p-4 border-b border-gray-600">ali@example.com</td>
-            </tr>
-            <tr>
-              <td class="p-4 border-b border-gray-600">Ali</td>
-              <td class="p-4 border-b border-gray-600">123-456-7890</td>
-              <td class="p-4 border-b border-gray-600">ali@example.com</td>
-            </tr>
+            <? } ?>
           </tbody>
         </table>
       </div>
@@ -218,45 +209,45 @@
           <form>
             <div class="mb-2 md:mb-4">
               <label for="name" class="block text-lime-500">Name</label>
-              <input type="name" placeholder="Name" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-                disabled>
+              <input type="name" placeholder="Name" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+                value="<?!= bookingDetails.customerDetails.name ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="contact" class="block text-lime-500">Phone Number</label>
               <input type="contact" placeholder="Phone Number"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.customerDetails.mobile ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="email" class="block text-lime-500">Email Addess</label>
               <input type="email" placeholder="Email Address"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.customerDetails.email ?>" disabled>
             </div>
           </form>
           <form>
             <div class="mb-2 md:mb-4">
               <label for="address1" class="block text-lime-500">Address Line 1</label>
               <input type="address1" placeholder="Address Line 1"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.address1 ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="address2" class="block text-lime-500">Address Line 2</label>
               <input type="address2" placeholder="Address Line 2"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.address2 ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="postCode" class="block text-lime-500">Post Code</label>
               <input type="postCode" placeholder="Post Code"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.postCode ?>" disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="city" class="block text-lime-500">City</label>
-              <input type="city" placeholder="City" class="p-2 rounded border border-neutral-100 bg-transparent w-full"
-                disabled>
+              <input type="city" placeholder="City" class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100"
+                value="<?!= bookingDetails.city ?>"disabled>
             </div>
             <div class="mb-2 md:mb-4">
               <label for="state" class="block text-lime-500">State</label>
               <input type="state" placeholder="State"
-                class="p-2 rounded border border-neutral-100 bg-transparent w-full" disabled>
+                class="p-2 rounded border border-neutral-100 bg-transparent w-full text-neutral-100" value="<?!= bookingDetails.state ?>" disabled>
             </div>
           </form>
         </div>
