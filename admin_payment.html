@@ -312,8 +312,6 @@
           if(currentInvoiceData.status == 'Close'){
             document.getElementById('paid-amount').value = currentInvoiceData.paidAmount || '';
             completebutton.classList.add('hidden');
-          }else{
-            openbutton.classList.add('hidden');
           }
 
           toggleModal('invoiceModal');
