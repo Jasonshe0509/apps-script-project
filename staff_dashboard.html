@@ -53,8 +53,8 @@
       border-color: #00aaff;
     }
 
-    .main-menu::-webkit-scrollbar{
-      display:none;
+    .main-menu::-webkit-scrollbar {
+      display: none;
     }
   </style>
 </head>
@@ -111,8 +111,9 @@
               <h3 for="search" class="font-bold text-neutral-100 text-xl pl-5">Search by keyword</h3>
             </div>
             <div class="relative m-4">
-              <input id="searchInput" type="text" class="w-full pl-10 p-2 rounded bg-lime-500 text-[#2a282a] text-base"
-                placeholder="Search...">
+              <input id="searchInput" type="text"
+                                class="w-full pl-10 p-2 rounded bg-lime-500 text-[#2a282a] text-base"
+                                placeholder="Search..." oninput="onSearchInputChange()">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6 text-[#313131] absolute left-2 top-1/2 transform -translate-y-1/2">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -124,22 +125,27 @@
             <div class="bg-[#2a282a] p-2">
               <h3 class="font-bold text-xl pl-5">Filter by Status</h3>
             </div>
-            <div class="flex flex-col m-4 text-base pl-5">
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Status 1</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Status 2</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Status 3</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Status 4</label>
+            <div class="flex flex-col m-4 text-base pl-5" id="statusCheckboxes">
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Pending">Pending</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Scheduled">Scheduled</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Canceled">Canceled</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox" value="On Going">On
+                                Going</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox" value="En Route">En
+                                Route</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Completed">Completed</label>
             </div>
           </div>
           <div class="mb-4 text-neutral-100">
             <div class="p-2 bg-[#2a282a]">
-              <h3 class="text-lg font-bold text-xl pl-5">Filter by Service Type</h3>
+              <h3 class="text-lg font-bold text-xl pl-5">Filter by Service</h3>
             </div>
-            <div class="flex flex-col m-4 text-base pl-5">
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Type 1</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Type 2</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Type 3</label>
-              <label class="mb-2"><input type="checkbox" class="mr-2"> Type 4</label>
+            <div id="serviceCheckboxes" class="flex flex-col m-4 text-base pl-5">
+              <!-- Dynamic checkboxes will be inserted here -->
             </div>
           </div>
           <div class="flex justify-center items-end">
@@ -167,20 +173,13 @@
         </div>
         <div class="flex justify-between items-center mt-4 text-neutral-100">
           <div>
-            <label for="page-input">Go to</label>
-            <input id="page-input" type="number" class="bg-[#2a2828] p-2 rounded w-16" value="1">
-            page
+            <label for="goToPage" class="mr-2 text-white">Go to</label>
+            <input type="number" id="goToPage" name="goToPage"
+                            class="w-16 px-2 py-1 mr-2 rounded-lg bg-[#2a2828] text-white border border-neutral-100"
+                            min="1" oninput="onPageInputChange()">
+            <label class="text-white">page</label>
           </div>
-          <div class="flex justify-between items-center mt-10">
-            <div>
-              <label for="goToPage" class="mr-2 text-white">Go to</label>
-              <input type="number" id="goToPage" name="goToPage"
-                class="w-16 px-2 py-1 mr-2 rounded-lg bg-[#323232] text-white border border-neutral-100" min="1"
-                oninput="onPageInputChange()">
-              <label class="text-white">page</label>
-            </div>
-            <div class="flex space-x-2" id="pagination-controls">
-            </div>
+          <div class="flex items-center space-x-2" id="pagination-controls">
           </div>
         </div>
       </div>
@@ -263,12 +262,6 @@
             <span class="text-gray-400 text-sm">← 1/3</span>
             <span class="text-gray-400 text-sm">New →</span>
           </div>
-          <div class="flex justify-end gap-[15px] mt-4 text-neutral-100">
-            <button type="button"
-              class="w-1/3 bg-transparent border-gray-600 border py-2 px-4 rounded modal-button-close"
-              onclick="toggleModal('updateEvidenceModal')">Close</button>
-            <button type="submit" class="w-1/3 bg-[#d35833] py-2 px-4 rounded modal-button-confirm">Submit</button>
-          </div>
         </form>
       </div>
     </div>
@@ -335,7 +328,7 @@
         table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].customerName + '</td>';
         table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].typeOfService + '</td>';
         table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].scheduleDate + '\n' + filteredData[i].scheduleTime + '</td>';
-        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round"d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><button onclick="toggleModal(\'updateStatusModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Status</button><button onclick="toggleModal(\'updateEvidenceModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Evidence</button><a href="<?=url?>?temp=staff_view_booking_details" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking Details</a></div></div></td>';
+        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round"d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><button onclick="toggleModal(\'updateStatusModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Status</button><button onclick="toggleModal(\'updateEvidenceModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Evidence</button><form method="post" action="<?= url ?>"><input class="hidden" name="action" value="booking_details"><input class="hidden" name="booking_id" value="'+ id +'"><button type="submit" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking Details</button></form></div></div></td>';
         table += '</tr>';
       }
 
@@ -413,16 +406,63 @@
     }
 
     function onSearchInputChange() {
-      var searchValue = document.getElementById('searchInput').value.toLowerCase();
-      filteredData = data.filter(function (row) {
-        var bookingID = row[0].toLowerCase();
-        var cusName = row[2].toLowerCase();
-        return bookingID.includes(searchValue) || cusName.includes(searchValue);
-      });
-      currentPage = 1; // Reset to first page
-      updatePageInput();
-      renderTable();
+        var searchValue = document.getElementById('searchInput').value.toLowerCase();
+        filterData();
     }
+
+    function onStatusFilterChange() {
+        filterData();
+    }
+
+    function onServiceFilterChange() {
+        filterData();
+    }
+
+    function filterData() {
+        var searchValue = document.getElementById('searchInput').value.toLowerCase();
+        var selectedStatus = Array.from(document.querySelectorAll('.statusCheckbox:checked')).map(cb => cb.value);
+        var selectedServices = Array.from(document.querySelectorAll('.serviceCheckbox:checked')).map(cb => cb.value);
+        console.log(selectedServices);
+
+        filteredData = data.filter(function (row) {
+            var customerName = row.customerName.toLowerCase();
+            var bookingId = row.bookingId.toLowerCase();
+            var statusMatches = selectedStatus.length === 0 || selectedStatus.includes(row.status);
+            var servicesMatches = selectedServices.length === 0 || selectedServices.includes(row.typeOfService);
+
+            return (customerName.includes(searchValue) || bookingId.includes(searchValue)) && statusMatches && servicesMatches;
+        });
+
+        currentPage = 1; // Reset to first page
+        updatePageInput();
+        renderTable();
+    }
+
+    google.script.run.withSuccessHandler(function (response) {
+        generateServiceCheckboxes(response);
+    }).getservice();
+
+    function generateServiceCheckboxes(services) {
+        var serviceCheckboxes = document.getElementById('serviceCheckboxes');
+        serviceCheckboxes.innerHTML = ''; // Clear any existing content
+
+        services.forEach(function (service) {
+            var serviceLabel = document.createElement('label');
+            serviceLabel.className = 'mb-2';
+            serviceLabel.innerHTML = '<input type="checkbox" class="mr-2 serviceCheckbox" value="' + service[1] + '"> ' + service[1]; // Assuming city name is in the second column
+            serviceCheckboxes.appendChild(serviceLabel);
+        });
+
+        // Attach event listeners to city checkboxes
+        document.querySelectorAll('.serviceCheckbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', onServiceFilterChange);
+        });
+    }
+
+    // Attach event listeners to role checkboxes
+    document.querySelectorAll('.statusCheckbox').forEach(function (checkbox) {
+        checkbox.addEventListener('change', onStatusFilterChange);
+    });
   </script>
   <script>
     // Load Modal
@@ -521,31 +561,6 @@
       }
     }
   </script>
-  <!-- <script>
-    // Toggle the dropdown menu - booking details
-    document.querySelectorAll('.bookingButton').forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        // Prevent the click event from bubbling up to the window click event
-        event.stopPropagation();
-
-        // Close other open dropdowns
-        document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
-          menu.classList.add('hidden');
-        });
-
-        // Toggle the corresponding dropdown menu
-        var menu = button.nextElementSibling;
-        menu.classList.toggle('hidden');
-      });
-    });
-
-    // Close the dropdown menu when clicking outside of it
-    window.onclick = function (event) {
-      document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
-        menu.classList.add('hidden');
-      });
-    }
-  </script> -->
   <script>
     function toggleDropdown(event, button) {
       // Prevent the click event from bubbling up to the window click event
