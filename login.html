@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+</head>
+
+<body class="parent min-h-screen flex items-center justify-center">
+  <? var url = getUrl(); ?>
+  <div class="lg:flex lg:w-3/4">
+    <div class="lg:w-1/2 flex mt-14 -mb-5 justify-center items-center">
+      <div class="hidden lg:block">
+        <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihaL6_H3h67EI9S2aO5ABJsvyDVrNBJKepPRFBZZ8R5mDOiD6-TSo83tp1c_mmcjdGAClqOJ2jC-tubDrGZ5amwEa3AGRIp9nsc=s2560"
+                    alt="Service Image" class="w-3/4 object-contain lg:w-auto">
+      </div>
+    </div>
+    <div class=" relative -ml-3 lg:w-[1000px] xl:w-[700px]">
+      <div class="ml-8 lg:ml-20 rounded-lg bg-opacity-80 p-8">
+        <div class="text-center mb-10 -mt-10">
+          <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+                        alt="EZBOOK Logo" class="mx-auto object-contain  mb-4" style="width: 250px; height: 80px;">
+        </div>
+        <div
+          class="px-12 py-[60px] rounded-[20px] border border-solid border-neutral-100 [background:radial-gradient(80%_80%_at_100%_0%,rgb(42,40,42)_0%,rgb(29,28,29)_100%)]">
+          <div class="text-center mb-8 -mt-5">
+            <h1 class="text-3xl text-white font-bold md:text-[48px]">Sign in
+            </h1>
+            <p class="text-white mt-4 md:text-[18px] hidden md:block">Manage
+              • Control • Service • Succeed</p>
+            <p class="text-white mt-4 block md:hidden">Manage • Control
+              •<br>Service • Succeed</p>
+          </div>
+          <form method="post" action="<?= url ?>" class="space-y-4">
+            <input class="hidden" name="action" value="login">
+            <div>
+              <label for="email" class="block text-white text-sm font-bold mb-2  md:text-[18px]"
+                                style="font-family: ABeeZee;">Email</label>
+              <input type="email"
+                                class="w-full px-3 py-2 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+                                id="email" placeholder="Email" name="email" style="background-color: #323232;font-family: ABeeZee;">
+            </div>
+            <div class="relative">
+              <label for="password" class="block text-white text-sm font-bold mb-2 md:text-[18px]"
+                                style="font-family: ABeeZee;">
+                                Password
+                            </label>
+              <input type="password"
+                                class="w-full px-3 py-2 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+                                id="password" placeholder="Password" name="password"
+                                style="background-color: #323232; font-family: ABeeZee;">
+              <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center mt-7" style="color: #f5f5f5;">
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </button>
+            </div>
+            <? if (message) { ?>
+            <div class="mb-2">
+              <p class="text-red-500 font-bold" style="font-family: ABeeZee;">
+                <?!= message ?>
+              </p>
+            </div>
+            <? } ?>
+            <div class="text-center pt-5">
+              <button type="submit" value="Login" name="LoginButton"
+                                class="w-full text-gray-900 font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500 md:text-[18px]"
+                                style="background-color: #C1FF03;font-family: Quicksand;">Sign
+                                In</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+</svg>`;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>`;
+            }
+        });
+  </script>
+</body>
+
+</html>
