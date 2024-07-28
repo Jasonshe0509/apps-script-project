@@ -47,9 +47,9 @@
     <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50 border-b-[1px] "
       style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
       <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
-        <img
-        src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
-        alt="EZBOOK Logo" class="h-[60px] object-contain">
+        <a href="<?=url?>?temp=admin_dashboard"><img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
         <img
           src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
@@ -66,12 +66,11 @@
       </div>
       <ul id="navItems"
         class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
-        <li><a href="#" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
-        <li><a href="#" class="text-white hover:text-lime-500">Customer</a></li>
-        <li><a href="#" class="text-white hover:text-lime-500">Booking</a></li>
-        <li><a href="#" class="text-white hover:text-lime-500">Invoice</a></li>
-        <li><a href="#" class="text-lime-500 hover:text-lime-500">Service</a></li>
-        <li><a href="#" class="text-white hover:text-lime-500">Report</a></li>
+        <li><a href="<?=url?>?temp=admin_employee" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
+        <li><a href="<?=url?>?temp=admin_customer" class="text-white hover:text-lime-500">Customer</a></li>
+        <li><a href="<?=url?>?temp=admin_booking" class="text-white hover:text-lime-500">Booking</a></li>
+        <li><a href="<?=url?>?temp=admin_payment" class="text-white hover:text-lime-500">Invoice</a></li>
+        <li><a href="<?=url?>?temp=admin_service" class="text-white hover:text-lime-500">Service</a></li>
       </ul>
     </nav>
     <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">

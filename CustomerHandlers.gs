@@ -6,9 +6,13 @@ function getCustomerData() {
   let customerMap = {};
   data.forEach(row => {
     let customerId = row[0];
+    let customerMobile = row[1];
     let customerName = row[3];
     if (customerId) {
-      customerMap[customerId] = customerName;
+      customerMap[customerId] = {
+        name: customerName,
+        mobile: customerMobile
+      };
     }
   });
 
