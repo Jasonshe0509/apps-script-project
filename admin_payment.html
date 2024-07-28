@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+  <style>
+    .animate-pulse-3 {
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .custom-select select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      box-shadow: 0px 7px 8px #161616;
+    }
+
+    .drop-area {
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .drop-area.dragover {
+      border-color: #00aaff;
+    }
+
+    .main-menu::-webkit-scrollbar {
+      display: none;
+    }
+
+    .modal::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="parent">
+  <? var url = getUrl(); ?>
+  <div id="loadingIndicator" class="flex items-center justify-center h-screen">
+    <div class="text-center">
+      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+                alt="Logo" class="  h-[60px] object-contain mx-auto">
+      <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
+    </div>
+  </div>
+  <div id="mainContent" style="display: none;">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50 border-b-[1px] "
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+                    alt="EZBOOK Logo" class="h-[60px] object-contain">
+        <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+                    <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
+                        alt="Profile" class="h-12 w-12 rounded-full">
+                </button>
+        <div id="profileMenu" class="dropdown-menu">
+          <a href="<?=url?>?temp=user_profile">User Profile</a>
+          <a href="<?=url?>?temp=user_change_password">Change Password</a>
+          <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+      <ul id="navItems"
+        class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+        <li><a href="<?=url?>?temp=admin_employee" class="text-white hover:text-lime-500 lg:ml-16">Employee</a>
+        </li>
+        <li><a href="<?=url?>?temp=admin_customer" class="text-white hover:text-lime-500">Customer</a></li>
+        <li><a href="<?=url?>?temp=admin_booking" class="text-white hover:text-lime-500">Booking</a></li>
+        <li><a href="<?=url?>?temp=admin_payment" class="text-lime-500 hover:text-lime-500">Invoice</a></li>
+        <li><a href="<?=url?>?temp=admin_service" class="text-white hover:text-lime-500">Service</a></li>
+      </ul>
+    </nav>
+    <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Invoice</h1>
+    </div>
+    <div class="flex">
+      <!-- Side bar -->
+      <div class="sideMenu bg-[#1D1C1D] sticky left-0 top-0 mt-4 h-screen z-40 overflow-y-auto" id="side-menu">
+        <div class="main-menu overflow-y-auto">
+          <div class="mb-4">
+            <div class="bg-[#2a282a] p-2">
+              <h3 for="search" class="font-bold text-neutral-100 text-xl pl-5">Search by keyword</h3>
+            </div>
+            <div class="relative m-4">
+              <input id="searchInput" type="text"
+                                class="w-full pl-10 p-2 rounded bg-lime-500 text-[#2a282a] text-base"
+                                placeholder="Search..." oninput="onSearchInputChange()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6 text-[#313131] absolute left-2 top-1/2 transform -translate-y-1/2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="mb-4 text-neutral-100">
+            <div class="bg-[#2a282a] p-2">
+              <h3 class="font-bold text-xl pl-5">Filter by Status</h3>
+            </div>
+            <div class="flex flex-col m-4 text-base pl-5" id="statusCheckboxes">
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Open">Open</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Close">Close</label>
+              <label class="mb-2"><input type="checkbox" class="mr-2 statusCheckbox"
+                                    value="Overdue">Overdue</label>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="closebtn text-lime-500 w-6 h-6" onclick="toggleNav()">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </div>
+      </div>
+      <!-- Main content -->
+      <div id="main-content" class="p-4 transition-all duration-[30ms] grow z-30 overflow-hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center">
+            <select id="date-filter" class="bg-[#2A282A] text-white border border-white p-2 rounded">
+                            <option>Last 30 days</option>
+                        </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto" id='invoice-table'>
+        </div>
+        <div class="flex justify-between items-center mt-4 text-neutral-100">
+          <div>
+            <label for="goToPage" class="mr-2 text-white">Go to</label>
+            <input type="number" id="goToPage" name="goToPage"
+                            class="w-16 px-2 py-1 mr-2 rounded-lg bg-[#2a2828] text-white border border-neutral-100"
+                            min="1" oninput="onPageInputChange()">
+            <label class="text-white">page</label>
+          </div>
+          <div class="flex items-center space-x-2" id="pagination-controls">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="invoiceModal"
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full sm:max-w-lg w-full max-h-[100vh] sm:max-h-[80vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A]">
+        <h2 id="invoiceStatus" class="text-center text-lg font-bold mb-4 text-green-400">Status: Overdue</h2>
+      </div>
+      <div class="p-6">
+        <form class="space-y-4">
+          <div>
+            <label for="id" class="block text-sm font-medium">Invoice Id</label>
+            <input type="input" id="invoice-id"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label for="amount" class="block text-sm font-medium">Amount</label>
+            <input type="input" id="payment-amount"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <!-- Invoice Document (URL) -->
+          <div>
+            <label for="invoice-document" class="block text-sm font-medium">Invoice Document</label>
+            <a id="invoice-link" href="#"
+              class="input-link block w-full rounded-md border border-gray-600 p-2 mt-1 bg-transparent"
+              onclick="return false;">Enter URL for invoice document</a>
+          </div>
+          <!-- Receipt Document (File Upload) -->
+          <div>
+            <label for="receipt-document" class="block text-sm font-medium">Receipt Document</label>
+            <div id="receipt-input-container">
+              <input type="file" id="receipt-document"
+               class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500"
+               onchange="previewFile()">
+            </div>
+            <div id="receipt-link-container" class="hidden">
+              <a id="receipt-link" href="#"
+                class="input-link block w-full rounded-md border border-gray-600 p-2 mt-1 bg-transparent"
+                onclick="return false;">Enter URL for invoice document</a>
+            </div>
+            <div id="file-preview" class="mt-4"></div>
+          </div>
+          <div id="file-preview" class="mt-4"></div>
+          <div>
+            <label for="paid" class="block text-sm font-medium">Paid Amount</label>
+            <input type="input" id="paid-amount"
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div class="flex space-x-4">
+            <button type="button" onclick="toggleModal('invoiceModal')"
+                            class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
+            <button type="button" id="remain-open"
+                            class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Remain Open</button>
+            <button type="button" id="mark-close"
+                            class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Mark As Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Toggle the dropdown menu - profile
+        document.getElementById('profileButton').addEventListener('click', function () {
+            var menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+                var dropdowns = document.getElementsByClassName('dropdown-menu');
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        }
+  </script>
+  <script>
+    // Side bar
+        function toggleNav() {
+            const nav = document.getElementById('side-menu');
+            const mainContent = document.getElementById('main-content');
+            const closeBtn = document.querySelector('.closebtn');
+
+            if (nav.classList.contains('open')) {
+                nav.classList.remove('open');
+                closeBtn.classList.add('rotate-180');
+                if (window.innerWidth <= 768) {
+                    nav.style.width = '50px';
+                    nav.style.gridTemplateColumns = '0 40px';
+                    mainContent.classList.remove('hidden');
+                } else {
+                    mainContent.classList.add('mx-4');
+                }
+            } else {
+                nav.classList.add('open');
+                closeBtn.classList.remove('rotate-180');
+                if (window.innerWidth <= 768) {
+                    nav.style.width = '100vw';
+                    nav.style.gridTemplateColumns = '90vw 10vw';
+                    mainContent.classList.add('hidden');
+                } else {
+                    mainContent.classList.remove('mx-4');
+                }
+            }
+        }
+
+        window.addEventListener('resize', function () {
+            const nav = document.getElementById('side-menu');
+            const closeBtn = document.querySelector('.closebtn');
+            const mainContent = document.getElementById('main-content');
+            if (window.innerWidth >= 768) {
+                nav.classList.add('open');
+                closeBtn.classList.remove('rotate-180');
+                mainContent.classList.remove('mx-8');
+            } else {
+                nav.classList.remove('open');
+                closeBtn.classList.add('rotate-180');
+                mainContent.classList.add('mx-4');
+            }
+        });
+        window.dispatchEvent(new Event('resize'));
+  </script>
+  <script>
+    // Load Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectElement = document.getElementById('status');
+            const svgElement = document.getElementById('select-arrow');
+
+            selectElement.addEventListener('click', function () {
+                svgElement.classList.toggle('rotate-180');
+            });
+        });
+
+        let currentInvoiceData = null;
+
+        function openInvoiceModal(index){
+          currentInvoiceData = filteredData[index];
+          const openbutton = document.getElementById('remain-open');
+          const completebutton = document.getElementById('mark-close');
+          openbutton.classList.remove('hidden');
+          completebutton.classList.remove('hidden');
+          if (!currentInvoiceData) return;
+          document.getElementById('invoice-id').value = currentInvoiceData.invoiceId || '';
+          document.getElementById('invoiceStatus').innerText = 'Status: ' + (currentInvoiceData.status || 'Pending');
+          document.getElementById('payment-amount').value = currentInvoiceData.paymentAmount || '';
+          setInvoiceURL(currentInvoiceData.invoiceUrl);
+          setReceiptURL(currentInvoiceData.customerReceiptUrl);
+
+          if(currentInvoiceData.status == 'Close'){
+            document.getElementById('paid-amount').value = currentInvoiceData.paidAmount || '';
+            completebutton.classList.add('hidden');
+          }else{
+            openbutton.classList.add('hidden');
+          }
+
+          toggleModal('invoiceModal');
+        }
+
+        // Set the invoice URL
+        function setInvoiceURL(url) {
+            const invoiceLink = document.getElementById('invoice-link');
+            if (url) {
+                invoiceLink.href = url;
+                invoiceLink.textContent = 'Click here to view the invoice document';
+                invoiceLink.onclick = () => window.open(url, '_blank');
+            }
+        }
+
+        function setReceiptURL(receiptUrl) {
+            const receiptInputContainer = document.getElementById('receipt-input-container');
+            const receiptLinkContainer = document.getElementById('receipt-link-container');
+            const receiptLink = document.getElementById('receipt-link');
+
+            if (receiptUrl) {
+                receiptLink.href = receiptUrl;
+                receiptLink.textContent = 'Click here to view the receipt document';
+                receiptLink.onclick = () => window.open(receiptUrl, '_blank');
+                receiptInputContainer.classList.add('hidden');
+                receiptLinkContainer.classList.remove('hidden');
+            } else {
+                receiptInputContainer.classList.remove('hidden');
+                receiptLinkContainer.classList.add('hidden');
+            }
+        }
+
+
+        function previewFile() {
+            const fileInput = document.getElementById('receipt-document');
+            const filePreview = document.getElementById('file-preview');
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileUrl = URL.createObjectURL(file);
+
+                filePreview.innerHTML = `
+                    <a href="${fileUrl}" target="_blank" class="text-blue-400 hover:underline">${file.name}</a>
+                `;
+            } else {
+                filePreview.innerHTML = '';
+            }
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal.classList.contains('opacity-0')) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100');
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.classList.remove('opacity-100');
+            }
+        }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+            loadData();
+        });
+
+        function loadData() {
+            // Simulate data fetching
+            setTimeout(() => {
+                renderTable();
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('mainContent').style.display = 'block';
+            }, 5000); // Adjust the delay to your actual data fetching time
+        }
+
+        var currentPage = 1;
+        var itemsPerPage = 10;
+        var data = [];
+        var filteredData = [];
+
+        google.script.run.withSuccessHandler(function (response) {
+            data = response;
+            filteredData = data; // Initialize filtered data
+            loadData();
+        }).getCustomerInvoice();
+
+
+
+        function renderTable() {
+            var startIndex = (currentPage - 1) * itemsPerPage;
+            var endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+            var table = '<table class="min-w-full max-w-full rounded-lg text-neutral-100 text-left">';
+            table += ' <thead class="text-nowrap"><tr><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Invoice ID</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Booking ID</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Status</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Invoice Amount</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Paid Amount</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Created Time</th><th class="p-2 md:p-4 border-b-2 border-gray-600 ">Actions</th></tr></thead>';
+            table += '<tbody>';
+
+            for (var i = startIndex; i < endIndex; i++) {
+                const invoice = filteredData[i]; // Assuming filteredData is an array of objects
+                table += '<tr class="hover:bg-gray-700">';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (invoice.invoiceId || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (invoice.bookingId || 'N/A') + '</td>';
+                switch (invoice.status) {
+                    case "Open":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFAF52] text-black text-[10px] md:text-xs">Open</span></td>';
+                        break;
+                    case "Close":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs">Close</span></td>';
+                        break;
+                    case "Overdue":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs">Overdue</span></td>';
+                        break;
+                    default:
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-gray-200 text-black text-[10px] md:text-xs"></span></td>';
+                        break;
+                }
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "> RM ' + (invoice.paymentAmount || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (invoice.paidAmount ? 'RM ' + invoice.paidAmount : '-') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (invoice.createdDate || 'N/A') + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline">';
+                table += '<button class="invoiceButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)">';
+                table += '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">';
+                table += '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />';
+                table += '</svg></button>';
+                table += '<div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]">';
+                table += '<button onclick="openInvoiceModal(' + i + ')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</button>';
+
+                if (invoice.status === 'Close') {
+                    table += '<button id="generated-receipt" onclick="openReceipt(' + i + ')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Generated Receipt</button>';
+                }
+
+                table += '</div></div></td>';
+            }
+
+            table += '</tbody></table>';
+
+            document.getElementById('invoice-table').innerHTML = table;
+            updatePaginationControls();
+        }
+
+        function openReceipt(index){
+          let currentInvoiceData = filteredData[index];
+          const generatedReceiptButton = document.getElementById('generated-receipt');
+          if (generatedReceiptButton) {
+              const receiptUrl = currentInvoiceData.receiptUrl || '#';
+              window.open(receiptUrl, '_blank');
+          }
+        }
+        
+        function updatePaginationControls() {
+            var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            var paginationControls = '<div class="flex flex-wrap items-center space-x-2 mt-2">';
+
+            // Previous button
+            paginationControls += '<button onclick="changePage(currentPage - 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === 1 ? 'opacity-50 cursor-not-allowed' : '') + '">‹</button>';
+
+            // Pagination buttons
+            if (totalPages <= 3) {
+                // Show all page numbers if there are 3 or fewer pages
+                for (var i = 1; i <= totalPages; i++) {
+                    paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-[#2A282A]' : '') + '">' + i + '</button>';
+                }
+            } else {
+                // Show pagination with ellipsis
+                if (currentPage < 2) {
+                    // Pages at the beginning
+                    for (var i = 1; i <= 3; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+                } else if (currentPage > totalPages - 1) {
+                    // Pages at the end
+                    paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    for (var i = totalPages - 2; i <= totalPages; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                } else {
+                    // Pages in the middle
+                    paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    for (var i = currentPage - 1; i <= currentPage + 1; i++) {
+                        paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+                    }
+                    paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+                    paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+                }
+            }
+
+            // Next button
+            paginationControls += '<button onclick="changePage(currentPage + 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : '') + '">›</button>';
+            paginationControls += '</div>';
+
+            document.getElementById('pagination-controls').innerHTML = paginationControls;
+        }
+
+        function changePage(pageNumber) {
+            var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (pageNumber < 1 || pageNumber > totalPages) return;
+            currentPage = pageNumber;
+            updatePageInput();
+            renderTable();
+        }
+
+        function updatePageInput() {
+            document.getElementById('goToPage').value = currentPage;
+        }
+
+        function onPageInputChange() {
+            var pageNumber = parseInt(document.getElementById('goToPage').value);
+            if (!isNaN(pageNumber)) {
+                changePage(pageNumber);
+            }
+        }
+        function onSearchInputChange() {
+            var searchValue = document.getElementById('searchInput').value.toLowerCase();
+            filterData();
+        }
+
+        function onStatusFilterChange() {
+            filterData();
+        }
+
+
+        function filterData() {
+            var searchValue = document.getElementById('searchInput').value.toLowerCase();
+            var selectedStatus = Array.from(document.querySelectorAll('.statusCheckbox:checked')).map(cb => cb.value);
+
+            filteredData = data.filter(function (row) {
+                var invoiceId = row.invoiceId.toLowerCase();
+                var bookingId = row.bookingId.toLowerCase();
+                var statusMatches = selectedStatus.length === 0 || selectedStatus.includes(row.status);
+                return (invoiceId.includes(searchValue) || bookingId.includes(searchValue)) && statusMatches;
+            });
+
+            currentPage = 1; // Reset to first page
+            updatePageInput();
+            renderTable();
+        }
+
+        // Attach event listeners to role checkboxes
+        document.querySelectorAll('.statusCheckbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', onStatusFilterChange);
+        });
+  </script>
+  <script>
+    function toggleDropdown(event, button) {
+            // Prevent the click event from bubbling up to the window click event
+            event.stopPropagation();
+
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+                menu.classList.add('hidden');
+            });
+
+            // Toggle the corresponding dropdown menu
+            var menu = button.nextElementSibling;
+            menu.classList.toggle('hidden');
+        }
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            document.querySelectorAll('.dropdown-menu1').forEach(function (menu) {
+                menu.classList.add('hidden');
+            });
+        };
+  </script>
+</body>
+
+</html>

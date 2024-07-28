@@ -24,6 +24,14 @@ function doGet(e) {
   if (temp == 'admin_employee') {
     return handleAdminEmployee();
   }
+  if (temp == 'admin_booking') {
+    return handleAdminBooking();
+  }
+
+  if (temp == 'admin_payment'){
+    return handleAdminPayment();
+  }
+
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -53,6 +61,8 @@ function doPost(e) {
     return changePassword(e);
   } else if (action == 'add_service') {
     return handleAddService(e);
+  } else if(action == 'booking_details'){
+    return handleStaffBookingDetails(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -127,6 +137,33 @@ function handleAdminEmployee() {
   var template = HtmlService.createTemplateFromFile('admin_employee');
   return template.evaluate()
     .setTitle('Employee Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminBooking(){
+  var template = HtmlService.createTemplateFromFile('admin_booking');
+  return template.evaluate()
+    .setTitle('Booking Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminPayment(){
+  var template = HtmlService.createTemplateFromFile('admin_payment');
+  return template.evaluate()
+    .setTitle('Payment Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleStaffBookingDetails(e){
+  let bookingId = e.parameter.booking_id;
+  let bookingDetails = getFullBookingDetails(bookingId);
+  var template = HtmlService.createTemplateFromFile('staff_view_booking_details');
+  template.bookingDetails = bookingDetails;
+  return template.evaluate()
+    .setTitle('Booking Details Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
