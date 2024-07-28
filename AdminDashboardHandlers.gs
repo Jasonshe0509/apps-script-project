@@ -108,7 +108,7 @@ function getTodaysBookings() {
     let endTime = new Date(row[4]);
     let address1 = row[5];
     let address2 = row[6];
-    let customerName = customerData[customerId] || 'Unknown'; // Look up customer name
+    let customerDetails = customerData[customerId] || 'Unknown'; // Look up customer name
     let cityName = cityData[cityId] || 'Unknown'; // Look up city name
     let address = address2 ? `${address1}, ${address2}` : address1;
 
@@ -119,7 +119,8 @@ function getTodaysBookings() {
     if (bookingDate >= todaysDate && bookingDate <= endOfDay) {
       bookings.push({
         id: row[0],
-        customerName: customerName,
+        customerName: customerDetails.name,
+        customerMobile: customerDetails.mobile,
         address: `${address}, ${cityName}`,
         time: `${formattedStartTime} - ${formattedEndTime}`,
         startTime: startTime // Include startTime for sorting purposes
@@ -159,12 +160,12 @@ function getRecentBookings() {
     }
 
     // Get customer name from the customer sheet
-    let customerName = customerData[customerId] || 'Unknown Customer';
+    let customerDetails = customerData[customerId] || 'Unknown Customer';
 
     bookings.push({
       bookingId: bookingId,
       status: status,
-      customerName: customerName,
+      customerName: customerDetails.name,
       typeOfService: typeOfService
     });
   });

@@ -9,6 +9,12 @@ function doGet(e) {
   if ('temp' in e.parameters) {
     temp = e.parameters['temp'][0];
   }
+  if (temp == 'staff_dashboard') {
+    return handleStaffDashboard();
+  }
+  if (temp == 'admin_dashboard') {
+    return handleAdminDashboard();
+  }
   if (temp == 'user_profile') {
     return handleUserProfile();
   }
@@ -28,10 +34,12 @@ function doGet(e) {
     return handleAdminBooking();
   }
 
-  if (temp == 'admin_payment'){
+  if (temp == 'admin_payment') {
     return handleAdminPayment();
   }
-
+  if (temp == 'staff_route') {
+    return handleStaffRoute();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -61,11 +69,40 @@ function doPost(e) {
     return changePassword(e);
   } else if (action == 'add_service') {
     return handleAddService(e);
-  } else if(action == 'booking_details'){
+  } else if (action == 'booking_details') {
     return handleStaffBookingDetails(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+}
+
+function handleStaffDashboard() {
+  var template = HtmlService.createTemplateFromFile('staff_dashboard');
+  return template.evaluate()
+    .setTitle('EzBook')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminDashboard() {
+  // Store session token in Properties Service
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+
+  var userDetails = JSON.parse(userSession);
+  var userId = userDetails.userID;
+
+  var html = HtmlService.createTemplateFromFile('admin_dashboard');
+  html.userID =userId;
+  html.totalSales = getTotalSales();
+  html.totalUnpaidAmount = getUnpaidAmounts();
+  html.totalPaidAmounts = getPaidAmounts();
+  html.totalActiveBookings = getActiveBookings();
+  html.bookings = getRecentBookings();
+  return html.evaluate()
+    .setTitle('EzBook')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function handleUserProfile() {
@@ -141,7 +178,7 @@ function handleAdminEmployee() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function handleAdminBooking(){
+function handleAdminBooking() {
   var template = HtmlService.createTemplateFromFile('admin_booking');
   return template.evaluate()
     .setTitle('Booking Page')
@@ -149,7 +186,7 @@ function handleAdminBooking(){
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function handleAdminPayment(){
+function handleAdminPayment() {
   var template = HtmlService.createTemplateFromFile('admin_payment');
   return template.evaluate()
     .setTitle('Payment Page')
@@ -157,13 +194,23 @@ function handleAdminPayment(){
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function handleStaffBookingDetails(e){
+function handleStaffBookingDetails(e) {
   let bookingId = e.parameter.booking_id;
   let bookingDetails = getFullBookingDetails(bookingId);
   var template = HtmlService.createTemplateFromFile('staff_view_booking_details');
   template.bookingDetails = bookingDetails;
   return template.evaluate()
     .setTitle('Booking Details Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleStaffRoute() {
+  let bookingDetails = getTodaysBookings();
+  var template = HtmlService.createTemplateFromFile('staff_route');
+  template.bookingDetails = bookingDetails;
+  return template.evaluate()
+    .setTitle('Routing Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
