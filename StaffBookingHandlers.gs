@@ -28,7 +28,12 @@ function getBookings() {
     .map(row => row[0]));
 
   const bookings = bookingData
-    .filter(row => userBookingIds.has(row[0]) && row.some(cell => cell !== '' && cell !== null && cell !== undefined))
+    .filter(row =>
+      userBookingIds.has(row[0]) &&
+      row.some(cell => cell !== '' && cell !== null && cell !== undefined) &&
+      row[15] !== 'Pending' &&
+      row[15] !== 'Canceled'
+    )
     .map(row => {
       let bookingId = row[0];
       let status = row[15];
@@ -135,9 +140,9 @@ function getFullBookingDetails(bookingID) {
   let reachTime = new Date(bookingRow[21]);
   let completedTime = new Date(bookingRow[22]);
   const formattedDate = date instanceof Date
-    ? Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd/MM/yyyy')
+    ? Utilities.formatDate(date, Session.getScriptTimeZone(), 'yyyy-MM-dd')
     : date;
-
+  Logger.log(formattedDate);
   // Format times to HH:MM
   let formattedStartTime = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   let formattedEndTime = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
