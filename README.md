@@ -1,3 +1,6 @@
+# Project Title: Ezbook Management System
+![CHEESE!](https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1)
+
 # Problem Statement
 
 **Operational Inefficiency**
@@ -7,9 +10,6 @@
 2. Inadequate Technology Utilization
 
 3. Inconsistent communication within the team
-
-# Project Title: Ezbook Management System
-![CHEESE!](https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1)
 
 # Project Description
 
@@ -31,4 +31,3 @@
 3. **Gmail**
 
 4.  **Google Calendar**
-5. 
