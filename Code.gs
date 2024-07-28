@@ -21,6 +21,16 @@ function doGet(e) {
   if (temp == 'admin_customer') {
     return handleAdminCustomer();
   }
+  if (temp == 'admin_employee') {
+    return handleAdminEmployee();
+  }
+  if (temp == 'admin_booking') {
+    return handleAdminBooking();
+  }
+
+  if (temp == 'admin_payment'){
+    return handleAdminPayment();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -116,6 +126,30 @@ function handleAdminCustomer() {
   var template = HtmlService.createTemplateFromFile('admin_customer');
   return template.evaluate()
     .setTitle('Customer Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminEmployee() {
+  var template = HtmlService.createTemplateFromFile('admin_employee');
+  return template.evaluate()
+    .setTitle('Employee Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminBooking(){
+  var template = HtmlService.createTemplateFromFile('admin_booking');
+  return template.evaluate()
+    .setTitle('Booking Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleAdminPayment(){
+  var template = HtmlService.createTemplateFromFile('admin_payment');
+  return template.evaluate()
+    .setTitle('Payment Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
