@@ -8,29 +8,33 @@
 
 **Operational Inefficiency**
 
-1. Employee Performance and Workload Imbalance
+📉 Operational Inefficiency
 
-2. Inadequate Technology Utilization
+📊 Employee Performance and Workload Imbalance
 
-3. Inconsistent communication within the team
+📱 Inadequate Technology Utilization
+
+📞 Inconsistent Communication within the Team
 
 # Project Description
 
-1. **Automated Booking & Scheduling System**
+🗓️ **Automated Booking & Scheduling System**
     * Automated assign employee based on city and distribute equally.
 
-2. **Integrated Communication Platform**
+💬 **Integrated Communication Platform**
     * Able to have valid record and tracking system which increase their satisfaction.
 
-3. **Contactless Evidence & Status Tracking System**
+📌 **Contactless Evidence & Status Tracking System**
     * Real time update with understanding the employee location, performance.
   
 # List of Google Workspace that being used
 
-1. **Google Sheet**
+📝 **Google Sheet**
 
-2. **Google Doc**
+📄 **Google Doc**
 
-3. **Gmail**
+✉️ **Gmail**
 
-4.  **Google Calendar**
+📆 **Google Calendar**
+
+📁 **Google Drive**
