@@ -1,4 +1,4 @@
-# Project Title: Ezbook Management System
+# Project Title: EzBook Management System
 ![CHEESE!](https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1)
 
 # Deployment Link
