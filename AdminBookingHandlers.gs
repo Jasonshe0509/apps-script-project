@@ -104,6 +104,7 @@ function getCustomerBookings() {
       numberOfDeviceService: row[13],
       additionalRemark: row[14],
       rejectReason: row[16],
+      totalCost: row[18],
       reachTime: formattedReachTime,
       completedTime: formattedCompletedTime,
       address1: row[5],
@@ -119,3 +120,155 @@ function getCustomerBookings() {
 
   return bookings;
 }
+
+function rejectBooking(bookingId, rejectReason) {
+  // Open the spreadsheet and get the Booking sheet
+  const bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:X');
+  const bookingData = bookingRange.getValues();
+
+  // Get Customer data
+  let customerSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Customer');
+  let customerRange = customerSheet.getRange('B5:E');
+  let customerData = customerRange.getValues();
+
+  // Create a map for customer IDs to customer names
+  const customerMap = new Map(customerData.map(row => [row[0], row[2]]));
+  let customerEmail = null
+  // Find the row with the matching bookingId
+  let rowIndex = -1;
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === bookingId) { // Assuming bookingId is in column B
+      customerEmail = customerMap.get(bookingData[i][1]) || 'Unknown Customer';
+      rowIndex = i;
+      break;
+    }
+  }
+
+  // If the bookingId was found
+  if (rowIndex !== -1) {
+    // Update the status and reject reason
+    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled'); // Assuming status is in column Q (17th column)
+    bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason); // Assuming reject reason is in column R (18th column)
+    sendEmail(customerEmail, 'Booking has been rejected', `Booking ID ${bookingId} has been rejected with reason: ${rejectReason}`);
+    return { success: true };
+  } else {
+    Logger.log(`Booking ID ${bookingId} not found.`);
+  }
+}
+
+function approveBooking(bookingId) {
+  // Open the spreadsheet and get the Booking sheet
+  const bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:X');
+  const bookingData = bookingRange.getValues();
+
+  // Get Customer data
+  let customerSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Customer');
+  let customerRange = customerSheet.getRange('B5:E');
+  let customerData = customerRange.getValues();
+
+  // Get Employee Appointment data
+  let employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  let employeeAppointmentRange = employeeAppointmentSheet.getRange('B5:C');
+  let employeeAppointmentData = employeeAppointmentRange.getValues();
+
+  // Get Employee data
+  let employeeSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('User');
+  let employeeRange = employeeSheet.getRange('B5:G');
+  let employeeData = employeeRange.getValues();
+
+  // Create a map for customer IDs to customer names and emails
+  const customerMap = new Map(customerData.map(row => [row[0], { email: row[2], name: row[3] }]));
+  let customerEmail = null;
+  let customerName = null;
+
+  // Create a map for user IDs to emails
+  const employeeMap = new Map(employeeData.map(row => [row[0], row[5]]));
+  let employeeEmails = [];
+
+  // Find the row with the matching bookingId
+  let rowIndex = -1;
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === bookingId) { // Assuming bookingId is in column B
+      let customerDetails = customerMap.get(bookingData[i][1]);
+      customerEmail = customerDetails.email || 'Unknown Customer';
+      customerName = customerDetails.name || 'Unknown Customer';
+      rowIndex = i;
+      break;
+    }
+  }
+
+  // Get the employee emails associated with the bookingId
+  for (let i = 0; i < employeeAppointmentData.length; i++) {
+    if (employeeAppointmentData[i][0] === bookingId) {
+      let userId = employeeAppointmentData[i][1];
+      let employeeEmail = employeeMap.get(userId);
+      if (employeeEmail) {
+        employeeEmails.push(employeeEmail);
+      }
+    }
+  }
+  employeeEmails.push('jasonshe80@gmail.com');
+
+  // Combine customer email and employee emails into one array
+  let emailArray = [customerEmail, ...employeeEmails];
+
+  Logger.log(emailArray);
+
+  // If the bookingId was found
+  if (rowIndex !== -1) {
+    // Update the status and reject reason
+    bookingSheet.getRange(rowIndex + 5, 17).setValue('Scheduled'); // Assuming status is in column Q (17th column)
+
+    let bookingDetails = bookingData[rowIndex];
+    let date = new Date(bookingDetails[2]);
+    let startTime = new Date(bookingDetails[3]);
+    let endTime = new Date(bookingDetails[4]);
+
+    var startDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+    Logger.log(startDateTime);
+
+    var endDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), endTime.getHours(), endTime.getMinutes(), endTime.getSeconds());
+
+
+    let formattedDate = Utilities.formatDate(startTime, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+    let formattedStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), 'HH:mm:ss');
+    let formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), 'HH:mm:ss');
+
+    let emailBody = `
+      Dear ${customerName},
+
+      Your booking with ID ${bookingId} has been approved.
+
+      Booking Details:
+      - Date: ${formattedDate}
+      - Time: ${formattedStartTime} - ${formattedEndTime}
+      - Type of Service: ${bookingDetails[11]}
+
+      Thank you,
+      Your Service Team
+    `;
+
+    // Send email notification
+    sendEmail(customerEmail, 'Booking has been approved', emailBody);
+
+    // Create a calendar invite
+    let description = `Booking ID: ${bookingId}
+                       Type of Service: ${bookingDetails[11]}
+                       Customer: ${customerName}
+                       Date: ${formattedDate}
+                       Time: ${formattedStartTime} - ${formattedEndTime}`;
+
+    createCalendarInvite('Service Booking', startDateTime, endDateTime, description, emailArray);
+
+    return { success: true };
+  } else {
+    Logger.log(`Booking ID ${bookingId} not found.`);
+    return { success: false, message: `Booking ID ${bookingId} not found.` };
+  }
+}
+
+
+
+
