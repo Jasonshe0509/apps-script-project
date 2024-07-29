@@ -269,6 +269,82 @@ function approveBooking(bookingId) {
   }
 }
 
+function setTotalCost(bookingId, totalCost) {
+  // Open the spreadsheet and get the Booking sheet
+  const bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:X');
+  const bookingData = bookingRange.getValues();
 
+  // Get Employee Appointment data
+  let employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  let employeeAppointmentRange = employeeAppointmentSheet.getRange('B5:C');
+  let employeeAppointmentData = employeeAppointmentRange.getValues();
+
+  const invoiceSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Invoice');
+  const invoiceRange = invoiceSheet.getRange('B5:M'); // Read data starting from B5
+  const invoiceData = invoiceRange.getValues();
+
+  let currentDateTime = getCurrentDateTime();
+
+  let employeeId = null;
+  const filteredData = employeeAppointmentData.filter(row => row[0] === bookingId);
+
+  if (filteredData.length > 0) {
+    employeeId = filteredData[0][1];
+  }
+
+
+  let rowIndex = -1;
+  let customerID = null
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === bookingId) { // Assuming bookingId is in column B
+      customerID = bookingData[i][1];
+      rowIndex = i;
+      break;
+    }
+  }
+
+  if (rowIndex !== -1) {
+    // Update the status and reject reason
+    bookingSheet.getRange(rowIndex + 5, 20).setValue(totalCost); // Assuming status is in column Q (17th column)
+    var lastId = '';
+    for (var i = 1; i < invoiceData.length; i++) { // Start from 1 to skip headers
+      var invoiceId = invoiceData[i][0]; // Assuming invoice ID is in the first column (index 0)
+      if (invoiceId.startsWith('INV')) {
+        lastId = invoiceId;
+      }
+    }
+    var newIdNumber = parseInt(lastId.replace('INV', '')) + 1;
+
+    // Format the number to ensure it's always three digits
+    var formattedNumber = newIdNumber.toString().padStart(3, '0');
+
+    // Generate the new invoice ID
+    var newInvoiceId = 'INV' + formattedNumber;
+
+    // Define the new invoice data
+    var newInvoice = [
+      '',
+      newInvoiceId, // invoice id
+      bookingId, // booking id
+      customerID, // customer id
+      employeeId, // employee id
+      'Open', // Invoice status
+      totalCost, // Payment Amount
+      0, // Paid Amount
+      14, // Duration
+      '', // invoice url
+      '', // receipt url
+      currentDateTime, // created date
+      currentDateTime // updated date
+    ];
+
+    invoiceSheet.appendRow(newInvoice);
+    generateInvoices(newInvoiceId, bookingId, customerID, employeeId, totalCost, '14', currentDateTime);
+    return { success: true };
+  } else {
+    Logger.log(`Booking ID ${bookingId} not found.`);
+  }
+}
 
 

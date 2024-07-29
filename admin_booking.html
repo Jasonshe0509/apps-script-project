@@ -440,6 +440,7 @@
       </div>
       <div class="p-6">
         <form class="space-y-4">
+          <input class="hidden" id="bookingID1">
           <div>
             <label for="service" class="block text-sm font-small">Type of Service</label>
             <select id="service2"
@@ -500,10 +501,12 @@
             <input type="number" id="cost" min="0"
                             class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
+          <div id="responseMessage1">
+          </div>
           <div class="flex space-x-4">
             <button type="button" onclick="toggleModal('assignServiceCostModal')"
                             class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
-            <button type="button" id="save_button"
+            <button type="button" id="save_button" onclick="setTotalCost()"
                             class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Save</button>
           </div>
         </form>
@@ -799,8 +802,10 @@
         }
 
         function populateAssignedServiceCostModal() {
+          document.getElementById('responseMessage1').classList.add('hidden');
           if (!currentBookingData) return;
           document.getElementById('bookingIDShow').innerText = 'Booking id: ' + (currentBookingData.bookingId || '');
+          document.getElementById('bookingID1').value = currentBookingData.bookingId || '';
           document.getElementById('device-type2').value = currentBookingData.typeOfDevice || '';
           document.getElementById('device1').value = currentBookingData.numberOfDeviceService || '';
           document.getElementById('evidence-name').value = currentBookingData.evidenceArray.evidence_name || '';
@@ -1158,6 +1163,27 @@
         document.getElementById('responseMessage').classList.remove('hidden')
         document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The reject reason cannot be empty</p>';
       }
+    }
+
+    function setTotalCost(){
+       const bookingId = document.getElementById('bookingID1').value;
+       const totalCost = document.getElementById('cost').value;
+       if(totalCost){
+        google.script.run.withSuccessHandler(function(response) {
+          if (response.success) {
+            document.getElementById('responseMessage1').innerHTML = '<p class="text-lime-500 font-bold " style="font-family: ABeeZee;">Successfully set a total price</p>';
+            setTimeout(() => {
+              document.getElementById('responseMessage1').classList.remove('hidden');
+              fetchData();
+            }, 5000); // Adjust timeout as needed
+          } else {
+            alert(response.message);
+          }
+       }).setTotalCost(bookingId, totalCost);
+       }else{
+        document.getElementById('responseMessage1').classList.remove('hidden');
+        document.getElementById('responseMessage1').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The total cost cannot be empty</p>';
+       }
     }
 
     function fetchData() {
