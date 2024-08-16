@@ -40,13 +40,17 @@
       border-color: #00aaff;
     }
   </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 </head>
 
 <body class="parent">
   <? var url = getUrl(); ?>
   <div id="loadingIndicator" class="flex items-center justify-center h-screen">
     <div class="text-center">
-      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+      <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
                 alt="Logo" class="  h-[60px] object-contain mx-auto">
       <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
     </div>
@@ -56,7 +60,7 @@
       style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
       <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
         <a href="<?=url?>?temp=admin_dashboard"><img
-          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
           alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
                     <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
@@ -166,10 +170,8 @@
         <form id="updateCityForm" method="post" action="#">
           <label for="city" class="block font-medium text-lime-500 font-['ABeeZee'] text-xl">City</label>
           <div class="custom-select relative">
-            <select name="city" id="city"
-            class="bg-[#323232] px-2 py-4 focus:outline-none text-neutral-100 w-full rounded-lg">
-            <!-- Options will be added dynamically here -->
-          </select>
+            <select name="city" id="city" class="js-example-basic-multiple bg-[#323232] px-2 py-4 focus:outline-none text-neutral-100 w-full rounded-lg" multiple="multiple">
+            </select>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" id="select-arrow"
               class="w-6 h-6 absolute right-4 top-2/4 -translate-y-2/4 pointer-events-none text-lime-500">
@@ -187,6 +189,11 @@
       </div>
     </div>
   </div>
+  <script>
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
+  </script>
   <script>
     // Toggle the dropdown menu - profile
         document.getElementById('profileButton').addEventListener('click', function () {
@@ -265,6 +272,8 @@
     });
 
     function openUpdateCityModal(currentCity, employeeID) {
+      const currentCities = currentCity ? currentCity.split(',').map(city => city.trim()) : [];
+
       const modal = document.getElementById('updateCityModal');
       modal.setAttribute('data-user-id', employeeID);
       modal.setAttribute('data-city-name', currentCity);
@@ -282,9 +291,13 @@
           citySelect.appendChild(option);
         });
 
-        // Set the current city as the selected option
-        if (currentCity) {
-          citySelect.value = currentCity;
+        // Set the current cities as selected options
+        if (currentCities && currentCities.length > 0) {
+          Array.from(citySelect.options).forEach(option => {
+            if (currentCities.includes(option.value)) {
+              option.selected = true;
+            }
+          });
         }
 
         // Show the modal
@@ -344,7 +357,12 @@
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.emailAddress || 'N/A') + '</td>';
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.role || 'N/A') + '</td>';
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.cityName || 'N/A') + '</td>';
-              table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><a href="<?=url?>?temp=user_profile" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</a><button onclick="openUpdateCityModal(\'' + employee.cityName + '\',\'' + employee.userId + '\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Modify Assigned City</button></div></div></td>';
+              table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><a href="<?=url?>?temp=user_profile" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</a>';
+
+              if(employee.role == "User"){
+                table += '<button onclick="openUpdateCityModal(\'' + employee.cityName + '\',\'' + employee.userId + '\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Modify Assigned City</button>';
+              }
+              table += '</div></div></td>';
           }
 
           table += '</tbody></table>';
@@ -503,29 +521,36 @@
     document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('updateCityForm');
     form.addEventListener('submit', function (event) {
-      event.preventDefault(); // Prevent form from submitting the default way
+        event.preventDefault(); // Prevent form from submitting the default way
 
-      // Get values from the form
-      const modal = document.getElementById('updateCityModal');
-      const userId = modal.getAttribute('data-user-id');
-      const newCityName = document.getElementById('city').value;
-      const oldCityName = modal.getAttribute('data-city-name');
+        // Get values from the form
+        const modal = document.getElementById('updateCityModal');
+        const userId = modal.getAttribute('data-user-id');
+        const selectedCities = Array.from(document.getElementById('city').selectedOptions).map(option => option.value);
+        const oldCityName = modal.getAttribute('data-city-name');
 
-      google.script.run.withSuccessHandler(function(response) {
-        console.log(response.success);
-        if (response.success) {
-          document.getElementById('successMessage').classList.remove('hidden');
-          setTimeout(() => {
-            document.getElementById('successMessage').classList.add('hidden');
-            toggleModal('updateCityModal'); // Close the modal after 3 seconds
-            renderTable();
-          }, 5000); // Adjust timeout as needed
-        } else {
-          alert(response.message);
-        }
-      }).updateEmployeeCity(userId, oldCityName, newCityName);
+        google.script.run.withSuccessHandler(function(response) {
+            console.log(response.success);
+            if (response.success) {
+                document.getElementById('successMessage').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('successMessage').classList.add('hidden');
+                    toggleModal('updateCityModal'); // Close the modal after 3 seconds
+                    fetchData();
+                }, 5000); // Adjust timeout as needed
+            } else {
+                alert(response.message);
+            }
+        }).updateEmployeeCity(userId, oldCityName, selectedCities);
     });
-  });
+});
+function fetchData() {
+      google.script.run.withSuccessHandler(function(response) {
+        data = response;
+        filteredData = data;
+        renderTable();
+      }).getFullEmployeeData();
+    }
   </script>
 
 </body>
