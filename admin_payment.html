@@ -54,7 +54,7 @@
   <? var url = getUrl(); ?>
   <div id="loadingIndicator" class="flex items-center justify-center h-screen">
     <div class="text-center">
-      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+      <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
                 alt="Logo" class="  h-[60px] object-contain mx-auto">
       <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
     </div>
@@ -64,7 +64,7 @@
       style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
       <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
         <a href="<?=url?>?temp=admin_dashboard"><img
-          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
           alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
                     <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
@@ -189,7 +189,7 @@
             <label for="receipt-document" class="block text-sm font-medium">Receipt Document</label>
             <div id="receipt-input-container">
               <input type="file" id="receipt-document"
-               class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500"
+               class="mt-1 mb-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500"
                onchange="previewFile()">
             </div>
             <div id="receipt-link-container" class="hidden">
@@ -199,18 +199,19 @@
             </div>
             <div id="file-preview" class="mt-4"></div>
           </div>
-          <div id="file-preview" class="mt-4"></div>
           <div>
             <label for="paid" class="block text-sm font-medium">Paid Amount</label>
             <input type="input" id="paid-amount"
-                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500">
+                            class="mt-1 block w-full rounded-md border border-gray-600 bg-transparent text-white p-2 focus:ring-blue-500 focus:border-blue-500" required>
+          </div>
+          <div id="responseMessage">
           </div>
           <div class="flex space-x-4">
             <button type="button" onclick="toggleModal('invoiceModal')"
                             class="w-full bg-transparent border border-gray-600 hover:bg-gray-600 text-white py-2 px-4 rounded">Close</button>
-            <button type="button" id="remain-open"
+            <button type="button" id="remain-open" onclick="remainOpen()"
                             class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Remain Open</button>
-            <button type="button" id="mark-close"
+            <button type="button" id="mark-close" onclick="markClose()"
                             class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Mark As Close</button>
           </div>
         </form>
@@ -296,81 +297,109 @@
 
         let currentInvoiceData = null;
 
-        function openInvoiceModal(index){
+        function openInvoiceModal(index) {
           currentInvoiceData = filteredData[index];
-          const openbutton = document.getElementById('remain-open');
-          const completebutton = document.getElementById('mark-close');
-          openbutton.classList.remove('hidden');
-          completebutton.classList.remove('hidden');
+          const openButton = document.getElementById('remain-open');
+          const completeButton = document.getElementById('mark-close');
+          openButton.classList.remove('hidden');
+          completeButton.classList.remove('hidden');
+          document.getElementById('responseMessage').classList.add('hidden');
+
           if (!currentInvoiceData) return;
+
           document.getElementById('invoice-id').value = currentInvoiceData.invoiceId || '';
           document.getElementById('invoiceStatus').innerText = 'Status: ' + (currentInvoiceData.status || 'Pending');
           document.getElementById('payment-amount').value = currentInvoiceData.paymentAmount || '';
           setInvoiceURL(currentInvoiceData.invoiceUrl);
-          setReceiptURL(currentInvoiceData.customerReceiptUrl);
+          setReceiptURL(currentInvoiceData.customerReceiptUrls, currentInvoiceData.status); // Pass the status as well
 
-          if(currentInvoiceData.status == 'Close'){
-            document.getElementById('paid-amount').value = currentInvoiceData.paidAmount || '';
-            completebutton.classList.add('hidden');
+          if (currentInvoiceData.status === 'Close') {
+              document.getElementById('paid-amount').value = currentInvoiceData.paidAmount || '';
+              completeButton.classList.add('hidden');
           }
 
           toggleModal('invoiceModal');
-        }
+      }
 
-        // Set the invoice URL
-        function setInvoiceURL(url) {
-            const invoiceLink = document.getElementById('invoice-link');
-            if (url) {
-                invoiceLink.href = url;
-                invoiceLink.textContent = 'Click here to view the invoice document';
-                invoiceLink.onclick = () => window.open(url, '_blank');
-            }
-        }
+      // Set the invoice URL
+      function setInvoiceURL(url) {
+          const invoiceLink = document.getElementById('invoice-link');
+          if (url) {
+              invoiceLink.href = url;
+              invoiceLink.textContent = 'Click here to view the invoice document';
+              invoiceLink.onclick = () => window.open(url, '_blank');
+          }
+      }
 
-        function setReceiptURL(receiptUrl) {
-            const receiptInputContainer = document.getElementById('receipt-input-container');
-            const receiptLinkContainer = document.getElementById('receipt-link-container');
-            const receiptLink = document.getElementById('receipt-link');
+      function setReceiptURL(receiptUrls, status) {
+        const receiptInputContainer = document.getElementById('receipt-input-container');
+        const receiptLinkContainer = document.getElementById('receipt-link-container');
+        
+        // Clear the container for receipt links
+        receiptLinkContainer.innerHTML = '';
 
-            if (receiptUrl) {
-                receiptLink.href = receiptUrl;
-                receiptLink.textContent = 'Click here to view the receipt document';
-                receiptLink.onclick = () => window.open(receiptUrl, '_blank');
+        if (receiptUrls && receiptUrls.length > 0) {
+            receiptUrls.forEach((url, index) => {
+                const link = document.createElement('a');
+                link.href = url;
+                link.textContent = `Click here to view receipt document ${index + 1}`;
+                link.target = '_blank';
+                link.className = 'block w-full rounded-md border border-gray-600 p-2 mt-1 bg-transparent text-blue-400 hover:underline';
+                receiptLinkContainer.appendChild(link);
+            });
+
+            if (status === 'Close') {
+                // If status is Close, only show the receipt links
                 receiptInputContainer.classList.add('hidden');
                 receiptLinkContainer.classList.remove('hidden');
             } else {
+                // If status is Open or Overdue, show both receipt links and file input
                 receiptInputContainer.classList.remove('hidden');
-                receiptLinkContainer.classList.add('hidden');
+                receiptLinkContainer.classList.remove('hidden');
             }
+        } else {
+            // If no receipt URLs, show only the file input
+            receiptInputContainer.classList.remove('hidden');
+            receiptLinkContainer.classList.add('hidden');
         }
+    }
+
+      function previewFile() {
+          const fileInput = document.getElementById('receipt-document');
+          const filePreview = document.getElementById('file-preview');
+
+          if (fileInput.files && fileInput.files[0]) {
+              const file = fileInput.files[0];
+              const fileUrl = URL.createObjectURL(file);
+
+              filePreview.innerHTML = `
+                  <a href="${fileUrl}" target="_blank" class="text-blue-400 hover:underline">${file.name}</a>
+              `;
+          } else {
+              filePreview.innerHTML = '';
+          }
+      }
 
 
-        function previewFile() {
-            const fileInput = document.getElementById('receipt-document');
-            const filePreview = document.getElementById('file-preview');
-
-            if (fileInput.files && fileInput.files[0]) {
-                const file = fileInput.files[0];
-                const fileUrl = URL.createObjectURL(file);
-
-                filePreview.innerHTML = `
-                    <a href="${fileUrl}" target="_blank" class="text-blue-400 hover:underline">${file.name}</a>
-                `;
-            } else {
-                filePreview.innerHTML = '';
-            }
-        }
-
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal.classList.contains('opacity-0')) {
-                modal.classList.remove('opacity-0', 'pointer-events-none');
-                modal.classList.add('opacity-100');
-            } else {
-                modal.classList.add('opacity-0', 'pointer-events-none');
-                modal.classList.remove('opacity-100');
-            }
-        }
+      function toggleModal(modalId) {
+          const modal = document.getElementById(modalId);
+          const fileInput = document.getElementById('receipt-document');
+          const filePreview = document.getElementById('file-preview');
+          
+          if (modal.classList.contains('opacity-0')) {
+              // Show the modal
+              modal.classList.remove('opacity-0', 'pointer-events-none');
+              modal.classList.add('opacity-100');
+          } else {
+              // Hide the modal
+              modal.classList.add('opacity-0', 'pointer-events-none');
+              modal.classList.remove('opacity-100');
+              
+              // Clear the file input and preview
+              fileInput.value = ''; // Clear the file input
+              filePreview.innerHTML = ''; // Clear the file preview
+          }
+      }
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -576,6 +605,127 @@
                 menu.classList.add('hidden');
             });
         };
+  </script>
+  <script>
+    function remainOpen() {
+      const fileInput = document.getElementById('receipt-document');
+      const totalPaid = document.getElementById('paid-amount').value;
+
+      if (totalPaid >= currentInvoiceData.paymentAmount && currentInvoiceData.status != "Close") {
+        document.getElementById('responseMessage').classList.remove('hidden');
+        document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The paid amount needs to be lower than the payment amount</p>';
+        return; // Exit function early if validation fails
+      }
+      
+      if(currentInvoiceData.status != "Close"){
+        if (fileInput.files && fileInput.files.length > 0) {
+          const uploadedFile = fileInput.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function(event) {
+            const fileContent = event.target.result.split(',')[1]; // Extract Base64 content
+            const mimeType = uploadedFile.type;
+
+            google.script.run
+              .withSuccessHandler(function(response) {
+                if (response.success) {
+                  document.getElementById('responseMessage').classList.remove('hidden');
+                  document.getElementById('responseMessage').innerHTML = '<p class="text-lime-500 font-bold " style="font-family: ABeeZee;">Successfully updated the paid amount and receipt</p>';
+                  setTimeout(() => {
+                    fetchData();
+                  }, 5000);
+                } else {
+                  document.getElementById('responseMessage').classList.remove('hidden');
+                  document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">' + response.error + '</p>';
+                }
+              })
+              .remainInvoiceOpen(
+                currentInvoiceData.invoiceId,
+                currentInvoiceData.status,
+                parseFloat(totalPaid),
+                { name: uploadedFile.name, content: fileContent, mimeType: mimeType } // Pass name, content, and MIME type
+              );
+          };
+
+          reader.readAsDataURL(uploadedFile); // Convert file to Base64
+        } else {
+          document.getElementById('responseMessage').classList.remove('hidden');
+          document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The customer receipt needs to be uploaded</p>';
+        }
+      }
+      
+      if(currentInvoiceData.status == "Close"){
+        google.script.run
+            .withSuccessHandler(function(response) {
+              if (response.success) {
+                document.getElementById('responseMessage').classList.remove('hidden');
+                document.getElementById('responseMessage').innerHTML = '<p class="text-lime-500 font-bold " style="font-family: ABeeZee;">Successfully open the close invoice</p>';
+                setTimeout(() => {
+                  fetchData();
+                }, 5000);
+              } else {
+                document.getElementById('responseMessage').classList.remove('hidden');
+                document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">' + response.error + '</p>';
+              }
+            })
+            .changeInvoiceStatus(
+              currentInvoiceData.invoiceId,
+              currentInvoiceData.status,
+            );
+        }
+      }
+
+
+    function markClose(){
+      const fileInput = document.getElementById('receipt-document');
+      const totalPaid = document.getElementById('paid-amount').value;
+
+      if (totalPaid != currentInvoiceData.paymentAmount) {
+        document.getElementById('responseMessage').classList.remove('hidden');
+        document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The paid amount needs to be same as the payment amount</p>';
+        return; // Exit function early if validation fails
+      }
+
+      if (fileInput.files && fileInput.files.length > 0) {
+          const uploadedFile = fileInput.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function(event) {
+            const fileContent = event.target.result.split(',')[1]; // Extract Base64 content
+            const mimeType = uploadedFile.type;
+
+            google.script.run
+              .withSuccessHandler(function(response) {
+                if (response.success) {
+                  document.getElementById('responseMessage').classList.remove('hidden');
+                  document.getElementById('responseMessage').innerHTML = '<p class="text-lime-500 font-bold " style="font-family: ABeeZee;">Successfully mark close the invoice</p>';
+                  setTimeout(() => {
+                    fetchData();
+                  }, 5000);
+                } else {
+                  document.getElementById('responseMessage').classList.remove('hidden');
+                  document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">' + response.error + '</p>';
+                }
+              })
+              .markInvoiceClose(
+                currentInvoiceData.invoiceId,
+                parseFloat(totalPaid),
+                { name: uploadedFile.name, content: fileContent, mimeType: mimeType } // Pass name, content, and MIME type
+              );
+          };
+          reader.readAsDataURL(uploadedFile); // Convert file to Base64
+        } else {
+          document.getElementById('responseMessage').classList.remove('hidden');
+          document.getElementById('responseMessage').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The customer receipt needs to be uploaded</p>';
+        }
+    }
+    function fetchData() {
+      google.script.run.withSuccessHandler(function(response) {
+        data = response;
+        filteredData = data;
+        renderTable();
+      }).getCustomerInvoice();
+    }
   </script>
 </body>
 

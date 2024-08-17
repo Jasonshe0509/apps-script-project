@@ -71,10 +71,13 @@ function doPost(e) {
     return handleAddService(e);
   } else if (action == 'booking_details') {
     return handleStaffBookingDetails(e);
+  } else if (action == 'remain_open') {
+    return handleRemainInvoiceOpen(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 }
+
 
 function handleStaffDashboard() {
   var template = HtmlService.createTemplateFromFile('staff_dashboard');
@@ -93,7 +96,7 @@ function handleAdminDashboard() {
   var userId = userDetails.userID;
 
   var html = HtmlService.createTemplateFromFile('admin_dashboard');
-  html.userID =userId;
+  html.userID = userId;
   html.totalSales = getTotalSales();
   html.totalUnpaidAmount = getUnpaidAmounts();
   html.totalPaidAmounts = getPaidAmounts();

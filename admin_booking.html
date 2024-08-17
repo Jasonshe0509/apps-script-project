@@ -703,7 +703,7 @@
             document.getElementById('cancel_button').classList.remove('hidden');
             document.getElementById('reject_button').classList.remove('hidden');
             document.getElementById('approve_button').classList.remove('hidden');
-            document.getElementById('responseMessage').classList.add('hidden')
+            document.getElementById('responseMessage').classList.add('hidden');
             document.getElementById('bookingStatus').innerText = 'Status: ' + (currentBookingData.status || 'Pending');
             if (currentBookingData.scheduleDate) {
                 let dateParts = currentBookingData.scheduleDate.split('/');
