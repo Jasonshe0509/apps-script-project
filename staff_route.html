@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+</head>
+
+<body class="parent">
+  <? var url = getUrl(); ?>
+  <div class="sticky top-0 z-50">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <a href="<?=url?>?temp=staff_dashboard"><img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
+        <div class="flex items-center gap-0 sm:gap-6">
+          <svg class="text-white w-10 h-10 cursor-pointer mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <button id="profileButton"
+                        class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+                        <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
+                            alt="Profile" class="h-12 w-12 rounded-full">
+                    </button>
+          <div id="profileMenu" class="dropdown-menu mt-56">
+            <a href="<?=url?>?temp=staff_route">Routing</a>
+            <a href="<?=url?>?temp=user_profile">User Profile</a>
+            <a href="<?=url?>?temp=user_change_password">Change Password</a>
+            <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+              <input type="hidden" name="action" value="logout">
+              <button type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Routing</h1>
+    </div>
+  </div>
+  <div class="lg:flex lg:gap-8 m-4 md:m-12">
+    <div class="-mb-5 md:mb-0 justify-center align-center w-full">
+      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha6thEEdIKBnw9q43IE9klFwQJtLhjV5Gkl-iJE3n60RfIXjWJ0hbKP0fFJs0dliE2lEtFBmDSocEjpt9chILq5RnAsbF1EUTw=s2560"
+                alt="routing map" class="block mx-auto object-cover">
+    </div>
+    <div class="bg-[#2a282a] pt-10 p-5 md:p-5 text-neutral-100 w-full rounded-b-xl md:rounded-xl">
+      <div class="justify-center align-center m-5 bg-[#2a282a] rounded-xl border border-lime-500 text-neutral-100">
+        <div class="container w-full px-4 py-6 md:py-8 xl:py-12 mx-auto">
+          <div class="grid gap-4 mx-4">
+            <div class="relative col-span-12 px-4 space-y-6 sm:col-span-9">
+              <div
+                class="col-span-12 space-y-6 relative px-4 sm:col-span-8 sm:space-y-8 sm:before:absolute sm:before:top-2 sm:before:bottom-0 sm:before:w-0.5 sm:before:-left-1 before:bg-gray-300">
+                <? for (var i = 0; i < bookingDetails.length; i++) { ?>
+                <div class="relative sm:flex sm:flex-col">
+                  <div
+                    class="w-8 h-8 flex items-center justify-center bg-orange-700 text-white rounded-full font-bold absolute z-10 left-[-35px] top-1 sm:top-2">
+                    <?= (i + 1).toString().padStart(2, '0'); ?></div>
+                  <div class="ml-4 md:ml-2 mt-2">
+                    <h3 class="text-xl font-semibold tracking-wide"><?= bookingDetails[i].id ?></h3>
+                    <time class="text-xs tracking-wide uppercase"><?= bookingDetails[i].time ?></time>
+                    <p class="mt-1"><?= bookingDetails[i].customerName ?></p>
+                    <p class="mt-1"><?= bookingDetails[i].customerMobile ?>t</p>
+                    <p class="mt-1"><?= bookingDetails[i].address ?></p>
+                  </div>
+                </div>
+                <? } ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+            loadData();
+        });
+
+        function loadData() {
+            // Simulate data fetching
+            setTimeout(() => {
+                renderTable();
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('mainContent').style.display = 'block';
+            }, 5000); // Adjust the delay to your actual data fetching time
+        }
+
+        var currentPage = 1;
+        var itemsPerPage = 10;
+        var data = [];
+        var filteredData = [];
+
+        google.script.run.withSuccessHandler(function (response) {
+            data = response;
+            filteredData = data; // Initialize filtered data
+            loadData();
+        }).getBookings();
+
+        function renderTable() {
+            var startIndex = (currentPage - 1) * itemsPerPage;
+            var endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+            var table = '<table class="min-w-full max-w-full rounded-lg text-neutral-100 text-left" style="font-family: ABeeZee;">';
+            table += '<thead class="text-nowrap"><tr class="border-b-2 border-gray-600"><th class="p-2 md:p-4">Booking ID</th><th class="p-2 md:p-4">Status</th><th class="p-2 md:p-4">Customer Name</th><th class="p-2 md:p-4">Type of Service</th><th class="p-2 md:p-4">Schedule Date Time</th><th class="p-2 md:p-4">Actions</th></tr></thead>';
+            table += '<tbody>';
+
+            for (var i = startIndex; i < endIndex; i++) {
+                var id = filteredData[i].bookingId;
+                table += '<tr class="hover:bg-gray-700">';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + id + '</td>';
+                switch (filteredData[i].status) {
+                    case "Pending":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span></td>';
+                        break;
+                    case "En Route":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFA16D] text-black text-[10px] md:text-xs">En Route</span></td>';
+                        break;
+                    case "Scheduled":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFAF52] text-black text-[10px] md:text-xs">Scheduled</span></td>';
+                        break;
+                    case "Canceled":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs">Canceled</span></td>';
+                        break;
+                    case "Completed":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs">Completed</span></td>';
+                        break;
+                    case "On Going":
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#DDB478] text-black text-[10px] md:text-xs">On Going</span></td>';
+                        break;
+                    default:
+                        table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-gray-200 text-black text-[10px] md:text-xs"></span></td>';
+                        break;
+                };
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].customerName + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].typeOfService + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + filteredData[i].scheduleDate + '\n' + filteredData[i].scheduleTime + '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round"d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><button onclick="toggleModal(\'updateStatusModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Status</button><button onclick="toggleModal(\'updateEvidenceModal\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Update Evidence</button><a href="<?=url?>?temp=staff_view_booking_details" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Booking Details</a></div></div></td>';
+                table += '</tr>';
+            }
+
+            table += '</tbody></table>';
+
+            document.getElementById('booking-table').innerHTML = table;
+            updatePaginationControls();
+        }
+
+  </script>
+  <script>
+    // Toggle the dropdown menu - profile
+        document.getElementById('profileButton').addEventListener('click', function () {
+            var menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+                var dropdowns = document.getElementsByClassName('dropdown-menu');
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        }
+  </script>
+</body>
+
+</html>

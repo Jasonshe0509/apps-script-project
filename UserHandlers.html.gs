@@ -34,6 +34,11 @@ function handleLogin(e) {
 
               var html = HtmlService.createTemplateFromFile(redirectPage);
               html.userID = userData[i][1];
+              html.totalSales = getTotalSales();
+              html.totalUnpaidAmount = getUnpaidAmounts();
+              html.totalPaidAmounts = getPaidAmounts();
+              html.totalActiveBookings = getActiveBookings();
+              html.bookings = getRecentBookings();
               return html.evaluate()
                 .setTitle('EzBook')
                 .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -133,3 +138,180 @@ function changePassword(e) {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+
+function getFullEmployeeData() {
+  const ss = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const employeeSheet = ss.getSheetByName('User');
+  const employeeZoneSheet = ss.getSheetByName('Employee_Zone');
+  const zoneSheet = ss.getSheetByName('Zone');
+
+  // Get customer data
+  const employeeRange = employeeSheet.getRange('B5:R'); // Adjust to include all relevant columns
+  const employees = employeeRange.getValues();
+
+  // Get Employee Zone data
+  const employeeZoneRange = employeeZoneSheet.getRange('B5:C');
+  const employeeZones = employeeZoneRange.getValues();
+
+  // Get Zone data
+  const zoneRange = zoneSheet.getRange('B5:C');
+  const zones = zoneRange.getValues();
+
+  // Create a map for city IDs to city names
+  const zoneMap = new Map(zones.map(([cityId, cityName]) => [cityId, cityName]));
+
+  // Create a map for user IDs to arrays of city IDs
+  const employeeZoneMap = new Map();
+  employeeZones.forEach(([userId, cityId]) => {
+    if (!employeeZoneMap.has(userId)) {
+      employeeZoneMap.set(userId, []);
+    }
+    employeeZoneMap.get(userId).push(cityId);
+  });
+
+  const updatedEmployees = employees
+    .filter(row => row.some(cell => cell !== '' && cell !== null && cell !== undefined))
+    .map(row => {
+      const userId = row[0]; // Assuming user_id is in the first column
+      const dob = row[7];
+      const cityIds = employeeZoneMap.get(userId) || [];
+      const cityNames = cityIds.map(cityId => zoneMap.get(cityId)).join(', ') || '-';
+      const formattedDob = dob instanceof Date
+        ? Utilities.formatDate(dob, Session.getScriptTimeZone(), 'dd/MM/yyyy')
+        : dob;
+
+      // Return the updated employee data excluding the date of birth
+      return {
+        userId: row[0],
+        username: row[1],
+        password: row[2],
+        fullName: row[3],
+        mobileNumber: row[4],
+        emailAddress: row[5],
+        nric: row[6],
+        dob: formattedDob,
+        gender: row[8],
+        race: row[9],
+        address1: row[10],
+        address2: row[11],
+        postCode: row[12],
+        employeeCity: row[13],
+        state: row[14],
+        country: row[15],
+        role: row[16],
+        cityName: cityNames
+      };
+    });
+
+  return updatedEmployees;
+}
+
+function getCitiesWithEmployees() {
+  const ss = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const citySheet = ss.getSheetByName('Zone');
+
+  const cityRange = citySheet.getRange('B5:D'); // Adjust if headers are in different rows or columns
+  const cities = cityRange.getValues();
+
+  const filteredCities = cities.filter(city => city[2] > 0); // Assuming the count of employees is in the third column
+
+  return filteredCities;
+}
+
+function getCities() {
+  const ss = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const citySheet = ss.getSheetByName('Zone');
+  const cityRange = citySheet.getRange('B5:C'); // Adjust range if necessary
+  const cities = cityRange.getValues();
+
+  // Filter out rows where the city name (assumed to be in the second column) is empty or null
+  const filteredCities = cities.filter(row => row[1] && row[1].trim() !== '');
+
+  return filteredCities;
+}
+
+function updateEmployeeCity(userId, oldCityName, newCityNames) {
+  const sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const employeeZoneSheet = sheet.getSheetByName('Employee_Zone');
+  const zoneSheet = sheet.getSheetByName('Zone');
+
+  // Get the Employee Zone data
+  const employeeZoneRange = employeeZoneSheet.getRange('B5:D');
+  const employeeZoneData = employeeZoneRange.getValues();
+
+  // Get the Zone data
+  const cityRange = zoneSheet.getRange('B5:D');
+  const cityData = cityRange.getValues();
+
+  let currentDateTime = getCurrentDateTime();
+
+  // Variables to store city IDs corresponding to city names
+  let oldCityId = null;
+  let newCityIds = []; // Array to store multiple new city IDs
+
+  // Lookup old city ID based on the old city name
+  for (let i = 0; i < cityData.length; i++) {
+    if (cityData[i][1] == oldCityName) {
+      oldCityId = cityData[i][0];
+      break;
+    }
+  }
+
+  // Lookup new city IDs based on the array of new city names
+  for (let i = 0; i < newCityNames.length; i++) {
+    for (let j = 0; j < cityData.length; j++) {
+      if (cityData[j][1] == newCityNames[i]) {
+        newCityIds.push(cityData[j][0]);
+        break;
+      }
+    }
+  }
+
+  if (oldCityId === null || newCityIds.length === 0) {
+    throw new Error("Invalid city names provided.");
+  }
+
+  let updatedEmployeeZoneData = [];
+
+  for (let i = 0; i < employeeZoneData.length; i++) {
+    if (employeeZoneData[i][0] != userId && employeeZoneData[i][1] != oldCityId) {
+      updatedEmployeeZoneData.push(employeeZoneData[i]);
+    }
+  }
+
+  // Add new city data for the user with currentDateTime
+  newCityIds.forEach(cityId => {
+    updatedEmployeeZoneData.push([userId, cityId, currentDateTime]);
+  });
+
+  // Update the sheet with the new data (including 3 columns: userId, cityId, currentDateTime)
+  employeeZoneSheet.getRange(5, 2, updatedEmployeeZoneData.length, 3).setValues(updatedEmployeeZoneData);
+
+
+  // Update Zone data (increment new city counts and decrement old city count)
+  let oldCityRow = -1;
+  let newCityRows = [];
+
+  for (let i = 0; i < cityData.length; i++) {
+    if (cityData[i][0] === oldCityId) {
+      oldCityRow = i;
+    }
+    if (newCityIds.includes(cityData[i][0])) {
+      newCityRows.push(i);
+    }
+  }
+
+  if (oldCityRow !== -1) {
+    cityData[oldCityRow][2] -= 1; // Decrement old city count
+  }
+
+  for (let i = 0; i < newCityRows.length; i++) {
+    cityData[newCityRows[i]][2] += 1; // Increment new city counts
+  }
+
+  cityRange.setValues(cityData);
+  return { success: true };
+}
+
+
+

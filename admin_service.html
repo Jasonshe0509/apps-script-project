@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+  <style>
+    .modal {
+      transition: opacity 0.25s ease;
+      z-index: 9999;
+      /* Ensure modal has highest z-index */
+    }
+
+    body.modal-active {
+      overflow-x: hidden;
+      overflow-y: visible !important;
+    }
+  </style>
+  <style>
+    .animate-pulse-3 {
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+  </style>
+</head>
+
+<body class="parent">
+  <? var url = getUrl(); ?>
+  <div id="loadingIndicator" class="flex items-center justify-center h-screen">
+    <div class="text-center">
+      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1" alt="Logo" class="  h-[60px] object-contain mx-auto">
+      <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
+    </div>
+  </div>
+  <div id="mainContent" style="display: none;">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50 border-b-[1px] "
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <a href="<?=url?>?temp=admin_dashboard"><img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
+        <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+        <img
+          src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
+          alt="Profile" class="h-12 w-12 rounded-full">
+      </button>
+        <div id="profileMenu" class="dropdown-menu">
+          <a href="<?=url?>?temp=user_profile">User Profile</a>
+          <a href="<?=url?>?temp=user_change_password">Change Password</a>
+          <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+            <input type="hidden" name="action" value="logout">
+            <button type="submit">Logout</button>
+          </form>
+        </div>
+      </div>
+      <ul id="navItems"
+        class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+        <li><a href="<?=url?>?temp=admin_employee" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
+        <li><a href="<?=url?>?temp=admin_customer" class="text-white hover:text-lime-500">Customer</a></li>
+        <li><a href="<?=url?>?temp=admin_booking" class="text-white hover:text-lime-500">Booking</a></li>
+        <li><a href="<?=url?>?temp=admin_payment" class="text-white hover:text-lime-500">Invoice</a></li>
+        <li><a href="<?=url?>?temp=admin_service" class="text-white hover:text-lime-500">Service</a></li>
+      </ul>
+    </nav>
+    <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Service</h1>
+    </div>
+    <div class="flex justify-between items-center mx-auto pt-5 md:p-5">
+      <div class="relative w-2/3 ml-6 md:w-1/3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-white w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+        <input type="text" id="searchInput"
+        class="w-full pl-10 pr-4 py-2 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+        style="background-color: #323232;font-family: ABeeZee;" placeholder="Search..." oninput="onSearchInputChange()">
+      </div>
+      <button id="addServiceButton" class=" text-white px-4  rounded-lg flex items-center" onclick="openModal('addServiceModal', 'add', '')">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-12 h-12">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+    </button>
+    </div>
+    <div class="mx-auto py-8 p-4 md:p-10 ">
+      <div id="service-table" class="overflow-x-auto">
+        <!-- Data table will be inserted here -->
+      </div>
+      <div class="flex justify-between items-center mt-10">
+        <div>
+          <label for="goToPage" class="mr-2 text-white">Go to</label>
+          <input type="number" id="goToPage" name="goToPage"
+          class="w-16 px-2 py-1 mr-2 rounded-lg bg-[#323232] text-white border border-neutral-100" min="1"
+          oninput="onPageInputChange()">
+          <label class="text-white">page</label>
+        </div>
+        <div class="flex space-x-2" id="pagination-controls">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div id="addServiceModal"
+    class="modal fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none">
+    <div class="modal-overlay absolute w-full h-full"
+      style="background-color:rgba(42, 40, 40, 0.2); backdrop-filter: blur(10px);"></div>
+
+    <div class="modal-container bg-[#1D1C1D] text-[#C1FF03] p-6 rounded-lg shadow-lg max-w-lg w-full z-50"
+      style="font-family: Abeezee;">
+      <div class="modal-content">
+        <form id="addServiceForm" class="space-y-4" method="post" action="<?= url ?>">
+          <input class="hidden" name="action" value="add_service">
+          <div>
+            <label for="name" class="block text-sm font-medium">Service Name</label>
+            <input type="text" id="serviceName" name="serviceName"
+              class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400" required>
+          </div>
+          <div>
+            <label for="description" class="block text-sm font-medium">Description</label>
+            <textarea id="serviceDescription" name="serviceDescription"
+              class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400" required></textarea>
+          </div>
+          <div>
+            <label for="employee" class="block text-sm font-medium">Number of Employees</label>
+            <input type="number" id="numberOfEmployee" min="0" name="numberOfEmployee"
+              class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400" required>
+          </div>
+          <div>
+            <label for="time" class="block text-sm font-medium">Estimated Time</label>
+            <input type="number" id="estimatedTime" min="0" name="estimatedTime"
+              class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400" required>
+          </div>
+          <div id="successMessage" class="hidden mb-4 text-green-500">Service added successfully!</div>
+          <div class="flex justify-between space-x-2">
+            <button type="button"
+              class="w-1/3 bg-transparent border-gray-600 border hover:bg-gray-600 text-white py-2 px-4 rounded"
+              onclick="toggleModal('addServiceModal')">Close</button>
+            <button type="button" id="deleteButton" class="w-1/3 bg-[#D35833] text-black hover:bg-red-400 py-2 px-4 rounded">Delete</button>
+            <button type="submit"
+              class="w-1/3 bg-[#C1FF03] hover:bg-lime-600 text-black py-2 px-4 rounded">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Toggle the dropdown menu
+    document.getElementById('profileButton').addEventListener('click', function () {
+      var menu = document.getElementById('profileMenu');
+      menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+    });
+
+    // Close the dropdown menu when clicking outside of it
+    window.onclick = function (event) {
+      if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+        var dropdowns = document.getElementsByClassName('dropdown-menu');
+        for (var i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.style.display === 'block') {
+            openDropdown.style.display = 'none';
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    function openModal(modalId, action, serviceId = null) {
+      const modal = document.getElementById(modalId);
+      const deleteButton = modal.querySelector('#deleteButton');
+      var messageDiv = document.getElementById('successMessage');
+      messageDiv.classList.add('hidden');
+
+      if (action === 'add') {
+        deleteButton.style.display = 'none';
+        document.getElementById('addServiceForm').reset(); // Clear form for new entry
+      } else {
+        deleteButton.style.display = 'block';
+        // Fetch and display data based on ID
+        fetchDataAndDisplay(serviceId);
+        deleteButton.setAttribute('onclick', `deleteService('${serviceId}')`);
+      }
+
+      // Store the serviceId for use when updating or deleting
+      modal.setAttribute('data-service-id', serviceId);
+
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100', 'pointer-events-auto');
+    }
+
+    function fetchDataAndDisplay(id) {
+      var service = filteredData.find(item => item[0] == id);
+      if (service) {
+        document.getElementById('serviceName').value = service[1];
+        document.getElementById('serviceDescription').value = service[2];
+        document.getElementById('numberOfEmployee').value = service[3];
+        document.getElementById('estimatedTime').value = service[4];
+      }
+    }
+    function deleteService(id) {
+      if (confirm('Are you sure you want to delete this service?')) {
+        filteredData = filteredData.filter(item => item[0] !== id);
+        
+        // Optionally, make an API call or perform other actions to update the server
+        google.script.run.withSuccessHandler(function(response) {
+          if (response.success) {
+            // Close the modal and re-render the table
+            fetchData();
+            toggleModal('addServiceModal');
+          } else {
+            alert('Failed to delete the service. Please try again.');
+          }
+        }).handleDeleteService(id); // Assuming you have a corresponding server-side function
+      }
+    }
+
+  function toggleModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.toggle('opacity-0');
+    modal.classList.toggle('pointer-events-none');
+    modal.classList.toggle('opacity-100');
+    modal.classList.toggle('pointer-events-auto');
+  }
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData();
+      });
+
+      function loadData() {
+        // Simulate data fetching
+        setTimeout(() => {
+          renderTable();
+          document.getElementById('loadingIndicator').classList.add('hidden');
+          document.getElementById('mainContent').style.display = 'block';
+        }, 3000); // Adjust the delay to your actual data fetching time
+      }
+
+    var currentPage = 1;
+    var itemsPerPage = 10;
+    var data = [];
+    var filteredData = [];
+
+    google.script.run.withSuccessHandler(function (response) {
+      data = response;
+      filteredData = data; // Initialize filtered data
+      loadData();
+    }).getServiceTypeData();
+
+    function renderTable() {
+      var startIndex = (currentPage - 1) * itemsPerPage;
+      var endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
+      var table = '<table class="rounded-lg text-white mx-auto w-full" style="font-family: ABeeZee;">';
+      table += ' <thead><tr class="border-b border-neutral-100"><th class="py-2 px-4 text-left">Service Name</th><th class="py-2 px-4 text-left">Service Description</th><th class="py-2 px-4 text-left">Num of employees</th><th class="py-2 px-4 text-left">Estimated time (minutes)</th><th class="py-2 px-4 text-left">Action</th></tr> </thead>';
+      table += '<tbody>';
+
+      for (var i = startIndex; i < endIndex; i++) {
+        var id = filteredData[i][0];
+        table += '<tr class="border-b border-neutral-100 hover:bg-gray-700">';
+        table += '<td class="px-4 py-2 hidden">' + id + '</td>';
+        table += '<td class="px-4 py-2">' + filteredData[i][1] + '</td>';
+        table += '<td class="px-4 py-2">' + filteredData[i][2] + '</td>';
+        table += '<td class="px-4 py-2">' + filteredData[i][3] + '</td>';
+        table += '<td class="px-4 py-2">' + filteredData[i][4] + '</td>';
+        table += '<td class="py-2 px-4 text-right"><button class="text-white hover:text-lime-500" onclick="openModal(\'addServiceModal\', \'edit\', \'' + id + '\')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button></td>';
+        table += '</tr>';
+      }
+
+      table += '</tbody></table>';
+
+      document.getElementById('service-table').innerHTML = table;
+      updatePaginationControls();
+    }
+
+    function updatePaginationControls() {
+      var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      var paginationControls = '<div class="flex flex-wrap items-center space-x-2 mt-2">';
+
+      // Previous button
+      paginationControls += '<button onclick="changePage(currentPage - 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === 1 ? 'opacity-50 cursor-not-allowed' : '') + '">‹</button>';
+
+      // Pagination buttons
+      if (totalPages <= 3) {
+        // Show all page numbers if there are 3 or fewer pages
+        for (var i = 1; i <= totalPages; i++) {
+          paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-[#2A282A]' : '') + '">' + i + '</button>';
+        }
+      } else {
+        // Show pagination with ellipsis
+        if (currentPage < 2) {
+          // Pages at the beginning
+          for (var i = 1; i <= 3; i++) {
+            paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+          }
+          paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+          paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+        } else if (currentPage > totalPages - 1) {
+          // Pages at the end
+          paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+          paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+          for (var i = totalPages - 2; i <= totalPages; i++) {
+            paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+          }
+        } else {
+          // Pages in the middle
+          paginationControls += '<button onclick="changePage(1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">1</button>';
+          paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+          for (var i = currentPage - 1; i <= currentPage + 1; i++) {
+            paginationControls += '<button onclick="changePage(' + i + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (i === currentPage ? 'bg-lime-500]' : '') + '">' + i + '</button>';
+          }
+          paginationControls += '<button class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg cursor-not-allowed">...</button>';
+          paginationControls += '<button onclick="changePage(' + totalPages + ')" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg">' + totalPages + '</button>';
+        }
+      }
+
+      // Next button
+      paginationControls += '<button onclick="changePage(currentPage + 1)" class="bg-[#323232] border border-gray-600 text-white px-3 py-1 rounded-lg ' + (currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : '') + '">›</button>';
+      paginationControls += '</div>';
+
+      document.getElementById('pagination-controls').innerHTML = paginationControls;
+    }
+
+
+
+
+    function changePage(pageNumber) {
+      var totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      if (pageNumber < 1 || pageNumber > totalPages) return;
+      currentPage = pageNumber;
+      updatePageInput();
+      renderTable();
+    }
+
+    function updatePageInput() {
+      document.getElementById('goToPage').value = currentPage;
+    }
+
+    function onPageInputChange() {
+      var pageNumber = parseInt(document.getElementById('goToPage').value);
+      if (!isNaN(pageNumber)) {
+        changePage(pageNumber);
+      }
+    }
+
+    function onSearchInputChange() {
+      var searchValue = document.getElementById('searchInput').value.toLowerCase();
+      filteredData = data.filter(function (row) {
+        var serviceName = row[1].toLowerCase();
+        var serviceDescription = row[2].toLowerCase();
+        return serviceName.includes(searchValue) || serviceDescription.includes(searchValue);
+      });
+      currentPage = 1; // Reset to first page
+      updatePageInput();
+      renderTable();
+    }
+  </script>
+  <script>
+    document.getElementById('addServiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const modal = document.getElementById('addServiceModal');
+    const serviceId = modal.getAttribute('data-service-id');
+    const action = serviceId ? 'edit' : 'add';
+
+    const serviceData = {
+      serviceName: document.getElementById('serviceName').value,
+      serviceDescription: document.getElementById('serviceDescription').value,
+      numberOfEmployee: document.getElementById('numberOfEmployee').value,
+      estimatedTime: document.getElementById('estimatedTime').value,
+    };
+    var messageDiv = document.getElementById('successMessage');
+
+    if (action == 'edit') {
+      google.script.run.withSuccessHandler(function(response) {
+        if (response.success) {
+          messageDiv.textContent = 'Service edited successfully!';
+          messageDiv.classList.remove('hidden');
+          fetchData(); // Refresh the table data
+        } else {
+          alert(response.message);
+        }
+      }).handleUpdateService(serviceId, serviceData);
+    } else {
+      var formData = new FormData(this);
+      formData.append('action', 'add_service');
+
+      fetch('<?= ScriptApp.getService().getUrl() ?>', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          messageDiv.textContent = 'Service added successfully!';
+          messageDiv.classList.remove('hidden');
+          fetchData(); // Refresh the table data
+        } else {
+          messageDiv.textContent = 'Failed to add service.';
+          messageDiv.classList.remove('hidden');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        var messageDiv = document.getElementById('successMessage');
+        messageDiv.textContent = 'An error occurred while adding the service.';
+        messageDiv.classList.remove('hidden');
+      });
+    }
+  });
+
+  function fetchData() {
+    google.script.run.withSuccessHandler(function(response) {
+      data = response;
+      filteredData = data;
+      renderTable();
+    }).getServiceTypeData();
+  }
+  </script>
+
+</body>
+
+</html>
