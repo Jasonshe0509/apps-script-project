@@ -34,6 +34,11 @@ function getCustomerBookings() {
   let feedbackRange = feedbackSheet.getRange('B5:F');
   let feedbackDate = feedbackRange.getValues();
 
+  //Get Service data
+  let serviceSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Service');
+  let serviceRange = serviceSheet.getRange('C5:F');
+  let serviceData = serviceRange.getValues();
+
   // Create a map for customer IDs to customer names
   const customerMap = new Map(customerData.map(row => [row[0], { mobile: row[1], email: row[2], name: row[3] }]));
 
@@ -42,7 +47,25 @@ function getCustomerBookings() {
 
   const zoneMap = new Map(zoneData.map(([cityId, cityName]) => [cityId, cityName]));
 
-  const evidenceMap = new Map(evidenceData.map(row => [row[1], { evidence_name: row[2], image_url: row[3], remark: row[4] }]));
+  const serviceMap = new Map(serviceData.map(row => [row[0], row[3]]))
+
+  // Create a map for booking IDs to their evidence details
+  const evidenceMap = new Map();
+
+  evidenceData.forEach(row => {
+    let bookingId = row[1];
+    let evidenceDetails = {
+      evidence_name: row[2],
+      image_url: row[3],
+      remark: row[4]
+    };
+
+    if (!evidenceMap.has(bookingId)) {
+      evidenceMap.set(bookingId, []);
+    }
+
+    evidenceMap.get(bookingId).push(evidenceDetails);
+  });
 
   const feedbackMap = new Map(feedbackDate.map(row => [row[1], { feedback_name: row[2], rate: row[3] }]));
 
@@ -73,6 +96,12 @@ function getCustomerBookings() {
       ? Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd/MM/yyyy')
       : date;
 
+    // Calculate the time difference in milliseconds
+    let timeDifferenceInMs = completedTime - reachTime;
+
+    // Convert the time difference from milliseconds to minutes
+    let timeDifferenceInMinutes = Math.floor(timeDifferenceInMs / 6000);
+
     // Format times to HH:MM
     let formattedStartTime = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     let formattedEndTime = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -88,9 +117,22 @@ function getCustomerBookings() {
     let employeeNamesString = employeeDetailsArray ? employeeDetailsArray.map(emp => emp.name).join(', ') : '-';
     let employeeNewDetailsArray = bookingEmployeeMap.get(bookingId);
 
-    let evidenceArray = evidenceMap.get(bookingId);
+    let evidenceArray = evidenceMap.get(bookingId) || [];
 
     let feedbackArray = feedbackMap.get(bookingId);
+
+    let estimatedServiceTime = serviceMap.get(typeOfService) || null;
+
+    let error = null;
+    if (formattedReachTime > formattedStartTime) {
+      error = "The booking start time has been delayed";
+    }
+
+    if (estimatedServiceTime) {
+      if(timeDifferenceInMinutes > estimatedServiceTime){
+        error = "The booking progress has been delayed";
+      }
+    }
 
     return {
       bookingId: bookingId,
@@ -114,12 +156,17 @@ function getCustomerBookings() {
       state: row[9],
       employeeDetailsArray: employeeNewDetailsArray,
       evidenceArray: evidenceArray,
-      feedbackArray: feedbackArray
+      feedbackArray: feedbackArray,
+      error: error
     };
   });
 
+  // Sort bookings in descending order by bookingId
+  bookings.sort((a, b) => b.bookingId.localeCompare(a.bookingId));
+
   return bookings;
 }
+
 
 function rejectBooking(bookingId, rejectReason) {
   // Open the spreadsheet and get the Booking sheet
@@ -213,8 +260,6 @@ function approveBooking(bookingId) {
 
   // Combine customer email and employee emails into one array
   let emailArray = [customerEmail, ...employeeEmails];
-
-  Logger.log(emailArray);
 
   // If the bookingId was found
   if (rowIndex !== -1) {

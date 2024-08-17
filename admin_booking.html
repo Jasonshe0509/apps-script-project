@@ -54,7 +54,7 @@
   <? var url = getUrl(); ?>
   <div id="loadingIndicator" class="flex items-center justify-center h-screen">
     <div class="text-center">
-      <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+      <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
                 alt="Logo" class="  h-[60px] object-contain mx-auto">
       <p class="mt-4 text-lg font-semibold text-white animate-pulse-3">Loading...</p>
     </div>
@@ -64,7 +64,7 @@
       style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
       <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
         <a href="<?=url?>?temp=admin_dashboard"><img
-          src="https://lh3.googleusercontent.com/drive-viewer/AKGpihbr1jUPEbB_FypVbwo5XnHDckfcb5iwTFCq7SgaTAEiQr5_Tf5qyVMtIKEnJjHEvTK2TstgNvLvBSjtypbJxUyRkXPPHFUJpA=s1600-rw-v1"
+          src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
           alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
                     <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
@@ -461,16 +461,16 @@
           <!-- Evidence Section -->
           <div class="border border-gray-600 rounded-md mb-4">
             <button type="button" onclick="toggleSection('evidence')"
-                            class="flex justify-between items-center w-full p-4 border-b border-gray-600">
-                            <span class="text-lg">Evidence</span>
-                            <span id="evidence-icon">▼</span>
-                        </button>
+                    class="flex justify-between items-center w-full p-4 border-b border-gray-600">
+                    <span class="text-lg">Evidence</span>
+                    <span id="evidence-icon">▼</span>
+                </button>
 
             <div id="evidence" class="space-y-4 px-4 pt-2 pb-4 hidden">
               <div class="relative w-full max-w-xs mx-auto" style="aspect-ratio: 4 / 3; overflow: hidden;">
                 <img id="evidence-photo"
-                                    class="absolute border border-gray-600 inset-0 w-full h-full object-cover rounded-md"
-                                    src="invalid-url.png" onerror="handleImageError()">
+                                class="absolute border border-gray-600 inset-0 w-full h-full object-cover rounded-md"
+                                src="invalid-url.png" onerror="handleImageError()">
                 <div id="no-image"
                   class="absolute inset-0 flex items-center justify-center border border-gray-600 text-white text-sm hidden">
                   No image uploaded</div>
@@ -478,20 +478,17 @@
               <div>
                 <label class="block text-sm font-small">Evidence Name</label>
                 <input type="text" id="evidence-name"
-                                    class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
+                                class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly>
               </div>
               <div>
                 <label class="block text-sm font-small">Remark</label>
                 <textarea id="evidence-remark"
-                                    class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly></textarea>
+                                class="w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500" readonly></textarea>
               </div>
-              <div class="flex justify-between ">
-                <div class="text-left">
-                  <a href="#" class="text-white text-sm hover:underline">&larr;1/3 </a>
-                </div>
-                <div class="text-right">
-                  <a href="#" class="text-white  text-sm hover:underline">3/3 &rarr;</a>
-                </div>
+              <div class="flex justify-between items-center">
+                <a id="prev-evidence" class="cursor-pointer text-white text-sm hover:underline">&larr; Previous</a>
+                <span id="evidence-count" class="text-white text-sm">0/0</span>
+                <a id="next-evidence" class="cursor-pointer text-white text-sm hover:underline">Next &rarr;</a>
               </div>
             </div>
           </div>
@@ -801,27 +798,69 @@
           });
         }
 
+        let currentEvidenceIndex = 0;
+
         function populateAssignedServiceCostModal() {
-          document.getElementById('responseMessage1').classList.add('hidden');
-          if (!currentBookingData) return;
-          document.getElementById('bookingIDShow').innerText = 'Booking id: ' + (currentBookingData.bookingId || '');
-          document.getElementById('bookingID1').value = currentBookingData.bookingId || '';
-          document.getElementById('device-type2').value = currentBookingData.typeOfDevice || '';
-          document.getElementById('device1').value = currentBookingData.numberOfDeviceService || '';
-          document.getElementById('evidence-name').value = currentBookingData.evidenceArray.evidence_name || '';
-          document.getElementById('evidence-remark').value = currentBookingData.evidenceArray.remark || '';
-          document.getElementById('cost').value = currentBookingData.totalCost || '';
-          if(currentBookingData.totalCost){
-            document.getElementById('save_button').classList.add('hidden');
-          }else {
-            document.getElementById('save_button').classList.remove('hidden');
-          }
-          const img = document.getElementById('evidence-photo');
-          img.src = (currentBookingData.evidenceArray.image_url || '');
-          const noImage = document.getElementById('no-image');
-          img.classList.remove('hidden'); // Hide the image using Tailwind's hidden class
-          noImage.classList.add('hidden'); // Show the "No image uploaded" message by removing Tailwind's hidden class
+            document.getElementById('responseMessage1').classList.add('hidden');
+            if (!currentBookingData) return;
+            
+            document.getElementById('bookingIDShow').innerText = 'Booking id: ' + (currentBookingData.bookingId || '');
+            document.getElementById('bookingID1').value = currentBookingData.bookingId || '';
+            document.getElementById('device-type2').value = currentBookingData.typeOfDevice || '';
+            document.getElementById('device1').value = currentBookingData.numberOfDeviceService || '';
+            document.getElementById('cost').value = currentBookingData.totalCost || '';
+            
+            if (currentBookingData.totalCost) {
+                document.getElementById('save_button').classList.add('hidden');
+            } else {
+                document.getElementById('save_button').classList.remove('hidden');
+            }
+            
+            // Initialize the evidence display
+            updateEvidenceDisplay();
+
+            // Set up the navigation buttons
+            document.getElementById('prev-evidence').addEventListener('click', () => changeEvidence(-1));
+            document.getElementById('next-evidence').addEventListener('click', () => changeEvidence(1));
         }
+
+        function updateEvidenceDisplay() {
+            if (!currentBookingData.evidenceArray || currentBookingData.evidenceArray.length === 0) {
+                document.getElementById('evidence-photo').src = 'invalid-url.png';
+                document.getElementById('no-image').classList.remove('hidden');
+                document.getElementById('evidence-name').value = '';
+                document.getElementById('evidence-remark').value = '';
+                document.getElementById('evidence-count').innerText = '0/0';
+                return;
+            }
+
+            let evidence = currentBookingData.evidenceArray[currentEvidenceIndex];
+            document.getElementById('evidence-photo').src = evidence.image_url || 'invalid-url.png';
+            document.getElementById('evidence-name').value = evidence.evidence_name || '';
+            document.getElementById('evidence-remark').value = evidence.remark || '';
+            document.getElementById('evidence-count').innerText = `${currentEvidenceIndex + 1}/${currentBookingData.evidenceArray.length}`;
+
+            if (!evidence.image_url) {
+                document.getElementById('no-image').classList.remove('hidden');
+            } else {
+                document.getElementById('no-image').classList.add('hidden');
+                 document.getElementById('evidence-photo').classList.remove('hidden'); 
+            }
+        }
+
+        function changeEvidence(direction) {
+            if (!currentBookingData.evidenceArray || currentBookingData.evidenceArray.length === 0) return;
+
+            currentEvidenceIndex += direction;
+            if (currentEvidenceIndex < 0) {
+                currentEvidenceIndex = currentBookingData.evidenceArray.length - 1;
+            } else if (currentEvidenceIndex >= currentBookingData.evidenceArray.length) {
+                currentEvidenceIndex = 0;
+            }
+
+            updateEvidenceDisplay();
+        }
+
 
         function toggleSection(sectionId) {
             const section = document.getElementById(sectionId);
@@ -908,7 +947,14 @@
                 const booking = filteredData[i]; // Assuming filteredData is an array of objects
                 const bookings = JSON.stringify(booking);
                 table += '<tr class="hover:bg-gray-700">';
-                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (booking.bookingId || 'N/A')+ '</td>';
+                table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">';
+                if (booking.error && booking.status == "Completed") {
+                  table += '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="inline-block w-6 h-6 mr-2 text-[#D35833]"> <title>' + booking.error + '</title>';
+                  table += '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />';
+                  table += '</svg>';
+                }
+                table += (booking.bookingId || 'N/A');
+                table += '</td>';
                 switch (booking.status) {
                   case "Pending":
                     table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 "><span class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs">Pending</span></td>';
