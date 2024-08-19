@@ -5,7 +5,8 @@
   <base target="_top">
   <?!= include('header') ?>
   <style>
-    .custom-select select, input {
+    .custom-select select,
+    input {
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -13,131 +14,217 @@
     }
   </style>
 </head>
+
 <body class="parent">
-    <? var url = getUrl(); ?>
-    <div class="sticky top-0 z-50">
-        <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
-            style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
-            <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
-                <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png" alt="EZBOOK Logo"
+  <? var url = getUrl(); ?>
+  <div class="sticky top-0 z-50">
+    <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+      style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+      <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+        <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png" alt="EZBOOK Logo"
                     class="h-[60px] object-contain">
-            </div>
-        </nav>
-        <div class="max-[320px]:h-[100px] sm:h-[74px] h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
-            <h1 class="text-lime-500 text-2xl pt-5 pl-5">Service Booking Form</h1>
-        </div>
+      </div>
+    </nav>
+    <div class="max-[320px]:h-[100px] sm:h-[74px] h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+      <h1 class="text-lime-500 text-2xl pt-5 pl-5">Service Booking Form</h1>
     </div>
-    <div class="max-[425px]:m-8 sm:mx-12 sm:my-8 md:mx-24 md:my-16">
-        <!-- Personal Details Section -->
-        <div class="my-4">
-            <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
-                <div class="p-2 text-xl font-semibold font-[Quicksand]">Personal Details</div>
-            </div>
-            <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5]">
-                <form class="space-y-4">
-                    <div>
-                        <label for="name">Name</label>
-                        <input type="text" placeholder="Name" class="w-full p-2 bg-[#313131] rounded-md" required>
-                    </div>
-                    <div>
-                        <label for="contact">Contact Number</label>
-                        <input type="text" placeholder="Contact Number" class="w-full p-2 bg-[#313131] rounded-md"
-                            required>
-                    </div>
-                    <div>
-                        <label for="email">Email Address</label>
-                        <input type="email" placeholder="Email Address" class="w-full p-2 bg-[#313131] rounded-md"
-                            required>
-                    </div>
-                    <div>
-                        <label for="address1">Address 1</label>
-                        <input type="text" placeholder="Address 1" class="w-full p-2 bg-[#313131] rounded-md" required>
-                    </div>
-                    <div>
-                        <label for="address2">Address 2</label>
-                        <input type="text" placeholder="Address 2" class="w-full p-2 bg-[#313131] rounded-md">
-                    </div>
-                    <div>
-                        <label for="postcode">Postcode</label>
-                        <input type="text" placeholder="Postcode" class="w-full p-2 bg-[#313131] rounded-md" required>
-                    </div>
-                    <div>
-                        <label for="city">City</label>
-                        <input type="text" placeholder="City" class="w-full p-2 bg-[#313131] rounded-md" required>
-                    </div>
-                    <div class="custom-select relative">
-                        <label for="state">State</label>
-                        <select class="w-full p-2 bg-[#313131] rounded-md">
-                            <option value="" disabled selected>Select State</option>
-                            <!-- Add options here -->
-                        </select>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" id="select-arrow"
-                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-                </form>
-            </div>
+  </div>
+  <? if (bookingData.error_message) { ?>
+  <div class="mx-8 my-6 sm:mx-12 md:mx-24">
+    <div class="py-4 px-5 bg-red-900 rounded-lg text-[#f5f5f5] flex">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+      </svg>
+      <p class="font-bold font-[ABeeZee]">
+        <?!= bookingData.error_message ?>
+      </p>
+    </div>
+  </div>
+  <? } ?>
+  <div class="max-[425px]:m-8 sm:mx-12 sm:my-8 md:mx-24 md:my-16">
+    <form method="post" action="<?= url ?>">
+      <input class="hidden" name="action" value="make_booking">
+      <!-- Personal Details Section -->
+      <div class="my-4">
+        <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
+          <div class="p-2 text-xl font-semibold font-[Quicksand]">Personal Details</div>
         </div>
-        <!-- Service Details Section -->
-        <div class="my-4">
-            <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
-                <div class="p-2 text-xl font-semibold font-[Quicksand]">Service Details</div>
-            </div>
-            <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5]">
-                <form class="space-y-4">
-                    <div>
-                        <label for="bookingDate">Booking Date</label>
-                        <input type="date" placeholder="Booking Date" class="w-full p-2 bg-[#313131] rounded-md"
-                            required>
-                    </div>
-                    <div>
-                        <label for="bookingTime">Booking Time</label>
-                        <input type="time" placeholder="Booking Time" class="w-full p-2 bg-[#313131] rounded-md"
-                            required>
-                    </div>
-                    <div class="custom-select relative">
-                        <label for="aircond">Aircond Type</label>
-                        <select class="bg-[#323232] focus:outline-none text-neutral-100 w-full p-2 rounded-lg">
-                            <option value="" selected>Wall Mounted</option>
-                            <option value="">Cassette / Ceiling</option>
-                            <option value="">Centralised/Ducted</option>
+        <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5] space-y-4">
+          <div>
+            <label for="name">Name</label>
+            <input type="text" placeholder="Name" name="name" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.name ?>" required>
+          </div>
+          <div>
+            <label for="contact">Contact Number</label>
+            <input type="text" placeholder="Contact Number (60...)" name="contact" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.contact ?>" required>
+          </div>
+          <div>
+            <label for="email">Email Address</label>
+            <input type="email" placeholder="Email Address" name="email" class="w-full p-2 bg-[#313131] rounded-md"
+                            value="<?= bookingData.email ?>" required>
+          </div>
+          <div>
+            <label for="address1">Address 1</label>
+            <input type="text" placeholder="Address 1" name="address1" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.address1 ?>" required>
+          </div>
+          <div>
+            <label for="address2">Address 2</label>
+            <input type="text" placeholder="Address 2" name="address2" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.address2 ?>">
+          </div>
+          <div>
+            <label for="postcode">Postcode</label>
+            <input type="text" placeholder="Postcode" name="postcode" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.postcode ?>" required>
+          </div>
+          <div class="custom-select relative">
+            <label for="city">City</label>
+            <select class="w-full p-2 bg-[#313131] rounded-md" name="city" id="city">
+                            <option value="" disabled selected>Select City</option>
                         </select>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" id="select-arrow"
-                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-                    <div class="custom-select relative">
-                        <label for="service">Service Type</label>
-                        <select class="w-full p-2 bg-[#313131] rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" id="select-arrow"
+              class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+          <div class="custom-select relative">
+            <label for="state">State</label>
+            <select class="w-full p-2 bg-[#313131] rounded-md" name="state" id="state">
+                            <option value="" disabled selected>Select State</option>
+                            <option value="Selangor">Selangor</option>
+                            <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        </select>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" id="select-arrow"
+              class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Service Details Section -->
+      <div class="my-4">
+        <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
+          <div class="p-2 text-xl font-semibold font-[Quicksand]">Service Details</div>
+        </div>
+        <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5] space-y-4">
+          <div>
+            <label for="bookingDate">Booking Date</label>
+            <input type="date" name="date" placeholder="Booking Date" class="w-full p-2 bg-[#313131] rounded-md"
+                            value="<?= bookingData.date ?>" required>
+          </div>
+          <div>
+            <label for="bookingTime">Booking Time</label>
+            <input type="time" name="time" placeholder="Booking Time" class="w-full p-2 bg-[#313131] rounded-md"
+                            value="<?= bookingData.time ?>" required>
+          </div>
+          <div class="custom-select relative">
+            <label for="aircond">Aircond Type</label>
+            <select class="bg-[#323232] focus:outline-none text-neutral-100 w-full p-2 rounded-lg" name="aircond_type" id="aircond_type">
+                            <option value="" disabled selected>Select Aircond Type</option>
+                            <option value="Wall Mounted" selected>Wall Mounted</option>
+                            <option value="Cassette / Ceiling">Cassette / Ceiling</option>
+                            <option value="Centralised/Ducted">Centralised/Ducted</option>
+                        </select>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" id="select-arrow"
+              class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+          <div class="custom-select relative">
+            <label for="service">Service Type</label>
+            <select class="w-full p-2 bg-[#313131] rounded-md" name="service_type" id="service_type">
                             <option value="" disabled selected>Type of Service</option>
                             <!-- Add options here -->
                         </select>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" id="select-arrow"
-                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </div>
-                    <div>
-                        <label for="device">Number of Device Service</label>
-                        <input type="number" placeholder="Number of Device Service"
-                            class="w-full p-2 bg-[#313131] rounded-md" required>
-                    </div>
-                    <div>
-                        <label for="remark">Remark (Optional)</label>
-                        <input type="text" placeholder="Remark" class="w-full p-2 bg-[#313131] rounded-md">
-                    </div>
-                </form>
-            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" id="select-arrow"
+              class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+          <div>
+            <label for="device">Number of Device Service</label>
+            <input type="number" placeholder="Number of Device Service" name="no_device_service"
+                            class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.no_device_service ?>" required>
+          </div>
+          <div>
+            <label for="remark">Remark (Optional)</label>
+            <input type="text" placeholder="Remark" name="remark" class="w-full p-2 bg-[#313131] rounded-md" value="<?= bookingData.remark ?>">
+          </div>
         </div>
-        <!-- Submit Button -->
-        <div class="mt-6 mr-4 flex justify-end">
-            <button type="submit" class="px-6 py-2 bg-[#d35833] text-[#f5f5f5] font-semibold rounded-md font-[ABeeZee]">Submit</button>
-        </div>
-    </div>
+      </div>
+      <!-- Submit Button -->
+      <div class="mt-6 mr-4 pb-6 flex justify-end">
+        <button type="submit" class="px-6 py-2 bg-[#d35833] text-[#f5f5f5] font-semibold rounded-md font-[ABeeZee]">Submit</button>
+      </div>
+    </form>
+  </div>
+  <script>
+    google.script.run.withSuccessHandler(function(cities) {
+        var citySelect = document.getElementById('city');
+
+        cities.forEach(function(city) {
+          var option = document.createElement('option');
+          option.value = city[1]; // Assuming city name is in the second column
+          option.textContent = city[1];
+          citySelect.appendChild(option);
+        });
+        var selectedCity = '<?= bookingData.city ?>';
+
+        if (selectedCity) {
+          Array.from(citySelect.options).forEach(option => {
+            if (selectedCity.includes(option.value)) {
+              option.selected = true;
+            }
+          });
+        }
+
+      }).getCities();
+
+    var stateSelect = document.getElementById('state');
+    var selectedState = '<?= bookingData.state ?>';
+    if(selectedState){
+      Array.from(stateSelect.options).forEach(option => {
+            if (selectedState.includes(option.value)) {
+              option.selected = true;
+            }
+          });
+    }
+
+    var aircondTypeSelect = document.getElementById('aircond_type');
+    var selectedAircondType = '<?= bookingData.aircond_type ?>';
+    if(selectedAircondType){
+      Array.from(aircondTypeSelect.options).forEach(option => {
+            if (selectedAircondType.includes(option.value)) {
+              option.selected = true;
+            }
+          });
+    }
+
+    google.script.run.withSuccessHandler(function(services){
+      var serviceSelect = document.getElementById('service_type');
+      
+      services.forEach(function(service){
+        var option = document.createElement('option');
+        option.value = service[1];
+        option.textContent = service[1];
+        serviceSelect.appendChild(option);
+      });
+
+      var selectedServiceType = '<?= bookingData.service_type ?>';
+
+        if (selectedServiceType) {
+          Array.from(serviceSelect.options).forEach(option => {
+            if (selectedServiceType.includes(option.value)) {
+              option.selected = true;
+            }
+          });
+        }
+    }).getServiceTypeData();
+  </script>
 </body>
+
 </html>
