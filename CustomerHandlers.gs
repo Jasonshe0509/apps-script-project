@@ -214,11 +214,61 @@ function handleCustomerCancelBooking(e) {
   } else {
     error_message = "Booking ID was not found (maybe wrong ID or current status of the booking cannot be canceled)";
     var template = HtmlService.createTemplateFromFile('customer_cancellation');
-    template.bookingID = e.parameter.bookingID
     template.error_message = error_message;
     return template.evaluate()
       .setTitle('Customer Cancellation Page')
       .addMetaTag('viewport', 'width=device-width, initial-scale=1')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+}
+
+function handleCustomerProvideBookingFeedback(e) {
+  // Open the spreadsheet and get the Booking sheet
+  const bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:X');
+  const bookingData = bookingRange.getValues();
+
+  const feedbackSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Feedback');
+
+  let error_message = null;
+  let currentDateTime = getCurrentDateTime();
+
+  let rowIndex = -1;
+  let status = null;
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === e.parameter.bookingID) { // Assuming bookingId is in column B
+      status = bookingData[i][15];
+      rowIndex = i;
+      break;
+    }
+  }
+
+  if (rowIndex == -1) {
+    error_message = "Booking ID was not found";
+    var template = HtmlService.createTemplateFromFile('customer_feedback');
+    template.error_message = error_message;
+    return template.evaluate()
+      .setTitle('Customer Feedback Page')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  if (status != 'Completed') {
+    error_message = "The booking status need to be completed";
+    var template = HtmlService.createTemplateFromFile('customer_feedback');
+    template.error_message = error_message;
+    return template.evaluate()
+      .setTitle('Customer Feedback Page')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  let lastRow = feedbackSheet.getLastRow();
+  let newFeedbackRow = lastRow + 1;
+  feedbackSheet.getRange(newFeedbackRow, 2, 1, 5).setValues([[newFeedbackRow - 4, e.parameter.bookingID, e.parameter.feedback, e.parameter.rating, currentDateTime]]);
+  var template = HtmlService.createTemplateFromFile('customer_feedback_confirmation');
+  return template.evaluate()
+    .setTitle('Customer Feedback Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
