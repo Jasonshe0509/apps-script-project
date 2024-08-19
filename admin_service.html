@@ -394,6 +394,7 @@
     } else {
       var formData = new FormData(this);
       formData.append('action', 'add_service');
+      console.log(formData)
 
       fetch('<?= ScriptApp.getService().getUrl() ?>', {
         method: 'POST',
