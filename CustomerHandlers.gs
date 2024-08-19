@@ -187,3 +187,38 @@ function handleCustomerBookService(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+function handleCustomerCancelBooking(e) {
+  // Open the spreadsheet and get the Booking sheet
+  const bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:X');
+  const bookingData = bookingRange.getValues();
+
+  let error_message = null;
+
+  let rowIndex = -1;
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === e.parameter.bookingID && (bookingData[i][15] != 'Completed' && bookingData[i][15] != 'On Going' && bookingData[i][15] != 'Canceled')) { // Assuming bookingId is in column B
+      rowIndex = i;
+      break;
+    }
+  }
+  if (rowIndex != -1) {
+    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled'); // Assuming status is in column Q (17th column)
+    bookingSheet.getRange(rowIndex + 5, 18).setValue(e.parameter.cancel_reason); // Assuming reject reason is in column R (18th column)
+    var template = HtmlService.createTemplateFromFile('customer_cancellation_confirmation');
+    template.bookingID = e.parameter.bookingID;
+    return template.evaluate()
+      .setTitle('Customer Cancellation Confirmation Page')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } else {
+    error_message = "Booking ID was not found (maybe wrong ID or current status of the booking cannot be canceled)";
+    var template = HtmlService.createTemplateFromFile('customer_cancellation');
+    template.bookingID = e.parameter.bookingID
+    template.error_message = error_message;
+    return template.evaluate()
+      .setTitle('Customer Cancellation Page')
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+}
