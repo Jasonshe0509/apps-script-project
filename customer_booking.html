@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+  <style>
+    .custom-select select, input {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      box-shadow: 0px 7px 8px #161616;
+    }
+  </style>
+</head>
+<body class="parent">
+    <? var url = getUrl(); ?>
+    <div class="sticky top-0 z-50">
+        <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+            style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+            <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+                <img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png" alt="EZBOOK Logo"
+                    class="h-[60px] object-contain">
+            </div>
+        </nav>
+        <div class="max-[320px]:h-[100px] sm:h-[74px] h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+            <h1 class="text-lime-500 text-2xl pt-5 pl-5">Service Booking Form</h1>
+        </div>
+    </div>
+    <div class="max-[425px]:m-8 sm:mx-12 sm:my-8 md:mx-24 md:my-16">
+        <!-- Personal Details Section -->
+        <div class="my-4">
+            <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
+                <div class="p-2 text-xl font-semibold font-[Quicksand]">Personal Details</div>
+            </div>
+            <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5]">
+                <form class="space-y-4">
+                    <div>
+                        <label for="name">Name</label>
+                        <input type="text" placeholder="Name" class="w-full p-2 bg-[#313131] rounded-md" required>
+                    </div>
+                    <div>
+                        <label for="contact">Contact Number</label>
+                        <input type="text" placeholder="Contact Number" class="w-full p-2 bg-[#313131] rounded-md"
+                            required>
+                    </div>
+                    <div>
+                        <label for="email">Email Address</label>
+                        <input type="email" placeholder="Email Address" class="w-full p-2 bg-[#313131] rounded-md"
+                            required>
+                    </div>
+                    <div>
+                        <label for="address1">Address 1</label>
+                        <input type="text" placeholder="Address 1" class="w-full p-2 bg-[#313131] rounded-md" required>
+                    </div>
+                    <div>
+                        <label for="address2">Address 2</label>
+                        <input type="text" placeholder="Address 2" class="w-full p-2 bg-[#313131] rounded-md">
+                    </div>
+                    <div>
+                        <label for="postcode">Postcode</label>
+                        <input type="text" placeholder="Postcode" class="w-full p-2 bg-[#313131] rounded-md" required>
+                    </div>
+                    <div>
+                        <label for="city">City</label>
+                        <input type="text" placeholder="City" class="w-full p-2 bg-[#313131] rounded-md" required>
+                    </div>
+                    <div class="custom-select relative">
+                        <label for="state">State</label>
+                        <select class="w-full p-2 bg-[#313131] rounded-md">
+                            <option value="" disabled selected>Select State</option>
+                            <!-- Add options here -->
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" id="select-arrow"
+                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Service Details Section -->
+        <div class="my-4">
+            <div class="bg-lime-400 text-[#1D1C1D] p-2 rounded-t-lg">
+                <div class="p-2 text-xl font-semibold font-[Quicksand]">Service Details</div>
+            </div>
+            <div class="bg-[#1D1C1D] p-6 rounded-b-lg mb-8 font-[ABeeZee] text-[#f5f5f5]">
+                <form class="space-y-4">
+                    <div>
+                        <label for="bookingDate">Booking Date</label>
+                        <input type="date" placeholder="Booking Date" class="w-full p-2 bg-[#313131] rounded-md"
+                            required>
+                    </div>
+                    <div>
+                        <label for="bookingTime">Booking Time</label>
+                        <input type="time" placeholder="Booking Time" class="w-full p-2 bg-[#313131] rounded-md"
+                            required>
+                    </div>
+                    <div class="custom-select relative">
+                        <label for="aircond">Aircond Type</label>
+                        <select class="bg-[#323232] focus:outline-none text-neutral-100 w-full p-2 rounded-lg">
+                            <option value="" selected>Wall Mounted</option>
+                            <option value="">Cassette / Ceiling</option>
+                            <option value="">Centralised/Ducted</option>
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" id="select-arrow"
+                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
+                    <div class="custom-select relative">
+                        <label for="service">Service Type</label>
+                        <select class="w-full p-2 bg-[#313131] rounded-md">
+                            <option value="" disabled selected>Type of Service</option>
+                            <!-- Add options here -->
+                        </select>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" id="select-arrow"
+                            class="w-6 h-6 absolute right-2 top-[70%] -translate-y-1/2 pointer-events-none text-lime-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </div>
+                    <div>
+                        <label for="device">Number of Device Service</label>
+                        <input type="number" placeholder="Number of Device Service"
+                            class="w-full p-2 bg-[#313131] rounded-md" required>
+                    </div>
+                    <div>
+                        <label for="remark">Remark (Optional)</label>
+                        <input type="text" placeholder="Remark" class="w-full p-2 bg-[#313131] rounded-md">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Submit Button -->
+        <div class="mt-6 mr-4 flex justify-end">
+            <button type="submit" class="px-6 py-2 bg-[#d35833] text-[#f5f5f5] font-semibold rounded-md font-[ABeeZee]">Submit</button>
+        </div>
+    </div>
+</body>
+</html>
