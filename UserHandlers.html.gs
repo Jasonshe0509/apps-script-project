@@ -2,51 +2,59 @@ function handleLogin(e) {
   var userData = user.getDataRange().getValues();
   for (let i = 4; i < userData.length; i++) {
     if (userData[i][6] == e.parameter.email && userData[i][3] == e.parameter.password) {
+
       var role = userData[i][17];
       var redirectPage = 'staff_dashboard';
+
       if (role == 'Admin') {
-        redirectPage = 'admin_dashboard'
+        redirectPage = 'admin_dashboard';
       }
-      var employeeZoneData = employee_zone.getDataRange().getValues();
-      for (let j = 4; j < employeeZoneData.length; j++) {
-        if (userData[i][1] == employeeZoneData[j][1]) {
-          var zoneID = employeeZoneData[j][2];
-          var zoneData = zone.getDataRange().getValues();
-          for (let k = 4; k < zoneData.length; k++) {
-            if (zoneID == zoneData[k][1]) {
-              var userDetails = {
-                userID: userData[i][1],
-                username: userData[i][2],
-                user_name: userData[i][4],
-                mobile: userData[i][5],
-                email: userData[i][6],
-                nric: userData[i][7],
-                dob: userData[i][8],
-                gender: userData[i][9],
-                race: userData[i][10],
-                role: userData[i][17],
-                city_name: zoneData[k][2]
-              };
 
-              // Store session token in Properties Service
-              var userProperties = PropertiesService.getUserProperties();
-              userProperties.setProperty(SESSION_KEY, JSON.stringify(userDetails));
-
-              var html = HtmlService.createTemplateFromFile(redirectPage);
-              html.userID = userData[i][1];
-              html.totalSales = getTotalSales();
-              html.totalUnpaidAmount = getUnpaidAmounts();
-              html.totalPaidAmounts = getPaidAmounts();
-              html.totalActiveBookings = getActiveBookings();
-              html.bookings = getRecentBookings();
-              return html.evaluate()
-                .setTitle('EzBook')
-                .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-                .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      var city_name = null;
+      if (role == 'User') {
+        var employeeZoneData = employee_zone.getDataRange().getValues();
+        for (let j = 4; j < employeeZoneData.length; j++) {
+          if (userData[i][1] == employeeZoneData[j][1]) {
+            var zoneID = employeeZoneData[j][2];
+            var zoneData = zone.getDataRange().getValues();
+            for (let k = 4; k < zoneData.length; k++) {
+              if (zoneID == zoneData[k][1]) {
+                city_name = zoneData[k][2];
+              }
             }
           }
         }
       }
+
+      var userDetails = {
+        userID: userData[i][1],
+        username: userData[i][2],
+        user_name: userData[i][4],
+        mobile: userData[i][5],
+        email: userData[i][6],
+        nric: userData[i][7],
+        dob: userData[i][8],
+        gender: userData[i][9],
+        race: userData[i][10],
+        role: userData[i][17],
+        city_name: city_name
+      };
+
+      // Store session token in Properties Service
+      var userProperties = PropertiesService.getUserProperties();
+      userProperties.setProperty(SESSION_KEY, JSON.stringify(userDetails));
+
+      var html = HtmlService.createTemplateFromFile(redirectPage);
+      html.userID = userData[i][1];
+      html.totalSales = getTotalSales();
+      html.totalUnpaidAmount = getUnpaidAmounts();
+      html.totalPaidAmounts = getPaidAmounts();
+      html.totalActiveBookings = getActiveBookings();
+      html.bookings = getRecentBookings();
+      return html.evaluate()
+        .setTitle('EzBook')
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
   }
 
@@ -266,7 +274,8 @@ function updateEmployeeCity(userId, oldCityName, newCityNames) {
       }
     }
   }
-
+  Logger.log(oldCityId);
+  Logger.log(newCityIds);
   if (oldCityId === null || newCityIds.length === 0) {
     throw new Error("Invalid city names provided.");
   }

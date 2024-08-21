@@ -129,6 +129,7 @@ function handleCustomerBookService(e) {
 
                 bookingSheet.getRange(newBookingRow, 2, 1, 20).setValues([[newBookingID, customerID, e.parameter.date, e.parameter.time, endTime, e.parameter.address1, e.parameter.address2, e.parameter.postcode, cityID, e.parameter.state, 'Malaysia', e.parameter.service_type, e.parameter.service_type, e.parameter.no_device_service, e.parameter.remark, 'Pending', '', '', '', currentDateTime]]);
 
+                autoAssignEmployee(newBookingID, e.parameter.date, e.parameter.time, endTime, cityID, no_employee);
                 var template = HtmlService.createTemplateFromFile('customer_booking_confirmation');
                 var bookingData = {
                   bookingID: newBookingID,
@@ -278,9 +279,9 @@ function autoAssignEmployee(bookingID, bookingDate, startTime, endTime, bookingZ
   let employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
   let bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
 
-  let employeeZoneData = employeeZoneSheet.getDataRange('B5:C').getValues();
-  let employeeAppointmentData = employeeAppointmentSheet.getDataRange('B5:D').getValues();
-  let bookingData = bookingSheet.getDataRange('B5:F').getValues();
+  let employeeZoneData = employeeZoneSheet.getRange('B5:C').getValues();
+  let employeeAppointmentData = employeeAppointmentSheet.getRange('B5:D').getValues();
+  let bookingData = bookingSheet.getRange('B5:F').getValues();
 
   let currentDateTime = getCurrentDateTime();
 
@@ -291,7 +292,7 @@ function autoAssignEmployee(bookingID, bookingDate, startTime, endTime, bookingZ
 
   // 1. Find employees matching the bookingZoneID
   let matchingEmployees = [];
-  for (let i = 1; i < employeeZoneData.length; i++) {
+  for (let i = 0; i < employeeZoneData.length; i++) {
     const employeeID = employeeZoneData[i][0];
     const employeeZoneID = employeeZoneData[i][1];
     if (employeeZoneID === bookingZoneID) {
@@ -310,25 +311,50 @@ function autoAssignEmployee(bookingID, bookingDate, startTime, endTime, bookingZ
     // Get the details of each booking from the Booking sheet
     const sameDayAppointments = employeeBookings.map(appointment => {
       const bookingDetails = bookingData.find(booking => booking[0] === appointment[0]); // Assuming bookingID is in the first column of Booking sheet
+
       if (bookingDetails) {
         const existingBookingDate = new Date(bookingDetails[2]); // Assuming bookingDate is in the third column
+        existingBookingDate.setHours(0, 0, 0, 0);
+        bookingDateObj.setHours(0, 0, 0, 0);
+
         if (existingBookingDate.getTime() === bookingDateObj.getTime()) {
+          let date = new Date(bookingDetails[2]);
+          let startTime = new Date(bookingDetails[3]);
+          let endTime = new Date(bookingDetails[4]);
+
+          var startDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), startTime.getHours(), startTime.getMinutes(), startTime.getSeconds());
+
+          var endDateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), endTime.getHours(), endTime.getMinutes(), endTime.getSeconds());
           return {
-            startTime: new Date(bookingDetails[2] + " " + bookingDetails[3]), // Assuming startTime is in the fourth column
-            endTime: new Date(bookingDetails[2] + " " + bookingDetails[4]) // Assuming endTime is in the fifth column
+            startTime: startDateTime, // Assuming startTime is in the fourth column
+            endTime: endDateTime // Assuming endTime is in the fifth column
           };
         }
       }
       return null;
     }).filter(booking => booking !== null);
 
-    // Check for time clashes
+    Logger.log(sameDayAppointments);
+    // Check for time clashes and gaps
     let hasClash = false;
     for (let j = 0; j < sameDayAppointments.length; j++) {
-      const gapBefore = startTimeObj - sameDayAppointments[j].endTime;
-      const gapAfter = sameDayAppointments[j].startTime - endTimeObj;
+      const existingStartTime = sameDayAppointments[j].startTime;
+      const existingEndTime = sameDayAppointments[j].endTime;
 
-      if (gapBefore < 3600000 && gapAfter < 3600000) { // Check if there's at least 1 hour gap before or after
+      // Check if the new booking is not between any existing booking and ensure 1 hour gap before and after
+      Logger.log(startTimeObj);
+      Logger.log(existingEndTime);
+      const gapBefore = startTimeObj - existingEndTime; // Time difference between new booking start and existing booking end
+      const gapAfter = existingStartTime - endTimeObj; // Time difference between existing booking start and new booking end
+      Logger.log(gapAfter);
+
+      if (
+        (startTimeObj >= existingStartTime && startTimeObj < existingEndTime) || // New booking starts within an existing booking
+        (endTimeObj > existingStartTime && endTimeObj <= existingEndTime) || // New booking ends within an existing booking
+        (gapBefore < 3600000 && gapAfter < 3600000) || // Less than 1 hour gap before or after
+        (gapBefore > 0 && gapBefore < 3600000) || // Less than 1 hour gap before
+        (gapAfter > 0 && gapAfter < 3600000) // Less than 1 hour gap after
+      ) {
         hasClash = true;
         break;
       }
@@ -338,6 +364,7 @@ function autoAssignEmployee(bookingID, bookingDate, startTime, endTime, bookingZ
       availableEmployees.push(employeeID);
     }
   }
+
   // 3. Sort available employees by their current number of bookings (ascending)
   availableEmployees.sort((a, b) => {
     const aAppointmentsCount = employeeAppointmentData.filter(appointment => appointment[1] === a).length;
