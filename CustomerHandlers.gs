@@ -127,7 +127,7 @@ function handleCustomerBookService(e) {
                 let endTime = bookingTime.toTimeString().split(' ')[0];
                 let cityID = zoneMap.get(e.parameter.city);
 
-                bookingSheet.getRange(newBookingRow, 2, 1, 20).setValues([[newBookingID, customerID, e.parameter.date, e.parameter.time, endTime, e.parameter.address1, e.parameter.address2, e.parameter.postcode, cityID, e.parameter.state, 'Malaysia', e.parameter.service_type, e.parameter.service_type, e.parameter.no_device_service, e.parameter.remark, 'Pending', '', '', '', currentDateTime]]);
+                bookingSheet.getRange(newBookingRow, 2, 1, 20).setValues([[newBookingID, customerID, e.parameter.date, e.parameter.time, endTime, e.parameter.address1, e.parameter.address2, e.parameter.postcode, cityID, e.parameter.state, 'Malaysia', e.parameter.service_type, e.parameter.aircond_type, e.parameter.no_device_service, e.parameter.remark, 'Pending', '', '', '', currentDateTime]]);
 
                 autoAssignEmployee(newBookingID, e.parameter.date, e.parameter.time, endTime, cityID, no_employee);
                 var template = HtmlService.createTemplateFromFile('customer_booking_confirmation');
