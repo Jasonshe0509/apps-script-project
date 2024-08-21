@@ -272,3 +272,89 @@ function handleCustomerProvideBookingFeedback(e) {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+
+function autoAssignEmployee(bookingID, bookingDate, startTime, endTime, bookingZoneID, numberEmployee) {
+  let employeeZoneSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee_Zone');
+  let employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  let bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+
+  let employeeZoneData = employeeZoneSheet.getDataRange('B5:C').getValues();
+  let employeeAppointmentData = employeeAppointmentSheet.getDataRange('B5:D').getValues();
+  let bookingData = bookingSheet.getDataRange('B5:F').getValues();
+
+  let currentDateTime = getCurrentDateTime();
+
+  // Convert times to Date objects for easier comparison
+  const bookingDateObj = new Date(bookingDate);
+  const startTimeObj = new Date(bookingDate + " " + startTime);
+  const endTimeObj = new Date(bookingDate + " " + endTime);
+
+  // 1. Find employees matching the bookingZoneID
+  let matchingEmployees = [];
+  for (let i = 1; i < employeeZoneData.length; i++) {
+    const employeeID = employeeZoneData[i][0];
+    const employeeZoneID = employeeZoneData[i][1];
+    if (employeeZoneID === bookingZoneID) {
+      matchingEmployees.push(employeeID);
+    }
+  }
+
+  // 2. Check for booking time clashes and get available employees
+  let availableEmployees = [];
+  for (let i = 0; i < matchingEmployees.length; i++) {
+    const employeeID = matchingEmployees[i];
+
+    // Get the employee's bookings
+    const employeeBookings = employeeAppointmentData.filter(appointment => appointment[1] === employeeID);
+
+    // Get the details of each booking from the Booking sheet
+    const sameDayAppointments = employeeBookings.map(appointment => {
+      const bookingDetails = bookingData.find(booking => booking[0] === appointment[0]); // Assuming bookingID is in the first column of Booking sheet
+      if (bookingDetails) {
+        const existingBookingDate = new Date(bookingDetails[2]); // Assuming bookingDate is in the third column
+        if (existingBookingDate.getTime() === bookingDateObj.getTime()) {
+          return {
+            startTime: new Date(bookingDetails[2] + " " + bookingDetails[3]), // Assuming startTime is in the fourth column
+            endTime: new Date(bookingDetails[2] + " " + bookingDetails[4]) // Assuming endTime is in the fifth column
+          };
+        }
+      }
+      return null;
+    }).filter(booking => booking !== null);
+
+    // Check for time clashes
+    let hasClash = false;
+    for (let j = 0; j < sameDayAppointments.length; j++) {
+      const gapBefore = startTimeObj - sameDayAppointments[j].endTime;
+      const gapAfter = sameDayAppointments[j].startTime - endTimeObj;
+
+      if (gapBefore < 3600000 && gapAfter < 3600000) { // Check if there's at least 1 hour gap before or after
+        hasClash = true;
+        break;
+      }
+    }
+
+    if (!hasClash) {
+      availableEmployees.push(employeeID);
+    }
+  }
+  // 3. Sort available employees by their current number of bookings (ascending)
+  availableEmployees.sort((a, b) => {
+    const aAppointmentsCount = employeeAppointmentData.filter(appointment => appointment[1] === a).length;
+    const bAppointmentsCount = employeeAppointmentData.filter(appointment => appointment[1] === b).length;
+    return aAppointmentsCount - bAppointmentsCount;
+  });
+
+  // 4. Select the numberEmployee employees with the least bookings
+  const selectedEmployees = availableEmployees.slice(0, numberEmployee);
+
+  // 5. Assign the booking to each selected employee
+  if (selectedEmployees.length > 0) {
+    selectedEmployees.forEach(employeeID => {
+      employeeAppointmentSheet.appendRow(['', bookingID, employeeID, currentDateTime]);
+    });
+    Logger.log('Booking ' + bookingID + ' assigned to employees: ' + selectedEmployees.join(', '));
+  } else {
+    Logger.log('No suitable employees found for booking ' + bookingID);
+  }
+}
