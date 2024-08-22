@@ -67,8 +67,9 @@
           src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
           alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
-                    <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
-                        alt="Profile" class="h-12 w-12 rounded-full">
+                     <img
+          src="https://i.ibb.co/PtJ70Vt/profile-Img.webp"
+          alt="Profile" class="h-12 w-12 rounded-full">
                 </button>
         <div id="profileMenu" class="dropdown-menu">
           <a href="<?=url?>?temp=user_profile">User Profile</a>
@@ -257,6 +258,7 @@
       <button onclick="toggleModal('bookingDetailsModal')" class="text-left w-full p-5  rounded-md">←
                 Back</button>
       <div class="space-y-4 px-4 py-4">
+        <input class="hidden" id="bookingID2">
         <!-- Customer Section -->
         <div class="border border-gray-600 rounded-md mb-4">
           <button onclick="toggleSection('customer-details')"
@@ -371,7 +373,6 @@
                   </th>
                   <th class="text-left text-sm font-small p-2 border-b border-gray-600">Email Address
                   </th>
-                  <th class="text-left text-sm font-small p-2 border-b border-gray-600">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -381,13 +382,11 @@
               <div class="flex-grow">
                 <select id="select-employee"
                                     class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">Select employee</option>
-                                    <option value="ali">Ali</option>
-                                    <!-- Add other employees here -->
+                                    <option value="" selected disabled>Select employee</option>
                                 </select>
               </div>
               <div>
-                <button class="bg-green-600 p-2 rounded-md">Add Employee</button>
+                <button onclick="addEmployee()" class="bg-green-600 p-2 rounded-md">Add Employee</button>
               </div>
             </div>
           </div>
@@ -426,6 +425,8 @@
                                 class="mt-1 block w-full rounded-md border border-gray-600 bg-[#323232] text-white p-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
           </div>
+        </div>
+        <div id="responseMessage2">
         </div>
       </div>
     </div>
@@ -657,36 +658,47 @@
               if (currentBookingData.typeOfService) {
                 serviceSelect.value = currentBookingData.typeOfService;
               }
-
-              // Show the modal
-              populateViewDetailsModal();
-              toggleModal('bookingDetailsModal');
             }).getservice();
+
+          google.script.run.withSuccessHandler(function(employees) {
+            var employeeSelect = document.getElementById('select-employee');
+
+            // Populate the select element with the employee options
+            employees.forEach(function(employee) {
+              var option = document.createElement('option');
+              console.log(employee.id);
+              option.value = employee.id;
+              option.textContent = employee.name;
+              employeeSelect.appendChild(option);
+            });
+          }).getEmployeeData(currentBookingData.bookingId);
           
+          // Show the modal
+          populateViewDetailsModal();
+          toggleModal('bookingDetailsModal');
         }
 
         function openAssignedServiceCostModal(index){
           currentBookingData = filteredData[index];
-            google.script.run.withSuccessHandler(function(services) {
-              var serviceSelect = document.getElementById('service2');
-              serviceSelect.innerHTML = ''; // Clear existing options
+          google.script.run.withSuccessHandler(function(services) {
+            var serviceSelect = document.getElementById('service2');
+            serviceSelect.innerHTML = ''; // Clear existing options
 
-              services.forEach(function(service) {
-                var option = document.createElement('option');
-                option.value = service[1]; // Assuming city name is in the second column
-                option.textContent = service[1];
-                serviceSelect.appendChild(option);
-              });
+            services.forEach(function(service) {
+              var option = document.createElement('option');
+              option.value = service[1]; // Assuming city name is in the second column
+              option.textContent = service[1];
+              serviceSelect.appendChild(option);
+            });
 
-              // Set the current city as the selected option
-              if (currentBookingData.typeOfService) {
-                serviceSelect.value = currentBookingData.typeOfService;
-              }
-
-              // Show the modal
-              populateAssignedServiceCostModal();
-              toggleModal('assignServiceCostModal');
-            }).getservice();
+            // Set the current city as the selected option
+            if (currentBookingData.typeOfService) {
+              serviceSelect.value = currentBookingData.typeOfService;
+            }
+          }).getservice();
+            // Show the modal
+            populateAssignedServiceCostModal();
+            toggleModal('assignServiceCostModal');
         }
 
         function openRatingModal(index){
@@ -741,7 +753,9 @@
         }
 
         function populateViewDetailsModal(){
+          document.getElementById('responseMessage2').classList.add('hidden');
           if (!currentBookingData) return;
+          document.getElementById('bookingID2').value = currentBookingData.bookingId || '';
           //Customer
           document.getElementById('name').value = currentBookingData.customerDetails.name || '';
           document.getElementById('phone').value = currentBookingData.customerDetails.mobile || '';
@@ -778,6 +792,10 @@
           document.getElementById('city').value = currentBookingData.city || '';
           document.getElementById('state').value = currentBookingData.state || '';
 
+          loopEmployeeData();
+        }
+
+        function loopEmployeeData(){
           // Employee details
           const employeeDetailsArray = currentBookingData.employeeDetailsArray;
           console.log(employeeDetailsArray);
@@ -790,9 +808,6 @@
               <td class="p-2 text-sm font-small border-b border-gray-600">${employee.name}</td>
               <td class="p-2 text-sm font-small border-b border-gray-600">${employee.mobile}</td>
               <td class="p-2 text-sm font-small border-b border-gray-600">${employee.email}</td>
-              <td class="p-2 text-sm font-small border-b border-gray-600">
-                <button class="px-2 py-1 bg-none rounded-md">:</button>
-              </td>
             `;
             employeeTableBody.appendChild(row);
           });
@@ -1231,7 +1246,27 @@
         document.getElementById('responseMessage1').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">The total cost cannot be empty</p>';
        }
     }
-
+    function addEmployee(){
+      const bookingId = document.getElementById('bookingID2').value;
+      const selectedEmployee = document.getElementById('select-employee').value;
+      if(selectedEmployee){
+        google.script.run.withSuccessHandler(function(response) {
+          if (response.success) {
+            document.getElementById('responseMessage2').innerHTML = '<p class="text-lime-500 font-bold " style="font-family: ABeeZee;">Successfully add an employee</p>';
+            setTimeout(() => {
+              document.getElementById('responseMessage2').classList.remove('hidden');
+              fetchData();
+              loopEmployeeData();
+            }, 5000); // Adjust timeout as needed
+          } else {
+            alert(response.message);
+          }
+       }).addEmployeetoBooking(bookingId, selectedEmployee);
+      }else{
+        document.getElementById('responseMessage2').classList.remove('hidden');
+        document.getElementById('responseMessage2').innerHTML = '<p class="text-red-500 font-bold " style="font-family: ABeeZee;">Please select an employee</p>';
+       }
+    }
     function fetchData() {
       google.script.run.withSuccessHandler(function(response) {
         data = response;
@@ -1239,6 +1274,16 @@
         renderTable();
       }).getCustomerBookings();
     }
+    // Function to fetch data every 10 seconds
+    function startAutoFetch() {
+        fetchData(); // Initial fetch
+        setInterval(fetchData, 10000); // Fetch every 10 seconds (10000 milliseconds)
+    }
+
+    // Call the function when the page is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        startAutoFetch();
+    });
   </script>
 </body>
 

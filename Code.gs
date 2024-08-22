@@ -40,6 +40,15 @@ function doGet(e) {
   if (temp == 'staff_route') {
     return handleStaffRoute();
   }
+  if (temp == 'customer_booking') {
+    return handleCustomerBooking();
+  }
+  if (temp == 'customer_cancellation') {
+    return handleCustomerCancellation();
+  }
+  if (temp == 'customer_feedback') {
+    return handleCustomerFeedback();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -73,6 +82,12 @@ function doPost(e) {
     return handleStaffBookingDetails(e);
   } else if (action == 'remain_open') {
     return handleRemainInvoiceOpen(e);
+  } else if (action == 'make_booking') {
+    return handleCustomerBookService(e);
+  } else if (action == 'cancel_booking') {
+    return handleCustomerCancelBooking(e);
+  } else if (action == 'provide_feedback'){
+    return handleCustomerProvideBookingFeedback(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -214,6 +229,50 @@ function handleStaffRoute() {
   template.bookingDetails = bookingDetails;
   return template.evaluate()
     .setTitle('Routing Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleCustomerBooking() {
+  var template = HtmlService.createTemplateFromFile('customer_booking');
+  var bookingData = {
+    name: '',
+    contact: '',
+    email: '',
+    address1: '',
+    address2: '',
+    postcode: '',
+    city: '',
+    state: '',
+    date: '',
+    time: '',
+    aircond_type: '',
+    service_type: '',
+    no_device_service: '',
+    remakr: '',
+    error_message: '',
+  }
+  template.bookingData = bookingData;
+  return template.evaluate()
+    .setTitle('Customer Booking Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleCustomerCancellation() {
+  var template = HtmlService.createTemplateFromFile('customer_cancellation');
+  template.error_message = '';
+  return template.evaluate()
+    .setTitle('Customer Cancellation Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleCustomerFeedback() {
+  var template = HtmlService.createTemplateFromFile('customer_feedback');
+  template.error_message = '';
+  return template.evaluate()
+    .setTitle('Customer Feedback Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }

@@ -63,8 +63,9 @@
           src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
           alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
         <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
-                    <img src="https://lh3.googleusercontent.com/drive-viewer/AKGpiha7I7athSkWWqVfCgZeiSgeHk39sZANsiMzg5K4EfLHgQWrvC-41XowMKHm__JluV-nkw9m-W55arJI9w3bG3XMJWiqrnKm3TQ=s2560"
-                        alt="Profile" class="h-12 w-12 rounded-full">
+                            <img
+          src="https://i.ibb.co/PtJ70Vt/profile-Img.webp"
+          alt="Profile" class="h-12 w-12 rounded-full">
                 </button>
         <div id="profileMenu" class="dropdown-menu">
           <a href="<?=url?>?temp=user_profile">User Profile</a>
@@ -189,6 +190,106 @@
       </div>
     </div>
   </div>
+  <!-- View Employee Details -->
+  <div id="ViewEmployeeModal"
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-50 text-neutral-100">
+    <div class="modal-overlay absolute w-full h-full bg-[#1d1c1d]/30 backdrop-blur-lg"></div>
+    <div
+      class="modal rounded-lg shadow-lg max-w-full w-full max-h-[110vh] sm:max-h-[70vh] overflow-auto z-50 bg-[#1D1C1D] mx-2 sm:mx-0 md:w-3/4"
+      style="font-family: Abeezee;">
+      <div class="space-y-4 px-4 py-4">
+        <h2 class=" py-5 text-center text-lg font-bold mb-4 text-lime-500" id="employeeID"></h2>
+        <div class="modal-content">
+          <form id="addServiceForm" class="space-y-4" method="post" action="<?= url ?>">
+            <input class="hidden" name="action" value="add_service">
+            <div>
+              <label for="name" class="block text-sm font-medium">Name</label>
+              <input type="text" id="name" name="name"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="name" class="block text-sm font-medium">Username</label>
+              <input type="text" id="username" name="username"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="Phone" class="block text-sm font-medium">Mobile Number</label>
+              <input type="text" id="contact" name="contact"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="Email" class="block text-sm font-medium">Email</label>
+              <input type="text" id="email" name="email"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+
+            <div>
+              <label for="description" class="block text-sm font-medium">DOB</label>
+              <input type="date" id="dob" name="dob"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="description" class="block text-sm font-medium">NRIC</label>
+              <input type="text" id="nric" name="nric"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+
+            <div>
+              <label for="description" class="block text-sm font-medium">Gender</label>
+              <input type="text" id="gender" name="gender"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="description" class="block text-sm font-medium">Race</label>
+              <input type="text" id="race" name="race"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400">
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">Address 1</label>
+              <input type="text" id="address1" min="0" name="address1"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">Address 2</label>
+              <input type="text" id="address2" min="0" name="address2"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">Postcode</label>
+              <input type="text" id="postcode" min="0" name="postcode"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">City</label>
+              <input type="text" id="employee_city" min="0" name="city"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">State</label>
+              <input type="text" id="state" min="0" name="state"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div>
+              <label for="employee" class="block text-sm font-medium">Country</label>
+              <input type="text" id="country" min="0" name="country"
+                class="mt-1 block w-full rounded-md border border-gray-600 p-2 bg-[#323232] text-white focus:outline-none focus:ring-2 focus:ring-lime-400"
+                required>
+            </div>
+            <div class="flex justify-between space-x-2">
+              <button type="button"
+                class="w-full bg-transparent border-gray-600 border hover:bg-gray-600 text-white py-2 px-4 rounded"
+                onclick="toggleModal('ViewEmployeeModal')">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     $(document).ready(function() {
         $('.js-example-basic-multiple').select2();
@@ -276,7 +377,7 @@
 
       const modal = document.getElementById('updateCityModal');
       modal.setAttribute('data-user-id', employeeID);
-      modal.setAttribute('data-city-name', currentCity);
+      modal.setAttribute('data-city-name', currentCities);
       var messageDiv = document.getElementById('successMessage');
       messageDiv.classList.add('hidden');
       // Fetch city data and populate the dropdown
@@ -303,6 +404,34 @@
         // Show the modal
         toggleModal('updateCityModal');
       }).getCities();
+    }
+
+    function openViewEmployeeDetailsModal(index){
+      let currentEmployee = filteredData[index];
+      console.log(currentEmployee);
+      document.getElementById('employeeID').innerText = 'Employee id: ' + (currentEmployee.userId || '') + ' (' + (currentEmployee.role || '') + ')';
+      document.getElementById('name').value = currentEmployee.fullName || '';
+      document.getElementById('username').value = currentEmployee.username || '';
+      document.getElementById('contact').value = currentEmployee.mobileNumber || '';
+      document.getElementById('email').value = currentEmployee.emailAddress || '';
+      if (currentEmployee.dob) {
+          let dateParts = currentEmployee.dob.split('/');
+          let formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+          console.log(formattedDate);
+          document.getElementById('dob').value = formattedDate;
+      } else {
+          document.getElementById('dob').value = '';
+      }
+      document.getElementById('nric').value = currentEmployee.nric || '';
+      document.getElementById('gender').value = currentEmployee.gender || '';
+      document.getElementById('race').value = currentEmployee.race || '';
+      document.getElementById('address1').value = currentEmployee.address1 || '';
+      document.getElementById('address2').value = currentEmployee.address2 || '';
+      document.getElementById('postcode').value = currentEmployee.postCode || '';
+      document.getElementById('employee_city').value = currentEmployee.employeeCity || '';
+      document.getElementById('state').value = currentEmployee.state || '';
+      document.getElementById('country').value = currentEmployee.country || '';
+      toggleModal('ViewEmployeeModal');
     }
 
 
@@ -357,7 +486,7 @@
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.emailAddress || 'N/A') + '</td>';
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.role || 'N/A') + '</td>';
               table += '<td class="p-2 md:p-4 border-b-2 border-gray-600 ">' + (employee.cityName || 'N/A') + '</td>';
-              table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><a href="<?=url?>?temp=user_profile" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</a>';
+              table += '<td class="p-2 md:p-4 border-b-2 border-gray-600"><div class="relative inline-block no-underline"><button class="bookingButton hover:text-lime-500 focus:text-lime-500" onclick="toggleDropdown(event, this)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg></button><div class="dropdown-menu1 absolute right-0 mt-[-0.5rem] hidden bg-[#2a2828] text-neutral-100 rounded-md shadow-lg z-40 text-nowrap border-b border-[#2d3748]"><button onclick="openViewEmployeeDetailsModal('+ i +')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">View Details</button>';
 
               if(employee.role == "User"){
                 table += '<button onclick="openUpdateCityModal(\'' + employee.cityName + '\',\'' + employee.userId + '\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Modify Assigned City</button>';
@@ -528,6 +657,7 @@
         const userId = modal.getAttribute('data-user-id');
         const selectedCities = Array.from(document.getElementById('city').selectedOptions).map(option => option.value);
         const oldCityName = modal.getAttribute('data-city-name');
+        console.log(oldCityName);
 
         google.script.run.withSuccessHandler(function(response) {
             console.log(response.success);

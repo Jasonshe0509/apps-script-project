@@ -2,51 +2,59 @@ function handleLogin(e) {
   var userData = user.getDataRange().getValues();
   for (let i = 4; i < userData.length; i++) {
     if (userData[i][6] == e.parameter.email && userData[i][3] == e.parameter.password) {
+
       var role = userData[i][17];
       var redirectPage = 'staff_dashboard';
+
       if (role == 'Admin') {
-        redirectPage = 'admin_dashboard'
+        redirectPage = 'admin_dashboard';
       }
-      var employeeZoneData = employee_zone.getDataRange().getValues();
-      for (let j = 4; j < employeeZoneData.length; j++) {
-        if (userData[i][1] == employeeZoneData[j][1]) {
-          var zoneID = employeeZoneData[j][2];
-          var zoneData = zone.getDataRange().getValues();
-          for (let k = 4; k < zoneData.length; k++) {
-            if (zoneID == zoneData[k][1]) {
-              var userDetails = {
-                userID: userData[i][1],
-                username: userData[i][2],
-                user_name: userData[i][4],
-                mobile: userData[i][5],
-                email: userData[i][6],
-                nric: userData[i][7],
-                dob: userData[i][8],
-                gender: userData[i][9],
-                race: userData[i][10],
-                role: userData[i][17],
-                city_name: zoneData[k][2]
-              };
 
-              // Store session token in Properties Service
-              var userProperties = PropertiesService.getUserProperties();
-              userProperties.setProperty(SESSION_KEY, JSON.stringify(userDetails));
-
-              var html = HtmlService.createTemplateFromFile(redirectPage);
-              html.userID = userData[i][1];
-              html.totalSales = getTotalSales();
-              html.totalUnpaidAmount = getUnpaidAmounts();
-              html.totalPaidAmounts = getPaidAmounts();
-              html.totalActiveBookings = getActiveBookings();
-              html.bookings = getRecentBookings();
-              return html.evaluate()
-                .setTitle('EzBook')
-                .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-                .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      var city_name = null;
+      if (role == 'User') {
+        var employeeZoneData = employee_zone.getDataRange().getValues();
+        for (let j = 4; j < employeeZoneData.length; j++) {
+          if (userData[i][1] == employeeZoneData[j][1]) {
+            var zoneID = employeeZoneData[j][2];
+            var zoneData = zone.getDataRange().getValues();
+            for (let k = 4; k < zoneData.length; k++) {
+              if (zoneID == zoneData[k][1]) {
+                city_name = zoneData[k][2];
+              }
             }
           }
         }
       }
+
+      var userDetails = {
+        userID: userData[i][1],
+        username: userData[i][2],
+        user_name: userData[i][4],
+        mobile: userData[i][5],
+        email: userData[i][6],
+        nric: userData[i][7],
+        dob: userData[i][8],
+        gender: userData[i][9],
+        race: userData[i][10],
+        role: userData[i][17],
+        city_name: city_name
+      };
+
+      // Store session token in Properties Service
+      var userProperties = PropertiesService.getUserProperties();
+      userProperties.setProperty(SESSION_KEY, JSON.stringify(userDetails));
+
+      var html = HtmlService.createTemplateFromFile(redirectPage);
+      html.userID = userData[i][1];
+      html.totalSales = getTotalSales();
+      html.totalUnpaidAmount = getUnpaidAmounts();
+      html.totalPaidAmounts = getPaidAmounts();
+      html.totalActiveBookings = getActiveBookings();
+      html.bookings = getRecentBookings();
+      return html.evaluate()
+        .setTitle('EzBook')
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
   }
 
@@ -230,7 +238,7 @@ function getCities() {
   return filteredCities;
 }
 
-function updateEmployeeCity(userId, oldCityName, newCityNames) {
+function updateEmployeeCity(userId, oldCityNames, newCityNames) {
   const sheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
   const employeeZoneSheet = sheet.getSheetByName('Employee_Zone');
   const zoneSheet = sheet.getSheetByName('Zone');
@@ -245,15 +253,20 @@ function updateEmployeeCity(userId, oldCityName, newCityNames) {
 
   let currentDateTime = getCurrentDateTime();
 
+  // Split oldCityNames string into an array of city names
+  const oldCityNamesArray = oldCityNames.split(',');
+
   // Variables to store city IDs corresponding to city names
-  let oldCityId = null;
+  let oldCityIds = []; // Array to store multiple old city IDs
   let newCityIds = []; // Array to store multiple new city IDs
 
-  // Lookup old city ID based on the old city name
-  for (let i = 0; i < cityData.length; i++) {
-    if (cityData[i][1] == oldCityName) {
-      oldCityId = cityData[i][0];
-      break;
+  // Lookup old city IDs based on the array of old city names
+  for (let i = 0; i < oldCityNamesArray.length; i++) {
+    for (let j = 0; j < cityData.length; j++) {
+      if (cityData[j][1] == oldCityNamesArray[i].trim()) {
+        oldCityIds.push(cityData[j][0]);
+        break;
+      }
     }
   }
 
@@ -267,14 +280,20 @@ function updateEmployeeCity(userId, oldCityName, newCityNames) {
     }
   }
 
-  if (oldCityId === null || newCityIds.length === 0) {
+  Logger.log(oldCityIds);
+  Logger.log(newCityIds);
+
+  if (oldCityIds.length === 0 || newCityIds.length === 0) {
     throw new Error("Invalid city names provided.");
   }
 
   let updatedEmployeeZoneData = [];
 
   for (let i = 0; i < employeeZoneData.length; i++) {
-    if (employeeZoneData[i][0] != userId && employeeZoneData[i][1] != oldCityId) {
+    if (
+      employeeZoneData[i][0] != userId ||
+      !oldCityIds.includes(employeeZoneData[i][1])
+    ) {
       updatedEmployeeZoneData.push(employeeZoneData[i]);
     }
   }
@@ -287,31 +306,56 @@ function updateEmployeeCity(userId, oldCityName, newCityNames) {
   // Update the sheet with the new data (including 3 columns: userId, cityId, currentDateTime)
   employeeZoneSheet.getRange(5, 2, updatedEmployeeZoneData.length, 3).setValues(updatedEmployeeZoneData);
 
-
   // Update Zone data (increment new city counts and decrement old city count)
-  let oldCityRow = -1;
+  let oldCityRows = [];
   let newCityRows = [];
 
   for (let i = 0; i < cityData.length; i++) {
-    if (cityData[i][0] === oldCityId) {
-      oldCityRow = i;
+    if (oldCityIds.includes(cityData[i][0])) {
+      oldCityRows.push(i);
     }
     if (newCityIds.includes(cityData[i][0])) {
       newCityRows.push(i);
     }
   }
 
-  if (oldCityRow !== -1) {
-    cityData[oldCityRow][2] -= 1; // Decrement old city count
-  }
+  oldCityRows.forEach(row => {
+    cityData[row][2] -= 1; // Decrement old city count
+  });
 
-  for (let i = 0; i < newCityRows.length; i++) {
-    cityData[newCityRows[i]][2] += 1; // Increment new city counts
-  }
+  newCityRows.forEach(row => {
+    cityData[row][2] += 1; // Increment new city counts
+  });
 
   cityRange.setValues(cityData);
   return { success: true };
 }
 
+function getEmployeeData(bookingID) {
+  Logger.log(bookingID);
+  const employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  const employeeSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('User');
+
+  var employeeAppointmentData = employeeAppointmentSheet.getRange('B5:C').getValues();
+  var employeeData = employeeSheet.getRange('B5:R').getValues();
+
+  var assignedEmployeeIDs = [];
+  for (var i = 0; i < employeeAppointmentData.length; i++) {
+    if (employeeAppointmentData[i][0] == bookingID) {
+      assignedEmployeeIDs.push(employeeAppointmentData[i][1]);
+    }
+  }
+
+  var availableEmployees = [];
+  for (var j = 0; j < employeeData.length; j++) {
+    var employeeID = employeeData[j][0]; 
+    var employeeName = employeeData[j][3]; 
+
+    if (assignedEmployeeIDs.indexOf(employeeID) === -1 && employeeData[j][16] != 'Admin') {
+      availableEmployees.push({ id: employeeID, name: employeeName });
+    }
+  }
+  return availableEmployees;
+}
 
 

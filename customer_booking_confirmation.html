@@ -18,11 +18,11 @@
   </div>
   <div class="text-center text-[#f5f5f5] font-[ABeeZee] text-lg">
     <div class="mt-8 mb-6 text-3xl text-lime-500">Service Booking Successful!</div>
-    <div>{Booking ID}</div>
+    <div><?= bookingData.bookingID ?></div>
     <img src="https://i.ibb.co/MgJKfB4/booking-successful.png" alt="Booking Successful" class="mx-auto">
-    <div class="mb-4">Date: {Booking Date}</div>
-    <div class="mb-4">Time: {Booking Time}</div>
-    <div class="mb-4">Service: {Booking Service}</div>
+    <div class="mb-4">Date: <?= bookingData.date ?></div>
+    <div class="mb-4">Time: <?= bookingData.time ?></div>
+    <div class="mb-4">Service: <?= bookingData.service ?></div>
   </div>
 </body>
 

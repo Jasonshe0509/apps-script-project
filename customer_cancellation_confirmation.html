@@ -4,7 +4,7 @@
 <head>
   <base target="_top">
   <?!= include('header') ?>
-  </head>
+</head>
 
 <body class="parent">
   <? var url = getUrl(); ?>
@@ -18,9 +18,12 @@
   </div>
   <div class="text-center text-[#f5f5f5] font-[ABeeZee] text-lg mx-8 sm:mx-12">
     <div class="mt-8 mb-6 text-3xl text-[#ff4e19]">Service cancellation successful!</div>
-    <div>{BookingId}</div>
+    <div>
+      <?= bookingID ?>
+    </div>
     <img src="https://i.ibb.co/m8CS8rx/cancellation-successful.png" alt="Cancellation Successful" class="mx-auto">
-    <div class="mb-4">We're sorry to hear that you're canceling the service.<br>Your cancellation form has been successfully submitted and will be processed shortly.</div>
+    <div class="mb-4">We're sorry to hear that you're canceling the service.<br>Your cancellation form has been successfully submitted and will be processed shortly.
+    </div>
   </div>
 </body>
 
