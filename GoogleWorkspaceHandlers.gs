@@ -62,9 +62,11 @@ function generateInvoices(invoiceId, bookingId, customerId, employeeId, paymentA
   }
 
   var customerName = '';
+  var customerEmail = ''; // Variable to store the customer's email address
   for (var k = 0; k < customerData.length; k++) {
     if (customerData[k][0] == customerId) {
       customerName = customerData[k][3]; // Column E corresponds to index 3 in zero-indexed array
+      customerEmail = customerData[k][2]; // Assuming column B (index 1) has the email address
       Logger.log('Found customer name for ' + customerId + ': ' + customerName);
       break;
     }
@@ -88,7 +90,32 @@ function generateInvoices(invoiceId, bookingId, customerId, employeeId, paymentA
   }
 
   // Pass the employeeName instead of employeeId
-  createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, duration, createdDate, itemDescription);
+  paymentAmount = Number(paymentAmount);
+
+  var invoiceUrl = createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, duration, createdDate, itemDescription);
+  // Send the email with the PDF invoice link
+  let emailBody = `
+    Dear ${customerName},
+
+    We are pleased to inform you that your invoice for Booking ID ${bookingId} has been generated.
+
+    Please find the details of the invoice below:
+    - **Invoice ID:** ${invoiceId}
+    - **Payment Amount:** RM ${paymentAmount.toFixed(2)}
+    - **Created Date:** ${createdDate}
+
+    You can view and download your invoice by clicking the link below:
+    [View Invoice](${invoiceUrl})
+
+    Thank you for choosing our services.
+
+    Best regards,
+    EzBook Team
+  `;
+
+  let subject = `Your Invoice for Booking ID ${bookingId} - EzBook`;
+
+  sendEmail(customerEmail, subject, emailBody);
 }
 
 function createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, duration, createdDate, itemDescription) {
@@ -112,13 +139,11 @@ function createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paym
   titleText.setFontSize(24).setBold(true);
   titleCell.setVerticalAlignment(DocumentApp.VerticalAlignment.MIDDLE);
 
-  paymentAmount = Number(paymentAmount);
-
   body.appendParagraph('\nInvoice ID: ' + invoiceId);
   body.appendParagraph('Booking ID: ' + bookingId);
   body.appendParagraph('Customer Name: ' + customerName);
   body.appendParagraph('Employee Name: ' + employeeName);
-  body.appendParagraph('Payment Amount: ' + paymentAmount.toFixed(2));
+  body.appendParagraph('Payment Amount: RM ' + paymentAmount.toFixed(2));
   body.appendParagraph('Created Date: ' + createdDate);
 
   var invoiceTable = body.appendTable();
@@ -156,7 +181,10 @@ function createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paym
 
   var invoiceUrl = pdfFile.getUrl();
   updateInvoiceUrl(invoiceId, invoiceUrl);
+
+  return invoiceUrl; // Return the URL of the invoice to be used in the email
 }
+
 
 function updateInvoiceUrl(invoiceId, invoiceUrl) {
   var folder = DriveApp.getFolderById('1dQZ-rs1dKAKNIqk1ZzFV6Z_hoLpaCv9v');

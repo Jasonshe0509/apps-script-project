@@ -129,7 +129,7 @@ function getCustomerBookings() {
     }
 
     if (estimatedServiceTime) {
-      if(timeDifferenceInMinutes > estimatedServiceTime){
+      if (timeDifferenceInMinutes > estimatedServiceTime) {
         error = "The booking progress has been delayed";
       }
     }
@@ -197,7 +197,24 @@ function rejectBooking(bookingId, rejectReason) {
     // Update the status and reject reason
     bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled'); // Assuming status is in column Q (17th column)
     bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason); // Assuming reject reason is in column R (18th column)
-    sendEmail(customerEmail, 'Booking has been rejected', `Booking ID ${bookingId} has been rejected with reason: ${rejectReason}`);
+    let message = `
+    Dear Customer,
+
+    We regret to inform you that your booking with ID ${bookingId} has been rejected. The reason for this decision is as follows:
+
+    ${rejectReason}
+
+    We apologize for any inconvenience this may cause. If you would like to rebook, please click the link below:
+
+    [Rebook Your Booking](https://script.google.com/macros/s/AKfycbxzr-wCjPWrtp4G63CV8r4NeaneCKTtjcya2qMqXQRbMyUQt8oPQ4lFW-61ipH_HCoj/exec?temp=customer_booking)
+
+    We appreciate your understanding.
+
+    Best regards,
+
+    EzBook
+    `;
+    sendEmail(customerEmail, 'Booking has been rejected', message)
     return { success: true };
   } else {
     Logger.log(`Booking ID ${bookingId} not found.`);
@@ -284,15 +301,17 @@ function approveBooking(bookingId) {
     let emailBody = `
       Dear ${customerName},
 
-      Your booking with ID ${bookingId} has been approved.
+      We are pleased to inform you that your booking with ID ${bookingId} has been approved.
 
-      Booking Details:
-      - Date: ${formattedDate}
-      - Time: ${formattedStartTime} - ${formattedEndTime}
-      - Type of Service: ${bookingDetails[11]}
+      Below are the details of your confirmed booking:
+      - **Date:** ${formattedDate}
+      - **Time:** ${formattedStartTime} - ${formattedEndTime}
+      - **Service Type:** ${bookingDetails[11]}
 
-      Thank you,
-      Your Service Team
+      We look forward to providing you with our services.
+
+      Best regards,
+      EzBook Team
     `;
 
     // Send email notification
