@@ -132,10 +132,11 @@ function createInvoicePdf(invoiceId, bookingId, customerName, employeeName, paym
   var logoCell = headerRow.appendTableCell();
   var titleCell = headerRow.appendTableCell();
 
-  logoCell.appendImage(logo.getBlob());
-  logoCell.setWidth(150);
+  var logoImage = logoCell.appendImage(logo.getBlob());
+  logoImage.setWidth(180); // Set the desired width
+  logoImage.setHeight(52); // Set the desired height
 
-  var titleText = titleCell.appendParagraph('Invoice');
+  var titleText = titleCell.appendParagraph('EzBook Invoice');
   titleText.setFontSize(24).setBold(true);
   titleCell.setVerticalAlignment(DocumentApp.VerticalAlignment.MIDDLE);
 
@@ -244,6 +245,7 @@ function generateReceipts(invoiceId, bookingId, customerId, employeeId, paymentA
   for (var k = 0; k < customerData.length; k++) {
     if (customerData[k][0] == customerId) {
       customerName = customerData[k][3]; // Column E corresponds to index 3 in zero-indexed array
+      customerEmail = customerData[k][2];
       Logger.log('Found customer name for ' + customerId + ': ' + customerName);
       break;
     }
@@ -267,7 +269,17 @@ function generateReceipts(invoiceId, bookingId, customerId, employeeId, paymentA
   }
 
   // Pass the employeeName instead of employeeId
-  createReceiptPdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, paidAmount, createdDate, itemDescription);
+  var receiptUrl = createReceiptPdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, paidAmount, createdDate, itemDescription);
+
+  var subject = 'Your Receipt for Invoice ' + invoiceId;
+  var emailBody = 'Dear Customer,\n\n' +
+    'Thank you for your payment. Your receipt for Invoice ' + invoiceId + ' has been generated.\n\n' +
+    'You can download your receipt from the following link:\n' +
+    receiptUrl + '\n\n' +
+    'If you have any questions, please feel free to contact us.\n\n' +
+    'Best regards,\n' +
+    'Your Company Name';
+  sendEmail(customerEmail, subject, emailBody);
 }
 
 function createReceiptPdf(invoiceId, bookingId, customerName, employeeName, paymentAmount, paidAmount, createdDate, itemDescription) {
@@ -282,12 +294,14 @@ function createReceiptPdf(invoiceId, bookingId, customerName, employeeName, paym
   var logoCell = headerRow.appendTableCell();
   var titleCell = headerRow.appendTableCell();
 
-  logoCell.appendImage(logo.getBlob());
-  logoCell.setWidth(150);
+  var logoImage = logoCell.appendImage(logo.getBlob());
+  logoImage.setWidth(180); // Set the desired width
+  logoImage.setHeight(52); // Set the desired height
 
-  var titleText = titleCell.appendParagraph('Receipt');
+  var titleText = titleCell.appendParagraph('EzBook Receipt');
   titleText.setFontSize(24).setBold(true);
   titleCell.setVerticalAlignment(DocumentApp.VerticalAlignment.MIDDLE);
+
 
   paymentAmount = Number(paymentAmount);
 
@@ -330,11 +344,13 @@ function createReceiptPdf(invoiceId, bookingId, customerName, employeeName, paym
   Utilities.sleep(500);
 
   var pdfBlob = DriveApp.getFileById(doc.getId()).getAs('application/pdf');
-  var receiptFolder = DriveApp.getFolderById('1g9br747XdRXDbBataJwzyAEdR6fozchw');
+  var receiptFolder = DriveApp.getFolderById('14I_wvidicwaAAoekgJJ2TdSdRA99kibO');
   var pdfFile = receiptFolder.createFile(pdfBlob).setName('Receipt ' + invoiceId + '.pdf');
 
   var receiptUrl = pdfFile.getUrl();
   updateReceiptUrl(invoiceId, receiptUrl);
+
+  return receiptUrl;
 }
 
 function updateReceiptUrl(invoiceId, receiptUrl) {
