@@ -331,6 +331,31 @@ function updateEmployeeCity(userId, oldCityNames, newCityNames) {
   return { success: true };
 }
 
+function getEmployeeData(bookingID) {
+  Logger.log(bookingID);
+  const employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  const employeeSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('User');
 
+  var employeeAppointmentData = employeeAppointmentSheet.getRange('B5:C').getValues();
+  var employeeData = employeeSheet.getRange('B5:R').getValues();
+
+  var assignedEmployeeIDs = [];
+  for (var i = 0; i < employeeAppointmentData.length; i++) {
+    if (employeeAppointmentData[i][0] == bookingID) {
+      assignedEmployeeIDs.push(employeeAppointmentData[i][1]);
+    }
+  }
+
+  var availableEmployees = [];
+  for (var j = 0; j < employeeData.length; j++) {
+    var employeeID = employeeData[j][0]; 
+    var employeeName = employeeData[j][3]; 
+
+    if (assignedEmployeeIDs.indexOf(employeeID) === -1 && employeeData[j][16] != 'Admin') {
+      availableEmployees.push({ id: employeeID, name: employeeName });
+    }
+  }
+  return availableEmployees;
+}
 
 

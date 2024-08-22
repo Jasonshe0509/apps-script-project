@@ -411,4 +411,12 @@ function setTotalCost(bookingId, totalCost) {
   }
 }
 
+function addEmployeetoBooking(bookingID, employeeID) {
+  let employeeAppointmentSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Employee Appointment');
+  let currentDateTime = getCurrentDateTime();
 
+  // Append the row with an array of values
+  employeeAppointmentSheet.appendRow(['', bookingID, employeeID, currentDateTime]);
+
+  return { success: true };
+}
