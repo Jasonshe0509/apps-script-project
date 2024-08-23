@@ -48,6 +48,9 @@ function doGet(e) {
   if (temp == 'employee_tracking_dashboard') {
     return handleStaffDashboard();
   }
+  if (temp == 'staff_booking') {
+    return handleStaffBooking();
+  }
   try {
     var template = HtmlService.createTemplateFromFile('login');
     template.message = '';
@@ -127,6 +130,18 @@ function handleAdminDashboard() {
   html.bookings = getRecentBookings();
   return html.evaluate()
     .setTitle('EzBook')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleStaffBooking() {
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
+  var template = HtmlService.createTemplateFromFile('staff_booking');
+  template.notificationDetails = getNotificationData(userDetails.userID);
+  return template.evaluate()
+    .setTitle('Staff Booking')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -225,8 +240,12 @@ function handleAdminPayment() {
 function handleStaffBookingDetails(e) {
   let bookingId = e.parameter.booking_id;
   let bookingDetails = getFullBookingDetails(bookingId);
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
   var template = HtmlService.createTemplateFromFile('staff_view_booking_details');
   template.bookingDetails = bookingDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('Booking Details Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')

@@ -96,12 +96,6 @@ function getCustomerBookings() {
       ? Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd/MM/yyyy')
       : date;
 
-    // Calculate the time difference in milliseconds
-    let timeDifferenceInMs = completedTime - reachTime;
-
-    // Convert the time difference from milliseconds to minutes
-    let timeDifferenceInMinutes = Math.floor(timeDifferenceInMs / 6000);
-
     // Format times to HH:MM
     let formattedStartTime = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     let formattedEndTime = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -121,17 +115,14 @@ function getCustomerBookings() {
 
     let feedbackArray = feedbackMap.get(bookingId);
 
-    let estimatedServiceTime = serviceMap.get(typeOfService) || null;
-
     let error = null;
     if (formattedReachTime > formattedStartTime) {
       error = "The booking start time has been delayed";
     }
 
-    if (estimatedServiceTime) {
-      if (timeDifferenceInMinutes > estimatedServiceTime) {
-        error = "The booking progress has been delayed";
-      }
+
+    if (formattedCompletedTime > formattedEndTime) {
+      error = "The booking progress has been delayed";
     }
 
     return {
@@ -195,8 +186,8 @@ function rejectBooking(bookingId, rejectReason) {
   // If the bookingId was found
   if (rowIndex !== -1) {
     // Update the status and reject reason
-    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled'); // Assuming status is in column Q (17th column)
-    bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason); // Assuming reject reason is in column R (18th column)
+    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled');
+    bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason);
     let message = `
     Dear Customer,
 
@@ -282,6 +273,7 @@ function approveBooking(bookingId) {
   if (rowIndex !== -1) {
     // Update the status and reject reason
     bookingSheet.getRange(rowIndex + 5, 17).setValue('Scheduled'); // Assuming status is in column Q (17th column)
+
 
     let bookingDetails = bookingData[rowIndex];
     let date = new Date(bookingDetails[2]);
@@ -370,7 +362,8 @@ function setTotalCost(bookingId, totalCost) {
 
   if (rowIndex !== -1) {
     // Update the status and reject reason
-    bookingSheet.getRange(rowIndex + 5, 20).setValue(totalCost); // Assuming status is in column Q (17th column)
+    bookingSheet.getRange(rowIndex + 5, 20).setValue(totalCost);
+    bookingSheet.getRange(rowIndex + 5, 22).setValue(currentDateTime);
     var lastId = '';
     for (var i = 1; i < invoiceData.length; i++) { // Start from 1 to skip headers
       var invoiceId = invoiceData[i][0]; // Assuming invoice ID is in the first column (index 0)
