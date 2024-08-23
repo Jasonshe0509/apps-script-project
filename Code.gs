@@ -9,9 +9,6 @@ function doGet(e) {
   if ('temp' in e.parameters) {
     temp = e.parameters['temp'][0];
   }
-  if (temp == 'staff_dashboard') {
-    return handleStaffDashboard();
-  }
   if (temp == 'admin_dashboard') {
     return handleAdminDashboard();
   }
@@ -33,7 +30,6 @@ function doGet(e) {
   if (temp == 'admin_booking') {
     return handleAdminBooking();
   }
-
   if (temp == 'admin_payment') {
     return handleAdminPayment();
   }
@@ -48,6 +44,9 @@ function doGet(e) {
   }
   if (temp == 'customer_feedback') {
     return handleCustomerFeedback();
+  }
+  if (temp == 'employee_tracking_dashboard') {
+    return handleStaffDashboard();
   }
   try {
     var template = HtmlService.createTemplateFromFile('login');
@@ -86,8 +85,10 @@ function doPost(e) {
     return handleCustomerBookService(e);
   } else if (action == 'cancel_booking') {
     return handleCustomerCancelBooking(e);
-  } else if (action == 'provide_feedback'){
+  } else if (action == 'provide_feedback') {
     return handleCustomerProvideBookingFeedback(e);
+  } else if (action == 'tracking_dashboard') {
+    return handleEmployeeTrackingDashboard(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -95,7 +96,14 @@ function doPost(e) {
 
 
 function handleStaffDashboard() {
-  var template = HtmlService.createTemplateFromFile('staff_dashboard');
+  var template = HtmlService.createTemplateFromFile('employee_tracking_dashboard');
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
+  var employeeDetails = getEmployeeDashboardData(userDetails.userID);
+  template.userDetails = userDetails;
+  template.employeeDetails = employeeDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -141,6 +149,7 @@ function handleUserProfile() {
 
   var template = HtmlService.createTemplateFromFile('user_profile');
   template.userDetails = userDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('User Profile')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -165,6 +174,7 @@ function handleUserChangePassword() {
 
   var template = HtmlService.createTemplateFromFile('user_change_password');
   template.userDetails = userDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   template.status = '';
   return template.evaluate()
     .setTitle('User Profile')
@@ -225,8 +235,12 @@ function handleStaffBookingDetails(e) {
 
 function handleStaffRoute() {
   let bookingDetails = getTodaysBookings();
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
   var template = HtmlService.createTemplateFromFile('staff_route');
   template.bookingDetails = bookingDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('Routing Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -273,6 +287,21 @@ function handleCustomerFeedback() {
   template.error_message = '';
   return template.evaluate()
     .setTitle('Customer Feedback Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleEmployeeTrackingDashboard(e) {
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
+  var template = HtmlService.createTemplateFromFile('employee_tracking_dashboard');
+  var employeeDetails = getEmployeeDashboardData(e.parameter.userId);
+  template.userDetails = userDetails;
+  template.employeeDetails = employeeDetails;
+  template.notificationDetails = getNotificationData(e.parameter.userID);
+  return template.evaluate()
+    .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }

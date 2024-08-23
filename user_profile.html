@@ -50,34 +50,42 @@
   </nav>
   <? } ?>
   <? if (userDetails.role == 'User') { ?>
-  <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+  <nav class="p-4 flex flex-wrap justify-between items-center border-b-[1px] "
     style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
     <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
-      <a href="<?=url?>?temp=staff_dashboard"><img
-          src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
-          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
-      <div class="flex items-center gap-0 sm:gap-6">
-        <svg class="text-white w-10 h-10 cursor-pointer mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-        </svg>
-        <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
-          <img
-          src="https://i.ibb.co/PtJ70Vt/profile-Img.webp"
-          alt="Profile" class="h-12 w-12 rounded-full">
-        </button>
-        <div id="profileMenu" class="dropdown-menu mt-56">
-          <a href="<?=url?>?temp=staff_route">Routing</a>
-          <a href="<?=url?>?temp=user_profile">User Profile</a>
-          <a href="<?=url?>?temp=user_change_password">Change Password</a>
-          <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
-            <input type="hidden" name="action" value="logout">
-            <button type="submit">Logout</button>
-          </form>
-        </div>
+      <a href="<?=url?>?temp=employee_tracking_dashboard"><img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
+                            alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
+      <div class="flex justify-end items-end">
+        <button onclick="toggleModal('messageModal')" class="cursor-pointer">
+                            <svg class="text-white w-10 h-10 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                            </svg>
+                        </button>
+        <button id="profileButton"
+                            class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+                            <img src="https://i.ibb.co/ZBYZbJc/profile-Img.webp" alt="Profile"
+                                class="h-12 w-12 rounded-full">
+                        </button>
+      </div>
+      <div id="profileMenu" class="dropdown-menu">
+        <a href="<?=url?>?temp=user_profile">User Profile</a>
+        <a href="<?=url?>?temp=user_change_password">Change Password</a>
+        <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+          <input type="hidden" name="action" value="logout">
+          <button type="submit">Logout</button>
+        </form>
       </div>
     </div>
+    <ul id="navItems"
+      class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+      <li><a href="<?=url?>?temp=staff_route" class="text-[#f5f5f5] hover:text-lime-500 lg:ml-16">En
+          Route</a>
+      </li>
+      <li><a href="<?=url?>?temp=staff_dashboard" class="text-[#f5f5f5] hover:text-lime-500">Booking</a>
+      </li>
+    </ul>
   </nav>
   <? } ?>
   <!-- Content Section -->
@@ -168,6 +176,52 @@
       </div>
     </div>
   </div>
+  <? if (userDetails.role == 'User') { ?>
+  <div id="messageModal"
+    class="desktop-msg overflow-y-auto fixed w-full h-full flex opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-[99]">
+    <div
+      class="mobile-msg modal rounded-lg shadow-lg w-full sm:w-[360px] z-50 bg-[#2a282a] border-lime-500 border-2 rounded-md text-[#f5f5f5] font-[ABeeZee]">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A] flex">
+        <h2 class="text-lime-500 text-xl">Notification</h2>
+        <div class="block min-[426px]:hidden right-4 absolute" onclick="closeModal('messageModal')">&#10006</div>
+      </div>
+      <div class="px-4 pb-4">
+        <? for (var i = 0; i < notificationDetails.length; i++) { ?>
+        <? if (notificationDetails[i].type == 'booking_add') { ?>
+        <div class="flex mb-2">
+          <div class="text-lg my-auto" id="msg-add">
+            <?= notificationDetails[i].message ?>
+          </div>
+          <div class="flex flex-col ml-auto text-xs text-right">
+            <div>
+              <?= notificationDetails[i].date ?>
+            </div>
+            <div>
+              <?= notificationDetails[i].time ?>
+            </div>
+          </div>
+        </div>
+        <? } ?>
+        <? if (notificationDetails[i].type == 'booking_cancel') { ?>
+        <div class="flex mb-2">
+          <div class="text-lg my-auto" id="msg-cancel">
+            <?= notificationDetails[i].message ?>
+          </div>
+          <div class="flex flex-col ml-auto text-xs text-right">
+            <div>
+              <?= notificationDetails[i].date ?>
+            </div>
+            <div>
+              <?= notificationDetails[i].time ?>
+            </div>
+          </div>
+        </div>
+        <? } ?>
+        <? } ?>
+      </div>
+    </div>
+  </div>
+  <? } ?>
   <script>
     // Toggle the dropdown menu
     document.getElementById('profileButton').addEventListener('click', function () {
@@ -187,6 +241,55 @@
         }
       }
     }
+  </script>
+  <script>
+    // Load Modal
+        function closeModal(modalId){
+            const modal = document.getElementById(modalId);
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        function toggleModal(modalId) {
+          const modal = document.getElementById(modalId);
+
+          if (modal.classList.contains('opacity-0')) {
+              modal.classList.remove('opacity-0', 'pointer-events-none');
+              modal.classList.add('opacity-100');
+          } else {
+              modal.classList.add('opacity-0', 'pointer-events-none');
+              modal.classList.remove('opacity-100');
+          }
+
+          // Handle all 'msg-add' notifications
+          const addBookings = document.querySelectorAll('#msg-add');
+          addBookings.forEach(addBooking => {
+              const existingAddImg = addBooking.parentNode.querySelector('img[alt="booking added"]');
+              if (!existingAddImg) {
+                  const addBookingImg = document.createElement('img');
+                  addBookingImg.src = 'https://i.ibb.co/y025Hny/add-booking.png';
+                  addBookingImg.alt = 'booking added';
+                  addBookingImg.className = 'object-contain mr-3';
+                  addBooking.parentNode.insertBefore(addBookingImg, addBooking);
+              }
+          });
+
+          // Handle all 'msg-cancel' notifications
+          const cancelBookings = document.querySelectorAll('#msg-cancel');
+          cancelBookings.forEach(cancelBooking => {
+              const existingCancelImg = cancelBooking.parentNode.querySelector('img[alt="booking cancelled"]');
+              if (!existingCancelImg) {
+                  const cancelBookingImg = document.createElement('img');
+                  cancelBookingImg.src = 'https://i.ibb.co/yfPGhqc/cancel-booking.png';
+                  cancelBookingImg.alt = 'booking cancelled';
+                  cancelBookingImg.className = 'object-contain mr-3';
+                  cancelBooking.parentNode.insertBefore(cancelBookingImg, cancelBooking);
+              }
+          });
+
+          google.script.run.withSuccessHandler().updateNotificationStatus();
+      }
+
   </script>
 </body>
 

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <?!= include('header') ?>
+  <style>
+    .modal {
+      transition: opacity 0.25s ease;
+      z-index: 9999;
+      /* Ensure modal has highest z-index */
+    }
+
+    body.modal-active {
+      overflow-x: hidden;
+      overflow-y: visible !important;
+    }
+  </style>
+</head>
+
+<body class="parent">
+  <? var url = getUrl(); ?>
+  <div id="mainContent">
+    <div class="sticky top-0 z-50 ">
+      <? if (userDetails.role == 'Admin') { ?>
+      <nav class="p-4 flex flex-wrap justify-between items-center sticky top-0 z-50"
+        style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+        <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+          <a href="<?=url?>?temp=admin_dashboard"><img
+          src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
+          alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
+          <button id="profileButton" class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+        <img
+          src="https://i.ibb.co/PtJ70Vt/profile-Img.webp"
+          alt="Profile" class="h-12 w-12 rounded-full">
+      </button>
+          <div id="profileMenu" class="dropdown-menu">
+            <a href="<?=url?>?temp=user_profile">User Profile</a>
+            <a href="<?=url?>?temp=user_change_password">Change Password</a>
+            <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+              <input type="hidden" name="action" value="logout">
+              <button type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+        <ul id="navItems"
+          class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+          <li><a href="<?=url?>?temp=admin_employee" class="text-white hover:text-lime-500 lg:ml-16">Employee</a></li>
+          <li><a href="<?=url?>?temp=admin_customer" class="text-white hover:text-lime-500">Customer</a></li>
+          <li><a href="<?=url?>?temp=admin_booking" class="text-white hover:text-lime-500">Booking</a></li>
+          <li><a href="<?=url?>?temp=admin_payment" class="text-white hover:text-lime-500">Invoice</a></li>
+          <li><a href="<?=url?>?temp=admin_service" class="text-white hover:text-lime-500">Service</a></li>
+        </ul>
+      </nav>
+      <? } ?>
+      <? if (userDetails.role == 'User') { ?>
+      <nav class="p-4 flex flex-wrap justify-between items-center border-b-[1px] "
+        style="background-color: rgba(42, 40, 40, 0.2); backdrop-filter: blur(16px);">
+        <div class="flex items-center mb-4 md:mb-0 w-full justify-between max-[800px]:mb-0">
+          <a href="<?=url?>?temp=employee_tracking_dashboard"><img src="https://i.ibb.co/1dyvwzk/Horizontal-Logo-1.png"
+                            alt="EZBOOK Logo" class="h-[60px] object-contain"></a>
+          <div class="flex justify-end items-end">
+            <button onclick="toggleModal('messageModal')" class="cursor-pointer">
+                            <svg class="text-white w-10 h-10 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                            </svg>
+                        </button>
+            <button id="profileButton"
+                            class="focus:outline-none h-12 w-12 flex items-center justify-center z-50">
+                            <img src="https://i.ibb.co/ZBYZbJc/profile-Img.webp" alt="Profile"
+                                class="h-12 w-12 rounded-full">
+                        </button>
+          </div>
+          <div id="profileMenu" class="dropdown-menu">
+            <a href="<?=url?>?temp=user_profile">User Profile</a>
+            <a href="<?=url?>?temp=user_change_password">Change Password</a>
+            <form id="logoutForm" action="<?= ScriptApp.getService().getUrl() ?>" method="post">
+              <input type="hidden" name="action" value="logout">
+              <button type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+        <ul id="navItems"
+          class="flex space-x-10 flex-wrap justify-end flex-grow  -mt-14 w-full max-[800px]:mt-4 max-[426px]:space-x-4 items-center justify-center">
+          <li><a href="<?=url?>?temp=staff_route" class="text-[#f5f5f5] hover:text-lime-500 lg:ml-16">En
+              Route</a>
+          </li>
+          <li><a href="<?=url?>?temp=staff_dashboard" class="text-[#f5f5f5] hover:text-lime-500">Booking</a>
+          </li>
+        </ul>
+      </nav>
+      <? } ?>
+      <div class="h-[74px] bg-[#2a282a] shadow-[8px_4px_4px_10px_#1d1c1d99]">
+        <? if (userDetails.role == 'Admin') { ?>
+        <h1 class="text-lime-500 text-2xl pt-5 pl-5">Employee Tracking Dashboard</h1>
+        <? } ?>
+        <? if (userDetails.role == 'User') { ?>
+        <h1 class="text-lime-500 text-2xl pt-5 pl-5">Dashboard</h1>
+        <? } ?>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-[426px]:m-8 sm:mx-12 sm:my-8 md:mx-24 md:my-16">
+      <!-- Details Block -->
+      <div class="bg-[#2a282a] p-6 rounded-lg text-[#f5f5f5]">
+        <h2 class="text-lime-500 text-xl font-bold mb-4">Details</h2>
+        <p>Employee name:
+          <?= employeeDetails.name ?>
+        </p>
+        <p>Employee email:
+          <?= employeeDetails.email ?>
+        </p>
+        <p>Employee contact:
+          <?= employeeDetails.contact ?>
+        </p>
+        <p>Zone Assigned:
+          <?= employeeDetails.city ?>
+        </p>
+        <p class="mt-4">Overall Rate:
+          <?= employeeDetails.rating ?>
+        </p>
+        <p class="mt-4">Total Revenue Gain: RM
+          <?= employeeDetails.totalPayment ?>
+        </p>
+        <p>Total Booking Completed this month:
+          <?= employeeDetails.bookingCount ?>
+        </p>
+      </div>
+
+      <!-- Feedback Block -->
+      <div class="bg-[#2a282a] p-6 rounded-lg">
+        <h2 class="text-lime-500 text-xl font-bold mb-4">Feedback <span class="text-xs">Latest</span></h2>
+        <select id="rating-filter" class="px-3 py-1 mb-3 bg-lime-500 text-[#2a282a] rounded-full border-[#2a282a] font-[ABeeZee]">
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+        <div class="overflow-hidden">
+          <div class="flex transition-transform duration-300 ease-in-out w-full" id="feedback-loop">
+            <!-- Feedback items will be dynamically inserted here -->
+          </div>
+          <div class="m-auto text-[#FF4F1A] text-lg" id="no-rating" style="display: none;">
+            <div class="flex justify-center items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                <path fill-rule="evenodd"
+                  d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+                  clip-rule="evenodd" />
+              </svg>
+              <p class="ml-2">No rating.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Booking Details Block -->
+      <div class="bg-[#2a282a] p-6 rounded-lg sm:col-span-2">
+        <h2 class="text-lime-500 text-xl font-bold mb-4">Booking Details <span class="text-xs">Latest</span>
+        </h2>
+        <div class="overflow-x-auto" id="booking-table">
+          <table class="min-w-full max-w-full rounded-lg text-neutral-100 text-left font-[ABeeZee]">
+            <thead class="text-nowrap">
+              <tr class="border-b-2 border-gray-600">
+                <th class="p-2 md:p-4">Booking ID</th>
+                <th class="p-2 md:p-4">Status</th>
+                <th class="p-2 md:p-4">Customer Name</th>
+                <th class="p-2 md:p-4">Type of Service</th>
+                <th class="p-2 md:p-4">Schedule Date</th>
+                <th class="p-2 md:p-4">Start Time</th>
+                <th class="p-2 md:p-4">End Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <? for (var i = 0; i < employeeDetails.bookingDetails.length; i++) { ?>
+              <tr class="hover:bg-gray-700">
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].bookingID ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600">
+                  <? if (employeeDetails.bookingDetails[i].status == 'Pending') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFDB7D] text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else if (employeeDetails.bookingDetails[i].status == 'En Route') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFA16D] text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else if (employeeDetails.bookingDetails[i].status == 'Scheduled') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#FFAF52] text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else if (employeeDetails.bookingDetails[i].status == 'Canceled') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#962424] text-neutral-100 text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else if (employeeDetails.bookingDetails[i].status == 'Completed') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#98F16E] text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else if (employeeDetails.bookingDetails[i].status == 'On Going') { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-[#DDB478] text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } else { ?>
+                  <span class="inline-block px-3 py-1 rounded bg-gray-200 text-black text-[10px] md:text-xs"><?= employeeDetails.bookingDetails[i].status ?></span>
+                  <? } ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].customerName ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].typeOfService ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].scheduleDate ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].startTime ?>
+                </td>
+                <td class="p-2 md:p-4 border-b-2 border-gray-600 ">
+                  <?= employeeDetails.bookingDetails[i].endTime ?>
+                </td>
+              </tr>
+              <? } ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <? if (userDetails.role == 'User') { ?>
+  <div id="messageModal"
+    class="desktop-msg overflow-y-auto fixed w-full h-full flex opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-[99]">
+    <div
+      class="mobile-msg modal rounded-lg shadow-lg w-full sm:w-[360px] z-50 bg-[#2a282a] border-lime-500 border-2 rounded-md text-[#f5f5f5] font-[ABeeZee]">
+      <div class="modal-header p-4 rounded-t-lg bg-[#2A282A] flex">
+        <h2 class="text-lime-500 text-xl">Notification</h2>
+        <div class="block min-[426px]:hidden right-4 absolute" onclick="closeModal('messageModal')">&#10006</div>
+      </div>
+      <div class="px-4 pb-4">
+        <? for (var i = 0; i < notificationDetails.length; i++) { ?>
+        <? if (notificationDetails[i].type == 'booking_add') { ?>
+        <div class="flex mb-2">
+          <div class="text-lg my-auto" id="msg-add">
+            <?= notificationDetails[i].message ?>
+          </div>
+          <div class="flex flex-col ml-auto text-xs text-right">
+            <div>
+              <?= notificationDetails[i].date ?>
+            </div>
+            <div>
+              <?= notificationDetails[i].time ?>
+            </div>
+          </div>
+        </div>
+        <? } ?>
+        <? if (notificationDetails[i].type == 'booking_cancel') { ?>
+        <div class="flex mb-2">
+          <div class="text-lg my-auto" id="msg-cancel">
+            <?= notificationDetails[i].message ?>
+          </div>
+          <div class="flex flex-col ml-auto text-xs text-right">
+            <div>
+              <?= notificationDetails[i].date ?>
+            </div>
+            <div>
+              <?= notificationDetails[i].time ?>
+            </div>
+          </div>
+        </div>
+        <? } ?>
+        <? } ?>
+      </div>
+    </div>
+  </div>
+  <? } ?>
+  <!-- Feedback Loop Script -->
+  <script>
+    // Simulate fetching the feedback data (normally you'd get this from your server)
+    const feedbacksJSON = '<?= employeeDetails.feedbackDetails ?>';
+
+    let feedbacks = [];
+    try {
+        feedbacks = JSON.parse(feedbacksJSON);
+    } catch (error) {
+        console.error("Error parsing feedbacks JSON:", error);
+    }
+
+    function createFeedbackElement(feedback) {
+        const feedbackElement = document.createElement('div');
+        feedbackElement.className = 'border border-gray-200 rounded-lg p-4 space-y-2 w-full';
+
+        feedbackElement.innerHTML = `
+          <div class="flex items-center space-x-4">
+              <img src="https://i.ibb.co/ZBYZbJc/profile-Img.webp" alt="User Profile" class="w-10 h-10 rounded-full object-cover">
+              <div class="flex flex-col flex-1">
+                  <span class="text-[#f5f5f5] font-semibold">Anonymous</span>
+                  <span class="text-gray-400 text-sm">Service Type</span>
+              </div>
+              <div class="flex flex-col items-end">
+                  <div class="flex space-x-1">
+                      ${'<span class="text-lime-500">★</span>'.repeat(feedback.rating)}
+                      ${'<span class="text-[#f5f5f5]">★</span>'.repeat(5 - feedback.rating)}
+                  </div>
+                  <span class="text-gray-400 text-sm text-right">${feedback.date}, ${feedback.time}</span>
+              </div>
+          </div>
+          <div class="bg-[#323232] rounded-md p-3 mt-2">
+              <div class="text-[#f5f5f5]">${feedback.comments}</div>
+          </div>
+      `;
+
+
+        return feedbackElement;
+    }
+
+    function renderFeedbacks(feedbacks) {
+        const feedbackLoop = document.getElementById('feedback-loop');
+        feedbackLoop.innerHTML = ''; // Clear existing feedbacks
+
+        feedbacks.forEach(feedback => {
+            const feedbackElement = createFeedbackElement(feedback);
+            feedbackLoop.appendChild(feedbackElement);
+        });
+    }
+
+    function filterFeedbacks(selectedRating) {
+        const feedbackLoop = document.getElementById('feedback-loop');
+        const feedbackElements = Array.from(feedbackLoop.children);
+        const noRating = document.getElementById('no-rating');
+        let hasVisibleFeedback = false;
+
+        feedbackElements.forEach(feedback => {
+            const stars = feedback.querySelectorAll('.text-lime-500').length;
+
+            if (stars === selectedRating) {
+                feedback.style.display = 'block';
+                hasVisibleFeedback = true;
+            } else {
+                feedback.style.display = 'none';
+            }
+        });
+
+        if (hasVisibleFeedback) {
+            noRating.style.display = 'none';
+        } else {
+            noRating.style.display = 'block';
+        }
+    }
+
+    function startFeedbackLoop() {
+        const feedbackBlock = document.getElementById('feedback-loop');
+        const feedbacks = Array.from(feedbackBlock.children).filter(feedback => feedback.style.display !== 'none');
+        console.log(feedbacks.length);
+        if (feedbacks.length === 0) return;
+
+        const feedbackWidth = feedbacks[0].offsetWidth;
+        const marginX = parseFloat(getComputedStyle(feedbacks[0]).marginLeft);
+        const totalWidth = feedbackWidth + 2 * marginX;
+
+        function loop() {
+            feedbackBlock.style.transition = 'transform 1.5s ease';
+            feedbackBlock.style.transform = `translateX(-${totalWidth}px)`;
+
+            setTimeout(() => {
+                feedbackBlock.appendChild(feedbacks[0]);
+                feedbackBlock.style.transition = 'none';
+                feedbackBlock.style.transform = 'translateX(0)';
+                setTimeout(() => {
+                    feedbackBlock.style.transition = 'transform 1.5s ease';
+                }, 50);
+            }, 1500);
+
+            setTimeout(loop, 4000);
+        }
+        loop();
+    }
+
+    document.getElementById('rating-filter').addEventListener('change', (event) => {
+        const selectedRating = parseInt(event.target.value, 10);
+        filterFeedbacks(selectedRating);
+        startFeedbackLoop();
+    });
+
+    // Initialize with default rating (e.g., 5 stars)
+    renderFeedbacks(feedbacks);
+    filterFeedbacks(parseInt(document.getElementById('rating-filter').value, 10));
+    startFeedbackLoop();
+
+  </script>
+
+  <script>
+    // Toggle the dropdown menu - profile
+        document.getElementById('profileButton').addEventListener('click', function () {
+            var menu = document.getElementById('profileMenu');
+            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown menu when clicking outside of it
+        window.onclick = function (event) {
+            if (!event.target.matches('#profileButton') && !event.target.matches('#profileButton img')) {
+                var dropdowns = document.getElementsByClassName('dropdown-menu');
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        }
+  </script>
+  <script>
+    // Load Modal
+        function closeModal(modalId){
+            const modal = document.getElementById(modalId);
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        function toggleModal(modalId) {
+          const modal = document.getElementById(modalId);
+
+          if (modal.classList.contains('opacity-0')) {
+              modal.classList.remove('opacity-0', 'pointer-events-none');
+              modal.classList.add('opacity-100');
+          } else {
+              modal.classList.add('opacity-0', 'pointer-events-none');
+              modal.classList.remove('opacity-100');
+          }
+
+          // Handle all 'msg-add' notifications
+          const addBookings = document.querySelectorAll('#msg-add');
+          addBookings.forEach(addBooking => {
+              const existingAddImg = addBooking.parentNode.querySelector('img[alt="booking added"]');
+              if (!existingAddImg) {
+                  const addBookingImg = document.createElement('img');
+                  addBookingImg.src = 'https://i.ibb.co/y025Hny/add-booking.png';
+                  addBookingImg.alt = 'booking added';
+                  addBookingImg.className = 'object-contain mr-3';
+                  addBooking.parentNode.insertBefore(addBookingImg, addBooking);
+              }
+          });
+
+          // Handle all 'msg-cancel' notifications
+          const cancelBookings = document.querySelectorAll('#msg-cancel');
+          cancelBookings.forEach(cancelBooking => {
+              const existingCancelImg = cancelBooking.parentNode.querySelector('img[alt="booking cancelled"]');
+              if (!existingCancelImg) {
+                  const cancelBookingImg = document.createElement('img');
+                  cancelBookingImg.src = 'https://i.ibb.co/yfPGhqc/cancel-booking.png';
+                  cancelBookingImg.alt = 'booking cancelled';
+                  cancelBookingImg.className = 'object-contain mr-3';
+                  cancelBooking.parentNode.insertBefore(cancelBookingImg, cancelBooking);
+              }
+          });
+
+          google.script.run.withSuccessHandler().updateNotificationStatus();
+      }
+
+  </script>
+</body>
+
+</html>
