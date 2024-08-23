@@ -4,13 +4,12 @@
 # Deployment Link
 [EzBook WebApp Link](https://script.google.com/macros/s/AKfycbxzr-wCjPWrtp4G63CV8r4NeaneCKTtjcya2qMqXQRbMyUQt8oPQ4lFW-61ipH_HCoj/exec)
 
-# Deployment Link
-**Testing Account**
-Admin: 
+# Testing Account
+**Admin**
 email: wongjiahui@gmail.com
 password: 123123
 
-Staff: 
+**Staff**: 
 email: leeahchoo@gmail.com
 password: ********
 
