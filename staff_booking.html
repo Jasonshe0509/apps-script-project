@@ -553,6 +553,7 @@
       currentBookingData = filteredData[index];
       document.getElementById('successMessage').classList.add('hidden');
       var statusSelect = document.getElementById('status');
+      statusSelect.innerHTML = '';
       if(currentBookingData.status == 'Scheduled'){
         var option = document.createElement('option');
         option.value = 'En Route'; 
