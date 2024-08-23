@@ -15,9 +15,7 @@ password: ********
 
 # Problem Statement
 
-**Operational Inefficiency**
-
-📉 Operational Inefficiency
+**Operational Domain**
 
 📊 Employee Performance and Workload Imbalance
 
