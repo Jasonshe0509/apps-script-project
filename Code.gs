@@ -9,9 +9,6 @@ function doGet(e) {
   if ('temp' in e.parameters) {
     temp = e.parameters['temp'][0];
   }
-  if (temp == 'staff_dashboard') {
-    return handleStaffDashboard();
-  }
   if (temp == 'admin_dashboard') {
     return handleAdminDashboard();
   }
@@ -33,7 +30,6 @@ function doGet(e) {
   if (temp == 'admin_booking') {
     return handleAdminBooking();
   }
-
   if (temp == 'admin_payment') {
     return handleAdminPayment();
   }
@@ -48,6 +44,9 @@ function doGet(e) {
   }
   if (temp == 'customer_feedback') {
     return handleCustomerFeedback();
+  }
+  if (temp == 'employee_tracking_dashboard') {
+    return handleStaffDashboard();
   }
   try {
     var template = HtmlService.createTemplateFromFile('login');
@@ -97,7 +96,13 @@ function doPost(e) {
 
 
 function handleStaffDashboard() {
-  var template = HtmlService.createTemplateFromFile('staff_dashboard');
+  var template = HtmlService.createTemplateFromFile('employee_tracking_dashboard');
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
+  var employeeDetails = getEmployeeDashboardData(userDetails.userID);
+  template.userDetails = userDetails;
+  template.employeeDetails = employeeDetails;
   return template.evaluate()
     .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')

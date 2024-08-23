@@ -4,7 +4,7 @@ function handleLogin(e) {
     if (userData[i][6] == e.parameter.email && userData[i][3] == e.parameter.password) {
 
       var role = userData[i][17];
-      var redirectPage = 'staff_dashboard';
+      var redirectPage = 'employee_tracking_dashboard';
 
       if (role == 'Admin') {
         redirectPage = 'admin_dashboard';
@@ -45,12 +45,19 @@ function handleLogin(e) {
       userProperties.setProperty(SESSION_KEY, JSON.stringify(userDetails));
 
       var html = HtmlService.createTemplateFromFile(redirectPage);
-      html.userID = userData[i][1];
-      html.totalSales = getTotalSales();
-      html.totalUnpaidAmount = getUnpaidAmounts();
-      html.totalPaidAmounts = getPaidAmounts();
-      html.totalActiveBookings = getActiveBookings();
-      html.bookings = getRecentBookings();
+      if (role == 'Admin') {
+        html.userID = userData[i][1];
+        html.totalSales = getTotalSales();
+        html.totalUnpaidAmount = getUnpaidAmounts();
+        html.totalPaidAmounts = getPaidAmounts();
+        html.totalActiveBookings = getActiveBookings();
+        html.bookings = getRecentBookings();
+      } else {
+        var employeeDetails = getEmployeeDashboardData(userDetails.userID);
+        html.userDetails = userDetails;
+        html.employeeDetails = employeeDetails;
+      }
+
       return html.evaluate()
         .setTitle('EzBook')
         .addMetaTag('viewport', 'width=device-width, initial-scale=1')
