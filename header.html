@@ -109,6 +109,33 @@
   span {
     font-family: ABeeZee;
   }
+
+  /* Feedback loop */
+  #feedback-loop>div {
+    flex-shrink: 0;
+  }
+
+  /* Notification */
+  .desktop-msg {
+    top: 75px;
+    right: 70px;
+    justify-content: end;
+    align-items: baseline;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .desktop-msg {
+      align-items: center;
+      justify-content: center;
+      top: 0;
+      left: 0;
+    }
+
+    .mobile-msg {
+      top: 140px;
+      position: absolute;
+    }
+  }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
