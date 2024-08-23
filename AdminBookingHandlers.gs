@@ -96,12 +96,6 @@ function getCustomerBookings() {
       ? Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd/MM/yyyy')
       : date;
 
-    // Calculate the time difference in milliseconds
-    let timeDifferenceInMs = completedTime - reachTime;
-
-    // Convert the time difference from milliseconds to minutes
-    let timeDifferenceInMinutes = Math.floor(timeDifferenceInMs / 6000);
-
     // Format times to HH:MM
     let formattedStartTime = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     let formattedEndTime = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -121,17 +115,14 @@ function getCustomerBookings() {
 
     let feedbackArray = feedbackMap.get(bookingId);
 
-    let estimatedServiceTime = serviceMap.get(typeOfService) || null;
-
     let error = null;
     if (formattedReachTime > formattedStartTime) {
       error = "The booking start time has been delayed";
     }
 
-    if (estimatedServiceTime) {
-      if (timeDifferenceInMinutes > estimatedServiceTime) {
-        error = "The booking progress has been delayed";
-      }
+
+    if (formattedCompletedTime > formattedEndTime) {
+      error = "The booking progress has been delayed";
     }
 
     return {
