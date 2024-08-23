@@ -153,7 +153,6 @@ function getFullEmployeeData() {
   const employeeZoneSheet = ss.getSheetByName('Employee_Zone');
   const zoneSheet = ss.getSheetByName('Zone');
 
-  // Get customer data
   const employeeRange = employeeSheet.getRange('B5:R'); // Adjust to include all relevant columns
   const employees = employeeRange.getValues();
 
@@ -348,8 +347,8 @@ function getEmployeeData(bookingID) {
 
   var availableEmployees = [];
   for (var j = 0; j < employeeData.length; j++) {
-    var employeeID = employeeData[j][0]; 
-    var employeeName = employeeData[j][3]; 
+    var employeeID = employeeData[j][0];
+    var employeeName = employeeData[j][3];
 
     if (assignedEmployeeIDs.indexOf(employeeID) === -1 && employeeData[j][16] != 'Admin') {
       availableEmployees.push({ id: employeeID, name: employeeName });
@@ -358,4 +357,166 @@ function getEmployeeData(bookingID) {
   return availableEmployees;
 }
 
+function getEmployeeDashboardData(userID) {
+  const ss = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE');
+  const employeeSheet = ss.getSheetByName('User');
+  const employeeRange = employeeSheet.getRange('B5:R'); // Adjust to include all relevant columns
+  const employees = employeeRange.getValues();
+
+  const employeeZoneSheet = ss.getSheetByName('Employee_Zone');
+  // Get Employee Zone data
+  const employeeZoneRange = employeeZoneSheet.getRange('B5:C');
+  const employeeZones = employeeZoneRange.getValues();
+
+  const zoneSheet = ss.getSheetByName('Zone');
+  // Get Zone data
+  const zoneRange = zoneSheet.getRange('B5:C');
+  const zones = zoneRange.getValues();
+
+  const employeeAppointmentSheet = ss.getSheetByName('Employee Appointment');
+  // Get Employee Appointments data
+  const employeeAppointmentRange = employeeAppointmentSheet.getRange('B5:C');
+  const employeeAppointments = employeeAppointmentRange.getValues();
+
+  const feedbackSheet = ss.getSheetByName('Feedback');
+  // Get Feedback data
+  const feedbackRange = feedbackSheet.getRange('B5:F'); // Assuming Booking ID is in B and Rating is in C
+  const feedbacks = feedbackRange.getValues();
+
+  const invoiceSheet = ss.getSheetByName('Invoice');
+  const invoiceRange = invoiceSheet.getRange('B5:G');
+  const invoices = invoiceRange.getValues();
+
+  const bookingSheet = ss.getSheetByName('Booking');
+  const bookingRange = bookingSheet.getRange('B5:Q');
+  const bookings = bookingRange.getValues();
+
+
+  let employeeName = null;
+  let employeeEmail = null;
+  let employeeContact = null;
+
+  // Find employee details
+  for (var i = 0; i < employees.length; i++) {
+    if (employees[i][0] == userID) {
+      employeeName = employees[i][3];
+      employeeContact = employees[i][4];
+      employeeEmail = employees[i][5];
+      break; // Stop loop once employee is found
+    }
+  }
+
+  // Find all city IDs for the given userID
+  const cityIDs = employeeZones
+    .filter(zone => zone[0] == userID) // Match userID
+    .map(zone => zone[1]); // Get city IDs
+
+  // Find city names corresponding to the city IDs
+  const cityNames = cityIDs
+    .map(cityID => zones.find(zone => zone[0] == cityID)) // Match cityID to get cityName
+    .filter(city => city) // Filter out any nulls (if cityID wasn't found)
+    .map(city => city[1]) // Extract city name
+    .join(', '); // Join city names with comma
+
+  // Get all booking IDs for the given userID
+  const bookingIDs = employeeAppointments
+    .filter(appointment => appointment[1] == userID) // Match userID to get booking IDs
+    .map(appointment => appointment[0]); // Extract booking IDs
+
+  const feedbackDetails = feedbacks
+    .filter(feedback => bookingIDs.includes(feedback[1])) // Match booking ID to feedback
+    .map(feedback => {
+      // Convert the Create Date string to a Date object
+      const createDateTime = new Date(feedback[4]);
+
+      let year = createDateTime.getFullYear();
+      let month = String(createDateTime.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      let day = String(createDateTime.getDate()).padStart(2, '0');
+      let hours = String(createDateTime.getHours()).padStart(2, '0');
+      let minutes = String(createDateTime.getMinutes()).padStart(2, '0');
+      let date = `${year}-${month}-${day}`;
+      let time = `${hours}:${minutes}`;
+      return {
+        bookingID: feedback[1],
+        rating: parseFloat(feedback[3]),
+        comments: feedback[2],
+        date: date,
+        time: time
+      };
+    });
+
+  // Convert the feedbackDetails to a JSON string
+  const feedbackDetailsJson = JSON.stringify(feedbackDetails);
+
+  // Get ratings from Feedback matching the booking IDs
+  const ratings = feedbacks
+    .filter(feedback => bookingIDs.includes(feedback[1])) // Match booking ID
+    .map(feedback => parseFloat(feedback[3])); // Extract ratings as floats
+
+  // Calculate average rating
+  const totalRatings = ratings.reduce((sum, rating) => sum + rating, 0);
+  const averageRating = ratings.length > 0 ? (totalRatings / ratings.length).toFixed(2) : null;
+
+  // Calculate total payment amount from invoices
+  const totalPayment = invoices
+    .filter(invoice => bookingIDs.includes(invoice[1])) // Match booking ID to invoices
+    .reduce((sum, invoice) => sum + parseFloat(invoice[5]), 0);
+
+  // Get current month and year
+  const now = new Date();
+  const currentMonth = now.getMonth(); // January is 0, so December is 11
+  const currentYear = now.getFullYear();
+
+  // Count total bookings in the current month for this employee
+  const currentMonthBookingCount = bookings
+    .filter(booking => bookingIDs.includes(booking[0])) // Match booking IDs
+    .filter(booking => {
+      const bookingDate = new Date(booking[2]);
+      return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+    })
+    .length;
+
+  let customerData = getCustomerData();
+
+
+  const employeeLatestBooking = bookings
+    .filter(booking => bookingIDs.includes(booking[0]))
+    .map(booking => {
+      let customerDetails = customerData[booking[1]] || { name: 'Unknown Customer' };
+      let bookingDate = new Date(booking[2]);
+      let startTime = new Date(booking[3]);
+      let endTime = new Date(booking[4]);
+
+      let year = bookingDate.getFullYear();
+      let month = String(bookingDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      let day = String(bookingDate.getDate()).padStart(2, '0');
+      let date = `${year}-${month}-${day}`;
+      // Format times to HH:MM
+      let formattedStartTime = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      let formattedEndTime = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return {
+        bookingID: booking[0],
+        status: booking[15],
+        customerName: customerDetails.name,
+        typeOfService: booking[11],
+        scheduleDate: date,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
+      };
+    })
+    .sort((a, b) => b.bookingID.localeCompare(a.bookingID)) // Sort in descending order by bookingID
+    .slice(0, 3); // Limit to 3 details
+
+  return {
+    name: employeeName,
+    contact: employeeContact,
+    email: employeeEmail,
+    city: cityNames,
+    rating: averageRating,
+    totalPayment: totalPayment,
+    bookingCount: currentMonthBookingCount,
+    feedbackDetails: feedbackDetailsJson,
+    bookingDetails: employeeLatestBooking,
+  }
+}
 

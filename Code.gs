@@ -86,8 +86,10 @@ function doPost(e) {
     return handleCustomerBookService(e);
   } else if (action == 'cancel_booking') {
     return handleCustomerCancelBooking(e);
-  } else if (action == 'provide_feedback'){
+  } else if (action == 'provide_feedback') {
     return handleCustomerProvideBookingFeedback(e);
+  } else if (action == 'tracking_dashboard') {
+    return handleEmployeeTrackingDashboard(e);
   } else {
     return HtmlService.createHtmlOutput('Invalid action').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -273,6 +275,20 @@ function handleCustomerFeedback() {
   template.error_message = '';
   return template.evaluate()
     .setTitle('Customer Feedback Page')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function handleEmployeeTrackingDashboard(e) {
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
+  var template = HtmlService.createTemplateFromFile('employee_tracking_dashboard');
+  var employeeDetails = getEmployeeDashboardData(e.parameter.userId);
+  template.userDetails = userDetails;
+  template.employeeDetails = employeeDetails;
+  return template.evaluate()
+    .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }

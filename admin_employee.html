@@ -490,6 +490,7 @@
 
               if(employee.role == "User"){
                 table += '<button onclick="openUpdateCityModal(\'' + employee.cityName + '\',\'' + employee.userId + '\')" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Modify Assigned City</button>';
+                table += '<form id="employeeTrackingDashboard" action="<?= ScriptApp.getService().getUrl() ?>" method="post"><input type="hidden" name="action" value="tracking_dashboard"><input type="hidden" name="userId" value="' + employee.userId + '"><button type="submit" class="block px-5 py-3 hover:text-lime-500 hover:bg-[#2a282833]">Employee Tracking Dashboard</button></form>';
               }
               table += '</div></div></td>';
           }
