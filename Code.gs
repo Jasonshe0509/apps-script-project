@@ -48,7 +48,7 @@ function doGet(e) {
   if (temp == 'employee_tracking_dashboard') {
     return handleStaffDashboard();
   }
-  if (temp = 'staff_booking') {
+  if (temp == 'staff_booking') {
     return handleStaffBooking();
   }
   try {

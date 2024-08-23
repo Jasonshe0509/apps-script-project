@@ -272,6 +272,7 @@ function updateEvidence(bookingID, evidence_name, remark, uploadedFile) {
     for(var i = 0; i < bookingData.length; i++){
       if(bookingData[i][0] == bookingID){
         bookingSheet.getRange(i + 5, 17).setValue('Completed');
+        bookingSheet.getRange(i + 5, 19).setValue(1);
       }
     }
   }
