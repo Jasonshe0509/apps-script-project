@@ -6,7 +6,7 @@ function getBookings() {
   var userDetails = JSON.parse(userSession);
   var userId = userDetails.userID;
 
-  //booking details
+  // Booking details
   let booking = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
   let bookingRange = booking.getRange('B5:Q');
   let bookingData = bookingRange.getValues();
@@ -58,11 +58,24 @@ function getBookings() {
         customerName: customerName,
         typeOfService: typeOfService,
         scheduleDate: formattedDate,
-        scheduleTime: formattedStartTime + "-" + formattedEndTime
+        scheduleTime: formattedStartTime + "-" + formattedEndTime,
+        originalDate: date, // Keep the original date object for sorting
+        originalStartTime: startTime // Keep the original start time object for sorting
       };
+    })
+    .sort((a, b) => {
+      // First sort by date in descending order
+      if (b.originalDate - a.originalDate !== 0) {
+        return b.originalDate - a.originalDate;
+      }
+      // If dates are the same, sort by start time in descending order
+      return b.originalStartTime - a.originalStartTime;
     });
 
-  return bookings;
+  // Remove the originalDate and originalStartTime properties before returning
+  const sortedBookings = bookings.map(({ originalDate, originalStartTime, ...rest }) => rest);
+
+  return sortedBookings;
 }
 
 function getFullBookingDetails(bookingID) {
@@ -187,4 +200,80 @@ function getFullBookingDetails(bookingID) {
     startTime: formattedStartTime,
     endTime: formattedEndTime
   };
+}
+
+function updateStatus(bookingID, status) {
+  // Get Booking data
+  let bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  let bookingRange = bookingSheet.getRange('B5:Q');
+  let bookingData = bookingRange.getValues();
+  let dateTime = getCurrentDateTime();
+
+  // Loop through the booking data to find the row with the matching bookingID
+  for (let i = 0; i < bookingData.length; i++) {
+    if (bookingData[i][0] === bookingID) { // Assuming Booking ID is in column B (index 0)
+      // Update the status in the relevant column
+      if (status == "En Route") {
+        bookingSheet.getRange(i + 5, 17).setValue(status); // Column Q is the 17th column (index 16)
+      } else if (status == "On Going") {
+        bookingSheet.getRange(i + 5, 17).setValue(status);
+        bookingSheet.getRange(i + 5, 23).setValue(dateTime);
+      }
+      break; // Exit the loop once the booking is found and updated
+    }
+  }
+  return { success: true };
+}
+
+function updateEvidence(bookingID, evidence_name, remark, uploadedFile) {
+  // Get Invoice data
+  let evidenceSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Evidence');
+  // Get Booking data
+  let bookingSheet = SpreadsheetApp.openById('12Fgh9h4M7Zss5KNUPfMVJZjRoE7qFEHed9przexy9zE').getSheetByName('Booking');
+  let bookingRange = bookingSheet.getRange('B5:X');
+  let bookingData = bookingRange.getValues();
+
+  let currentDateTime = getCurrentDateTime();
+
+  if (uploadedFile) {
+    const driveFolder = DriveApp.getFolderById('1iXyl1j52PcgnI8Z1XQy5sbeFJ3Hjx3mM');
+    const evidenceFolderName = bookingID;
+    let evidenceFolder;
+
+    // Check if the folder for the invoice ID already exists
+    const folders = driveFolder.getFoldersByName(evidenceFolderName);
+    if (folders.hasNext()) {
+      evidenceFolder = folders.next();
+    } else {
+      // Create a new folder for the invoice ID
+      evidenceFolder = driveFolder.createFolder(evidenceFolderName);
+    }
+
+    try {
+      // Decode Base64 encoded file content
+      const base64Data = uploadedFile.content;
+      const decodedBytes = Utilities.base64Decode(base64Data);
+      const fileBlob = Utilities.newBlob(decodedBytes, uploadedFile.mimeType, uploadedFile.name);
+      const file = evidenceFolder.createFile(fileBlob);
+      
+      // Generate the viewable link for the image
+      const fileId = file.getId();
+      const fileUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+
+      const lastRow = evidenceSheet.getLastRow();
+      const nextId = lastRow + 1;
+
+      // Append the new row with ID, Invoice ID, URL, and createdDate
+      evidenceSheet.appendRow([' ', nextId, bookingID, evidence_name, fileUrl, remark, currentDateTime, currentDateTime]);
+    } catch (e) {
+      Logger.log('Error decoding file content: ' + e.message);
+    }
+    
+    for(var i = 0; i < bookingData.length; i++){
+      if(bookingData[i][0] == bookingID){
+        bookingSheet.getRange(i + 5, 17).setValue('Completed');
+      }
+    }
+  }
+  return { success: true };
 }
