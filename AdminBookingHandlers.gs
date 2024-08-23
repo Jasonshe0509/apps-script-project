@@ -186,8 +186,8 @@ function rejectBooking(bookingId, rejectReason) {
   // If the bookingId was found
   if (rowIndex !== -1) {
     // Update the status and reject reason
-    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled'); // Assuming status is in column Q (17th column)
-    bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason); // Assuming reject reason is in column R (18th column)
+    bookingSheet.getRange(rowIndex + 5, 17).setValue('Canceled');
+    bookingSheet.getRange(rowIndex + 5, 18).setValue(rejectReason);
     let message = `
     Dear Customer,
 
@@ -273,6 +273,7 @@ function approveBooking(bookingId) {
   if (rowIndex !== -1) {
     // Update the status and reject reason
     bookingSheet.getRange(rowIndex + 5, 17).setValue('Scheduled'); // Assuming status is in column Q (17th column)
+
 
     let bookingDetails = bookingData[rowIndex];
     let date = new Date(bookingDetails[2]);
@@ -361,7 +362,8 @@ function setTotalCost(bookingId, totalCost) {
 
   if (rowIndex !== -1) {
     // Update the status and reject reason
-    bookingSheet.getRange(rowIndex + 5, 20).setValue(totalCost); // Assuming status is in column Q (17th column)
+    bookingSheet.getRange(rowIndex + 5, 20).setValue(totalCost);
+    bookingSheet.getRange(rowIndex + 5, 22).setValue(currentDateTime);
     var lastId = '';
     for (var i = 1; i < invoiceData.length; i++) { // Start from 1 to skip headers
       var invoiceId = invoiceData[i][0]; // Assuming invoice ID is in the first column (index 0)
