@@ -149,6 +149,7 @@ function handleUserProfile() {
 
   var template = HtmlService.createTemplateFromFile('user_profile');
   template.userDetails = userDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('User Profile')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -173,6 +174,7 @@ function handleUserChangePassword() {
 
   var template = HtmlService.createTemplateFromFile('user_change_password');
   template.userDetails = userDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   template.status = '';
   return template.evaluate()
     .setTitle('User Profile')
@@ -233,8 +235,12 @@ function handleStaffBookingDetails(e) {
 
 function handleStaffRoute() {
   let bookingDetails = getTodaysBookings();
+  var userProperties = PropertiesService.getUserProperties();
+  var userSession = userProperties.getProperty(SESSION_KEY);
+  var userDetails = JSON.parse(userSession);
   var template = HtmlService.createTemplateFromFile('staff_route');
   template.bookingDetails = bookingDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('Routing Page')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')

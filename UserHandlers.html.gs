@@ -13,17 +13,24 @@ function handleLogin(e) {
       var city_name = null;
       if (role == 'User') {
         var employeeZoneData = employee_zone.getDataRange().getValues();
+        var cityNames = []; // Array to store all city names associated with the employee
+
         for (let j = 4; j < employeeZoneData.length; j++) {
-          if (userData[i][1] == employeeZoneData[j][1]) {
+          if (userData[i][1] == employeeZoneData[j][1]) { // Match userID
             var zoneID = employeeZoneData[j][2];
             var zoneData = zone.getDataRange().getValues();
+
             for (let k = 4; k < zoneData.length; k++) {
-              if (zoneID == zoneData[k][1]) {
-                city_name = zoneData[k][2];
+              if (zoneID == zoneData[k][1]) { // Match zoneID
+                cityNames.push(zoneData[k][2]); // Add city name to the array
               }
             }
           }
         }
+
+        // Combine city names into a single string, separated by commas
+        var city_name = cityNames.join(', ');
+
       }
 
       var userDetails = {
