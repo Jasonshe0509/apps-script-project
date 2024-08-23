@@ -56,6 +56,7 @@ function handleLogin(e) {
         var employeeDetails = getEmployeeDashboardData(userDetails.userID);
         html.userDetails = userDetails;
         html.employeeDetails = employeeDetails;
+        html.notificationDetails = getNotificationData(userDetails.userID);
       }
 
       return html.evaluate()

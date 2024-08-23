@@ -103,6 +103,7 @@ function handleStaffDashboard() {
   var employeeDetails = getEmployeeDashboardData(userDetails.userID);
   template.userDetails = userDetails;
   template.employeeDetails = employeeDetails;
+  template.notificationDetails = getNotificationData(userDetails.userID);
   return template.evaluate()
     .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
@@ -292,6 +293,7 @@ function handleEmployeeTrackingDashboard(e) {
   var employeeDetails = getEmployeeDashboardData(e.parameter.userId);
   template.userDetails = userDetails;
   template.employeeDetails = employeeDetails;
+  template.notificationDetails = getNotificationData(e.parameter.userID);
   return template.evaluate()
     .setTitle('EzBook')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
